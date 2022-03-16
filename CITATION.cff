@@ -6,13 +6,13 @@ authors:
   -
     family-names: Ootes
     given-names: Laura
-    orcid: "https://orcid.org/0000-0000-0000-0000"
-date-released: 20??-MM-DD
-doi: <insert your DOI here>
+    orcid: "https://orcid.org/0000-0002-2800-8309"
+date-released: 2022-03-16
+doi: 10.0000/FIXME
 version: "0.1.0"
 repository-code: "https://github.com/Transparency-in-the-non-profit-sector/np-transparency"
 keywords:
-  - keyword1
-  - keyword2
+  - NLP
+  - Philanthropy
 message: "If you use this software, please cite it using these metadata."
 license: Apache-2.0
