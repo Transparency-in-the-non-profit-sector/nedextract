@@ -21,10 +21,23 @@
 | MarkDown link checker              | [![markdown-link-check](https://github.com/Transparency-in-the-non-profit-sector/np-transparency/actions/workflows/markdown-link-check.yml/badge.svg)](https://github.com/Transparency-in-the-non-profit-sector/np-transparency/actions/workflows/markdown-link-check.yml) |
 
 ## How to use auto_extract
+What does it do?
+Auto_extract is being developed to extract specific information from annual report PDF files that are written in Dutch. Currently it tries to do the following:
 
-extract specific information from annual report files
+- Read the PDF file, and perform Named Entity Recognition (NER) using Stanza to extract all persons named in the document
+- Extract persons: using a rule-based method that searches for specific keywords, this module tries to identify:
+    - Ambassadors
+    - People in important positions in the organization. The code tries to determine a main job description (e.g. director or board) and a sub-job description (e.g. chairman or treasurer). Note: these positions are identified and outputted in Dutch.
+- Extract related organizations (under development). 
+- Classify the sector in which the organization is active. The code uses a pre-trained model to identify one of eight sectors in which the organization is active. 
 
-The project setup is documented in [project_setup.md](project_setup.md). Feel free to remove this document (and/or the link to this document) if you don't need it.
+Output
+
+Methods of running:
+
+Command to run:
+python auto_extract/run_auto_extract.py 
+
 
 ## Installation
 
