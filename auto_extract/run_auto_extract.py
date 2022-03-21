@@ -39,6 +39,8 @@ parser.add_argument('-d', '--directory',
 parser.add_argument('-f', '--file', help='Specific pdf file to be processed.')
 parser.add_argument('-u', '--url', help='URL to pdf file to be processed.')
 parser.add_argument('-uf', '--url_file', help='File containing url paths to be processed.')
+parser.add_argument('-t', '--tasks', choices=['all', 'people', 'orgs', 'sectors'],
+                    nargs='*', default='all', help='tasks to be performed. Default=all')
 args = parser.parse_args()
 
 if not (args.directory or args.file or args.url or args.url_file):
@@ -54,12 +56,14 @@ fn = 'output' + str(outtime) + '.xlsx'
 outputfile = os.path.join(outdir_path, fn)
 outputdata = []
 
+# convert tasks to list
+tasks = [args.tasks] if isinstance(args.tasks, str) else args.tasks
 
 # Read all files
 countfiles = 0
 if args.file:
     infile = os.path.join(os.getcwd(), args.file)
-    outputdata = extract_pdf(infile, outputdata)
+    outputdata = extract_pdf(infile, outputdata, tasks)
 elif args.directory:
     totalfiles = len([name for name in os.listdir(os.path.join(os.getcwd(), args.directory))
                      if name.lower().endswith('.pdf')])
@@ -68,10 +72,10 @@ elif args.directory:
         print('Working on file:', countfiles, 'out of', totalfiles)
         if filename.lower().endswith('.pdf'):
             infile = os.path.join(os.getcwd(), args.directory, filename)
-            outputdata = extract_pdf(infile, outputdata)
+            outputdata = extract_pdf(infile, outputdata, tasks)
 elif args.url:
     infile = download_pdf(args.url)
-    outputdata = extract_pdf(infile, outputdata)
+    outputdata = extract_pdf(infile, outputdata, tasks)
     delete_downloaded_pdf()
 elif args.url_file:
     with open(args.url_file, 'r') as u:
@@ -79,12 +83,11 @@ elif args.url_file:
     for url in urls:
         print(url)
         infile = download_pdf(url)
-        outputdata = extract_pdf(infile, outputdata)
+        outputdata = extract_pdf(infile, outputdata, tasks)
         delete_downloaded_pdf()
 
 
 # Return extrcated information to output
-outpufile = './Output/output'
 df1 = pd.DataFrame(outputdata, columns=['Input file', 'Organization', 'Main sector', 'Persons',
                    'Ambassadors', 'Board members', 'Job description', 'Related organizations'])
 df1.to_excel(outputfile)
