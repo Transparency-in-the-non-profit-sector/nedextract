@@ -11,7 +11,7 @@ from auto_extract.extract_related_orgs import extract_orgs
 from auto_extract.classify_organisation import predict_main_sector
 
 
-def extract_pdf(infile, outputdata, tasks):
+def extract_pdf(infile, opd_p, opd_g, opd_o, tasks):
     """ Extract information from a pdf file using a stanza pipline. """
 
     print(f"{datetime.now():%Y-%m-%d %H:%M:%S}", 'Working on file:', infile)
@@ -38,7 +38,8 @@ def extract_pdf(infile, outputdata, tasks):
             imc = np.argmax(corg)
             organization = organizations[imc]
             if 'people' in tasks or 'all' in tasks:
-                ambassadors, board, board_positions = extract_persons(doc)
+                (ambassadors, board, board_positions, p_directeur, p_rvt, p_bestuur, p_ledenraad,
+                 p_kasc, p_controlec) = extract_persons(doc, persons)
             else:
                 ambassadors, board, board_positions = [], [], []
             if 'orgs' in tasks or 'all' in tasks:
@@ -53,15 +54,25 @@ def extract_pdf(infile, outputdata, tasks):
             else:
                 main_sector = []
         except ValueError:
-            (organization, ambassadors, board, board_positions, main_sector,
-             orgs_details) = ([], [], [], [], [], [])
+            (organization, ambassadors, board, board_positions, p_directeur, p_rvt, p_bestuur,
+             p_ledenraad, p_kasc, p_controlec, main_sector,
+             orgs_details) = ([], [], [], [], [], [], [], [], [], [], [], [])
 
     # Output
-    outputdata.append([infile, organization, main_sector, ots(persons), ots(ambassadors),
-                      ots(board), ots(board_positions), ots(orgs_details)])
+    output = [infile, organization, main_sector, ots(persons), ots(ambassadors), ots(board),
+              ots(board_positions)]
+    output.extend(atc(p_directeur, 5))
+    output.extend(atc(p_rvt, 20))
+    output.extend(atc(p_bestuur, 20))
+    output.extend(atc(p_ledenraad, 30))
+    output.extend(atc(p_kasc, 5))
+    output.extend(atc(p_controlec, 5))
+    opd_p.append(output)
+    opd_g.append([infile, organization, main_sector])
+    opd_o.append([infile, organization, ots(orgs_details)])
 
     print(f"{datetime.now():%Y-%m-%d %H:%M:%S}", 'Finished file:', infile)
-    return outputdata
+    return opd_p, opd_g, opd_o
 
 
 def ots(input):
@@ -69,5 +80,20 @@ def ots(input):
     out_string = ""
     for element in input:
         out_string += str(element) + "\n"
-
     return out_string
+
+
+def atc(input, length):
+    """ Array to columns: Split array into 5 variables which will be converted into columns
+        in the final output"""
+    outlist = ['']*length
+    if input is not None:
+        for i in range(len(input)):
+            if i == length - 1 and len(input) > length:
+                print("Problem: there are more persons in one of the categories than allocated "
+                      "columns.")
+                outlist[i] = ots(input[i:])
+                break
+            else:
+                outlist[i] = input[i]
+    return outlist
