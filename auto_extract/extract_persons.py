@@ -87,25 +87,35 @@ def find_duplicate_persons(persons):
             outnames.append(same_name)
 
     outnames.sort(key=len, reverse=True)
+
     # remove duplicate lists of names
     for i in range(len(outnames)-1, -1, -1):
         if any(all(elem in names for elem in outnames[i]) for names in outnames[0:i]):
             outnames.pop(i)
 
-    return outnames
+    # remove items that appear in two sublists
+    outlist = []
+    for j in range(len(outnames)):
+        x = outnames[j]
+        for restlist in (outnames[:j] + outnames[j+1:]):
+            if any(elem in outnames[j] for elem in restlist):
+                x = [k for k in outnames[j] if k not in restlist]
+        outlist.append(x)
+
+    return outlist
 
 
 def surrounding_words(text, search_names):
     """ for a given text and search words (names), returns an array of words that are
     found before and after the search word"""
-    surrounding_words = []
+    surrounding_words = np.array([])
     text = np.array2string(text, separator=' ')
     search_names.sort(key=len, reverse=True)
     for search_name in search_names:
         text = text.replace(search_name.lower(), 'search4term')
     text = re.sub('[^0-9a-zA-Z ]+', ' ', text)
     text = text.replace('vice voorzitter', 'vicevoorzitter')
-    text = text.replace('algemeen bestuurslid', 'bestuurslid')
+    text = text.replace('algemeen', '')
     text = text.replace('adjunct', '')
     text = text.replace('interim', '')
     text_split = text.split()
@@ -161,13 +171,19 @@ def determine_main_job(main_jobs, sentences, surroundings):
         main_cat = main_job[np.where(ft == max(ft))[0]][0]
     elif (max(fts) > 0 and len(np.where(fts == max(fts))[0]) == 1):
         main_cat = main_job[np.where(fts == max(fts))[0]][0]
+    elif max(fs) > 0:
+        main_cat = main_job[np.where(fs == max(fs))[0]][0]
+    elif max(fss) > 0:
+        main_cat = main_job[np.where(fss == max(fss))[0]][0]
     else:
         main_cat = None
     ft_director = ft[np.where(main_job == 'directeur')]
-    return main_cat, ft_director
+    fts_bestuur = fts[np.where(main_job == 'bestuur')]
+    fts_rvt = fts[np.where(main_job == 'rvt')]
+    return main_cat, ft_director, fts_bestuur, fts_rvt
 
 
-def extract_persons(doc):
+def extract_persons(doc, all_persons):
     ''' Determine from a text which persons (identified with stanza) are ambassadors or
     board members, using a rule based method. Identify potential ambassadors and board members
     based on key words occuring in sentences in which a name is mentioned. Next, for board members,
@@ -181,23 +197,35 @@ def extract_persons(doc):
     - they are mentioned in director context < 2 (ft), while the max mentioning is > 2
     - the subposition (obtained from words directly surrounding name) is not director.'''
     ambassadors = np.array([])  # identified ambassadors
-    pot_per = np.array([])  # potential board memebrs/ambassadors
-    board = np.array([])    # identified board members
-    b_position = np.array([])   # identified board members + main and sub position
+    pot_per = np.array([])  # people with potential significant position
+    people = []  # list of all writing forms of names of people in pot_per
+    board = np.array([])    # identified people with significant positions
+    b_position = np.array([])   # people with significant positions + main and sub position
     pot_director = []  # list potential directors, subjob, and context count
+    p_directeur = np.array([])  # array of identified directors
+    pot_rvt = []  # list of potential rvt members
+    p_rvt = np.array([])  # array of identified rvt members
+    pot_bestuur = []  # list of potential board member
+    p_bestuur = np.array([])  # array of identified board members
+    p_ledenraad = np.array([])  # array of identified ledenraad members
+    p_kasc = np.array([])  # array of identified members of kascommissie
+    p_controlec = np.array([])  # array of identified members of controlecommissie
 
     # words and categories for main jobs
-    directeur = ['directeur', 'directrice', 'directie']
+    directeur = ['directeur', 'directrice', 'directie', 'bestuurder']
+    bestuur = ['bestuur', 'db', 'ab', 'rvb', 'bestuurslid', 'bestuursleden', 'hoofdbestuur',
+               'bestuursvoorzitter']
     rvt = ['rvt', 'raad van toezicht', 'raad v. toezicht', 'auditcommissie', 'audit commissie']
-    bestuur = ['bestuur', 'db', 'ab', 'rvb', 'bestuurslid', 'bestuursleden']
-    ledenraad = ['ledenraad']
+    ledenraad = ['ledenraad', 'ledenraadsvoorzitter', 'ledenraadpresidium']
     kascommissie = ['kascommissie']
     controlecommissie = ['controlecommissie']
     ambassadeur = ['ambassadeur', 'ambassadeurs']
     main_job_all = (directeur + rvt + bestuur + ledenraad + kascommissie + controlecommissie
                     + ambassadeur)
-    main_jobs = [directeur, rvt, bestuur, ledenraad, kascommissie, controlecommissie, ambassadeur]
-    main_jobs_backup = [rvt, bestuur, ledenraad, kascommissie, controlecommissie, ambassadeur]
+    main_jobs = [directeur, bestuur, rvt, ledenraad, kascommissie, controlecommissie, ambassadeur]
+    main_jobs_no_amb = [directeur, bestuur, rvt, ledenraad, kascommissie, controlecommissie]
+    main_jobs_backup = [bestuur, rvt, ledenraad, kascommissie, controlecommissie, ambassadeur]
+    main_jobs_backup_noamb = [bestuur, rvt, ledenraad, kascommissie, controlecommissie]
 
     # words and categories for sub jobs
     vicevoorzitter = ['vice-voorzitter', 'vicevoorzitter', 'vice voorzitter']
@@ -206,22 +234,26 @@ def extract_persons(doc):
     secretaris = ['secretaris', 'secretariaat']
     commissaris = ['commissaris', 'commissariaat']
     lid = ['lid', 'leden', 'bestuurslid', 'bestuursleden']
-    adviseur = ['adviseur']
+    adviseur = ['adviseur', 'adviseurs']
     sub_job_all = (directeur + vicevoorzitter + voorzitter + penningmeester + secretaris +
                    commissaris + lid + adviseur)
     sub_jobs = [directeur, vicevoorzitter, voorzitter, penningmeester, secretaris, commissaris,
                 lid, adviseur]
     sub_job = np.array([sj[0] for sj in sub_jobs])
 
-    # identify potential ambassadors and board members based on key words in sentences
+    # identify potential ambassadors and board members based on keywords in sentences
     for sentence in doc.sentences:
         stripped_sentence = sentence.text.lower().replace(',', ' ').replace('.', ' ')
         if any(item in stripped_sentence for item in (main_job_all + sub_job_all)):
             per = [f'{ent.text}' for ent in sentence.ents if ent.type == "PER"]
             pot_per = np.append(pot_per, per)
 
-    # Find duplicates (i.e. J Brown and James Brown)
-    people = find_duplicate_persons(list(np.unique(pot_per)))
+    # Find duplicates (i.e. J Brown and James Brown) and concatenate all ways of writing
+    # the name of one persons that is potentially of interest
+    peoples = find_duplicate_persons(list(np.unique(all_persons)))
+    for p in peoples:
+        if any(item in pot_per for item in p):
+            people.append(p)
 
     # Determine most likely position of board members
     # Collect all sentences containing a particular board member name +
@@ -247,36 +279,60 @@ def extract_persons(doc):
             prevsentence = sentence.text.lower()
 
         # Determine main job category
-        main_cat, ft_direc = determine_main_job(main_jobs, sentences, surroundings)
+        main_cat, ft_direc, fts_bestuur, fts_rvt = determine_main_job(main_jobs, sentences,
+                                                                      surroundings)
         if main_cat is None:
-            people.remove(members)
             continue
 
         # Determine sub job category based on positions mentioned directely before or after name
         surrounding_w = surrounding_words(sentences, members)
-        for sj in sub_jobs:
-            c_sub_job = np.append(c_sub_job, count_occurrence(surrounding_w, sj)[0])
+        if surrounding_w.size > 0:
+            for sj in sub_jobs:
+                c_sub_job = np.append(c_sub_job, count_occurrence(surrounding_w, sj)[0])
+        else:
+            c_sub_job = np.append(c_sub_job, 0)
 
         if max(c_sub_job) > 0 and len(np.where(c_sub_job == max(c_sub_job))[0]) == 1:
             sub_cat = backup_sub_cat = sub_job[np.where(c_sub_job == max(c_sub_job))[0]][0]
             if main_cat == 'directeur' and sub_cat != 'directeur':
                 sub_cat = ''
+            elif main_cat == 'directeur' and sub_cat == 'directeur':
+                backup_sub_cat = ''
         else:
             sub_cat = backup_sub_cat = ''
-        backup_main_cat = determine_main_job(main_jobs_backup, sentences, surroundings)[0]
 
         # Add final results
         member = max(members, key=len)
         if main_cat == 'ambassadeur':
-            ambassadors = np.append(ambassadors, member)
-        else:
+            if sub_cat != '':
+                main_cat = determine_main_job(main_jobs_no_amb, sentences, surroundings)[0]
+            else:
+                ambassadors = np.append(ambassadors, member)
+        if main_cat != 'ambassadeur':
             board = np.append(board, member)
             b_position = np.append(b_position, member + ' - ' + main_cat + ' - ' + sub_cat)
-        # Prep for additional check for directors
-        if main_cat == 'directeur':
-            pot_director.append([member, sub_cat, ft_direc, backup_main_cat, backup_sub_cat])
+            if main_cat == 'directeur':
+                p_directeur = np.append(p_directeur, member)
+                if sub_cat == '':
+                    backup_main_cat = determine_main_job(main_jobs_backup, sentences,
+                                                         surroundings)[0]
+                else:
+                    backup_main_cat = determine_main_job(main_jobs_backup_noamb, sentences,
+                                                         surroundings)[0]
+                pot_director.append([member, sub_cat, ft_direc, backup_main_cat, backup_sub_cat,
+                                     fts_bestuur, fts_rvt])
+            elif main_cat == 'rvt':
+                pot_rvt.append([member, sub_cat, fts_rvt])
+            elif main_cat == 'bestuur':
+                pot_bestuur.append([member, sub_cat, fts_bestuur])
+            elif main_cat == 'ledenraad':
+                p_ledenraad = np.append(p_ledenraad, member)
+            elif main_cat == 'kascommissie':
+                p_kasc = np.append(p_kasc, member)
+            elif main_cat == 'controlecommissie':
+                p_controlec = np.append(p_controlec, member)
 
-    # Additional check for directors
+    # **** Additional check
     # if there are > 2 potential directors, a potential director is not considered a director if:
     # - they are mentioned in director context < 2 (ft), while the max mentioning is > 2
     # - or if the subposition (obtained from words directly surrounding name) is not director.
@@ -284,13 +340,52 @@ def extract_persons(doc):
     pot_director = np.array(pot_director, dtype=object)
     if len(pot_director) > 1:
         for i in range(len(pot_director)):
-            if (pot_director[i, 2] <= 1 and int(max(pot_director[:, 2])) > 2):
-                board = board[board != pot_director[i, 0]]
-                b_position = b_position[b_position != pot_director[i, 0] + ' - directeur - ']
-                b_position = b_position[b_position !=
-                                        (pot_director[i, 0] + ' - directeur - directeur')]
-            elif pot_director[i, 1] != 'directeur':
-                b_position = b_position[b_position != pot_director[i, 0] + ' - directeur - ']
-                b_position = np.append(b_position, (str(pot_director[i, 0]) + ' - ' +
-                                       str(pot_director[i, 3]) + ' - ' + str(pot_director[i, 4])))
-    return ambassadors, board, b_position
+            if ((pot_director[i, 2] <= 1 and int(max(pot_director[:, 2])) > 2) or
+               (pot_director[i, 1] != 'directeur')):
+                b_position = b_position[b_position != (pot_director[i, 0] + ' - directeur - ' +
+                                                       pot_director[i, 1])]
+                p_directeur = p_directeur[p_directeur != pot_director[i, 0]]
+                # Use backup
+                if str(pot_director[i, 3]) == 'rvt':
+                    pot_rvt.append([pot_director[i, 0], pot_director[i, 1], pot_director[i, 6]])
+                elif str(pot_director[i, 3]) == 'bestuur':
+                    pot_bestuur.append([pot_director[i, 0], pot_director[i, 1],
+                                       pot_director[i, 5]])
+                elif str(pot_director[i, 3]) == 'ledenraad':
+                    p_ledenraad = np.append(p_ledenraad, pot_director[i, 0])
+                elif str(pot_director[i, 3]) == 'kascommissie':
+                    p_kasc = np.append(p_kasc, pot_director[i, 0])
+                elif str(pot_director[i, 3]) == 'controlecommissie':
+                    p_controlec = np.append(p_controlec, pot_director[i, 0])
+                else:
+                    board = board[board != pot_director[i, 0]]
+                if pot_director[i, 3] == 'ambassadeur':
+                    ambassadors = np.append(ambassadors, pot_director[i, 0])
+                elif pot_director[i, 3] is not None:
+                    b_position = np.append(b_position, (str(pot_director[i, 0]) + ' - ' +
+                                           str(pot_director[i, 3]) + ' - ' +
+                                           str(pot_director[i, 4])))
+
+    # If there are more than 10 people in rvt or bestuur, remove them if they have an fts <= 3
+    # and do not have an sub position assigned
+    pot_rvt = np.array(pot_rvt, dtype=object)
+    print('rvt', pot_rvt)
+    for i in range(len(pot_rvt)):
+        if len(pot_rvt) > 10 and pot_rvt[i, 2] <= 3:
+            board = board[board != pot_rvt[i, 0]]
+            b_position = b_position[b_position != pot_rvt[i, 0] + ' - rvt - ' + pot_rvt[i, 1]]
+        else:
+            p_rvt = np.append(p_rvt, pot_rvt[i, 0])
+
+    pot_bestuur = np.array(pot_bestuur, dtype=object)
+    print('bestuur', pot_bestuur)
+    for i in range(len(pot_bestuur)):
+        if len(pot_bestuur) > 10 and pot_bestuur[i, 2] <= 3:
+            board = board[board != pot_bestuur[i, 0]]
+            b_position = b_position[b_position != (pot_bestuur[i, 0] + ' - bestuur - ' +
+                                                   pot_bestuur[i, 1])]
+        else:
+            p_bestuur = np.append(p_bestuur, pot_bestuur[i, 0])
+
+    return (ambassadors, board, b_position, p_directeur, p_rvt, p_bestuur, p_ledenraad, p_kasc,
+            p_controlec)
