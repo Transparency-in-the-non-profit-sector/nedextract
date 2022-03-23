@@ -52,9 +52,15 @@ if not os.path.exists(os.path.join(os.getcwd(), 'Output')):
     os.makedirs(os.path.join(os.getcwd(), 'Output'))
 outdir_path = os.path.join(os.getcwd(), 'Output')
 outtime = time.strftime("%Y%m%d_%H%M%S", time.localtime())
-fn = 'output' + str(outtime) + '.xlsx'
-outputfile = os.path.join(outdir_path, fn)
-outputdata = []
+fn_p = 'output' + str(outtime) + '_people.xlsx'
+opf_p = os.path.join(outdir_path, fn_p)
+fn_g = 'output' + str(outtime) + '_general.xlsx'
+opf_g = os.path.join(outdir_path, fn_g)
+fn_o = 'output' + str(outtime) + '_related_organizations.xlsx'
+opf_o = os.path.join(outdir_path, fn_o)
+opd_p = []
+opd_g = []
+opd_o = []
 
 # convert tasks to list
 tasks = [args.tasks] if isinstance(args.tasks, str) else args.tasks
@@ -63,7 +69,7 @@ tasks = [args.tasks] if isinstance(args.tasks, str) else args.tasks
 countfiles = 0
 if args.file:
     infile = os.path.join(os.getcwd(), args.file)
-    outputdata = extract_pdf(infile, outputdata, tasks)
+    opd_p, opd_g, opd_o = extract_pdf(infile, opd_p, opd_g, opd_o, tasks)
 elif args.directory:
     totalfiles = len([name for name in os.listdir(os.path.join(os.getcwd(), args.directory))
                      if name.lower().endswith('.pdf')])
@@ -72,10 +78,10 @@ elif args.directory:
         print('Working on file:', countfiles, 'out of', totalfiles)
         if filename.lower().endswith('.pdf'):
             infile = os.path.join(os.getcwd(), args.directory, filename)
-            outputdata = extract_pdf(infile, outputdata, tasks)
+            opd_p, opd_g, opd_o = extract_pdf(infile, opd_p, opd_g, opd_o, tasks)
 elif args.url:
     infile = download_pdf(args.url)
-    outputdata = extract_pdf(infile, outputdata, tasks)
+    opd_p, opd_g, opd_o = extract_pdf(infile, opd_p, opd_g, opd_o, tasks)
     delete_downloaded_pdf()
 elif args.url_file:
     with open(args.url_file, 'r') as u:
@@ -83,14 +89,33 @@ elif args.url_file:
     for url in urls:
         print(url)
         infile = download_pdf(url)
-        outputdata = extract_pdf(infile, outputdata, tasks)
+        opd_p, opd_g, opd_o = extract_pdf(infile, opd_p, opd_g, opd_o, tasks)
         delete_downloaded_pdf()
 
 
 # Return extrcated information to output
-df1 = pd.DataFrame(outputdata, columns=['Input file', 'Organization', 'Main sector', 'Persons',
-                   'Ambassadors', 'Board members', 'Job description', 'Related organizations'])
-df1.to_excel(outputfile)
+if 'all' in tasks or 'people' in tasks:
+    cols_p = ['Input_file', 'Organization', 'Main_sector', 'Persons', 'Ambassadors',
+              'Board_members', 'Job_description']
+    cols_p.extend(['directeur%s' % n for n in range(1, 6)])
+    cols_p.extend(['rvt%s' % n for n in range(1, 21)])
+    cols_p.extend(['bestuur%s' % n for n in range(1, 21)])
+    cols_p.extend(['ledenraad%s' % n for n in range(1, 31)])
+    cols_p.extend(['kascommissie%s' % n for n in range(1, 6)])
+    cols_p.extend(['controlecommissie%s' % n for n in range(1, 6)])
+    df1 = pd.DataFrame(opd_p, columns=cols_p)
+    df1.to_excel(opf_p)
+
+if 'all' in tasks or 'sectors' in tasks:
+    cols_g = ['Input_file', 'Organization', 'Main_sector']
+    df2 = pd.DataFrame(opd_g, columns=cols_g)
+    df2.to_excel(opf_g)
+
+if 'all' in tasks or 'orgs' in tasks:
+    cols_o = ['Input_file', 'Organization', 'Related_organizations']
+    df3 = pd.DataFrame(opd_o, columns=cols_o)
+    df3.to_excel(opf_o)
+
 
 # end time
 end_time = f"{datetime.now():%Y-%m-%d %H:%M:%S}"
