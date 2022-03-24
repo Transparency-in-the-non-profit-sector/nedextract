@@ -6,11 +6,11 @@ import urllib.request
 import os
 
 
-def preprocess_pdf(infile):
+def preprocess_pdf(infile, r_blankline):
     with open(infile, 'rb') as f:
         pdf = pdftotext.PDF(f)
     text = "\n\n".join(pdf)
-    text = text.replace('\n\n', ' ').replace('\n', ' ').replace('\t', ' ')
+    text = text.replace('\n\n', r_blankline).replace('\n', ' ').replace('\t', ' ')
     text = text.replace('(', '').replace(')', '').replace(';', ',')
     text = text.replace('\x0c', ' ').replace('\x07', ' ').replace('\xad', ' ')
     text = text.replace('•', ', ').replace('', ', ').replace('◼', ', ').replace('\uf0b7', ' ')
