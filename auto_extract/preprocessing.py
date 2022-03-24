@@ -11,7 +11,7 @@ def preprocess_pdf(infile, r_blankline):
         pdf = pdftotext.PDF(f)
     text = "\n\n".join(pdf)
     text = text.replace('\n\n', r_blankline).replace('\n', ' ').replace('\t', ' ')
-    text = text.replace('(', '').replace(')', '').replace(';', ',')
+    text = text.replace('\r', ' ').replace('(', '').replace(')', '').replace(';', ',')
     text = text.replace('\x0c', ' ').replace('\x07', ' ').replace('\xad', ' ')
     text = text.replace('•', ', ').replace('', ', ').replace('◼', ', ').replace('\uf0b7', ' ')
     while ':.' in text:
