@@ -15,7 +15,7 @@ def extract_pdf(infile, opd_p, opd_g, opd_o, tasks):
     """ Extract information from a pdf file using a stanza pipline. """
 
     print(f"{datetime.now():%Y-%m-%d %H:%M:%S}", 'Working on file:', infile)
-    text = preprocess_pdf(infile)
+    text = preprocess_pdf(infile, ' ')
     if tasks == ['sectors']:
         main_sector = predict_main_sector('./Pretrained/trained_sector_classifier.joblib',
                                           './Pretrained/labels_sector_classifier.joblib',
@@ -40,6 +40,15 @@ def extract_pdf(infile, opd_p, opd_g, opd_o, tasks):
             if 'people' in tasks or 'all' in tasks:
                 (ambassadors, board, board_positions, p_directeur, p_rvt, p_bestuur, p_ledenraad,
                  p_kasc, p_controlec) = extract_persons(doc, persons)
+                # try again if unlikely results
+                if ((len(p_rvt) == 0 and len(p_bestuur) == 0) or (len(p_rvt) > 10)
+                   or (len(p_bestuur) > 10)):
+                    text2 = preprocess_pdf(infile, '. ')
+                    doc2 = nlp(text2)
+                    persons2 = np.unique([f'{ent.text}' for ent in doc2.ents
+                                          if ent.type == "PER"])
+                    (ambassadors, board, board_positions, p_directeur, p_rvt, p_bestuur,
+                     p_ledenraad, p_kasc, p_controlec) = extract_persons(doc2, persons2)
             else:
                 ambassadors, board, board_positions = [], [], []
             if 'orgs' in tasks or 'all' in tasks:
