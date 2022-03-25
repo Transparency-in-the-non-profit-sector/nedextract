@@ -13,7 +13,7 @@
 | **Other best practices**           | &nbsp; |
 | Static analysis                    | [![workflow scq badge](https://sonarcloud.io/api/project_badges/measure?project=Transparency-in-the-non-profit-sector_np-transparency&metric=alert_status)](https://sonarcloud.io/dashboard?id=Transparency-in-the-non-profit-sector_np-transparency) |
 | Coverage                           | [![workflow scc badge](https://sonarcloud.io/api/project_badges/measure?project=Transparency-in-the-non-profit-sector_np-transparency&metric=coverage)](https://sonarcloud.io/dashboard?id=Transparency-in-the-non-profit-sector_np-transparency) |
-| Documentation                      | [![Documentation Status](https://readthedocs.org/projects/np-transparency/badge/?version=latest)](https://np-transparency.readthedocs.io/en/latest/?badge=latest) |
+| Documentation                      | [![Documentation Status](https://github.com/Transparency-in-the-non-profit-sector/np-transparency)](https://github.com/Transparency-in-the-non-profit-sector/np-transparency) |
 | **GitHub Actions**                 | &nbsp; |
 | Build                              | [![build](https://github.com/Transparency-in-the-non-profit-sector/np-transparency/actions/workflows/build.yml/badge.svg)](https://github.com/Transparency-in-the-non-profit-sector/np-transparency/actions/workflows/build.yml) |
 | Citation data consistency               | [![cffconvert](https://github.com/Transparency-in-the-non-profit-sector/np-transparency/actions/workflows/cffconvert.yml/badge.svg)](https://github.com/Transparency-in-the-non-profit-sector/np-transparency/actions/workflows/cffconvert.yml) |
