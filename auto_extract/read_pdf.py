@@ -1,6 +1,7 @@
 # Copyright 2022 Netherlands eScience Center and Vrije Universiteit Amsterdam
 # Licensed under the Apache License, version 2.0. See LICENSE for details.
 
+import os
 import stanza
 import numpy as np
 from datetime import datetime
@@ -25,6 +26,7 @@ def extract_pdf(infile, opd_p, opd_g, opd_o, tasks):
                                                                                     [], [])
     else:
         # Apply pre-trained Dutch stanza pipeline to text
+        download_stanza_NL()
         nlp = stanza.Pipeline(lang='nl', processors='tokenize,ner')
         doc = nlp(text)
 
@@ -106,3 +108,12 @@ def atc(input, length):
             else:
                 outlist[i] = input[i]
     return outlist
+
+
+def download_stanza_NL():
+    outpath = os.path.join(os.getcwd(), 'stanza_resources')
+    outf = os.path.join(outpath, 'nl')
+    outfile = os.path.join(outf, 'default.zip')
+    if not os.path.exists(outfile):
+        stanza.download('nl', model_dir=outpath)
+    return outfile
