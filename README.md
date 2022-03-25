@@ -90,7 +90,6 @@ To install auto_extract from the GitHub repository, do:
 git clone https://github.com/Transparency-in-the-non-profit-sector/np-transparency.git
 cd np-transparency
 python3 -m pip install .
-python3 auto_extract/Install_stanza_NL.py
 ```
 
 Auto_extract requires the following Python packages: [FuzzyWuzzy](https://github.com/seatgeek/fuzzywuzzy) (with [python-Levenshtein](https://github.com/ztane/python-Levenshtein)), [NumPy](https://numpy.org), [openpyxl](https://openpyxl.readthedocs.io/en/stable/), [pandas](https://pandas.pydata.org), [pdftotext](https://github.com/jalan/pdftotext), [scikit-learn](https://scikit-learn.org/stable/), and [Stanza](https://github.com/stanfordnlp/stanza).
