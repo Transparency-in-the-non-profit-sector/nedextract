@@ -13,7 +13,7 @@ setup(name='run_auto_extract',
       author='Laura S. Ootes',
       author_email='l.ootes@esciencecenter.nl',
       packages=['auto_extract'],
-      install_requires=['python-poppler'
+      install_requires=['python-poppler',
                         'fuzzywuzzy==0.18.0',
                         'numpy>=1.21.5',
                         'pandas>=1.3.5',
