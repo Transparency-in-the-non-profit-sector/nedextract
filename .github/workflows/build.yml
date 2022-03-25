@@ -26,6 +26,7 @@ jobs:
       - name: Upgrade pip and install dependencies
         run: |
           python3 -m pip install --upgrade pip setuptools
+          conda install -c conda-forge/label/gcc7 poppler
           python3 -m pip install .[dev,publishing]
       - name: Check style against standards using prospector
         run: prospector
