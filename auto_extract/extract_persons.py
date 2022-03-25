@@ -369,7 +369,6 @@ def extract_persons(doc, all_persons):
     # If there are more than 10 people in rvt or bestuur, remove them if they have an fts <= 3
     # and do not have an sub position assigned
     pot_rvt = np.array(pot_rvt, dtype=object)
-    print('rvt', pot_rvt)
     for i in range(len(pot_rvt)):
         if len(pot_rvt) > 10 and pot_rvt[i, 2] <= 3:
             board = board[board != pot_rvt[i, 0]]
@@ -378,7 +377,6 @@ def extract_persons(doc, all_persons):
             p_rvt = np.append(p_rvt, pot_rvt[i, 0])
 
     pot_bestuur = np.array(pot_bestuur, dtype=object)
-    print('bestuur', pot_bestuur)
     for i in range(len(pot_bestuur)):
         if len(pot_bestuur) > 10 and pot_bestuur[i, 2] <= 3:
             board = board[board != pot_bestuur[i, 0]]
