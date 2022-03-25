@@ -13,7 +13,7 @@ setup(name='run_auto_extract',
       author='Laura S. Ootes',
       author_email='l.ootes@esciencecenter.nl',
       packages=['auto_extract'],
-      install_requires=['poppdf', 'numpy', 'pandas', 'stanza', 'python-Levenshtein', 'fuzzywuzzy',
+      install_requires=['numpy', 'pandas', 'stanza', 'python-Levenshtein', 'fuzzywuzzy',
                         'pdftotext', 'sklearn', 'openpyxl'],
       license='Apache Software License',
       url='https://github.com/Transparency-in-the-non-profit-sector/np-transparency'
