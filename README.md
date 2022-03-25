@@ -76,17 +76,24 @@ The gathered information is written to auto-named xlsx files in de folder <i>Out
 Here YYYYMMDD and HHMMSS refer to the date and time at which the execution started.
 <br/><br/>
 
+## Prerequisites
+1. [Python 3.9](https://www.python.org/downloads/)
+2. If you are using Microsoft Visual Studio Code, the Microsoft Visual C++ Build Tools are required, which can be found under ['Build Tools for Visual Studio'](https://visualstudio.microsoft.com/downloads/). 
+3. [Poppler](https://anaconda.org/conda-forge/poppler)
+4. Auto_extract requires the following Python packages: [FuzzyWuzzy](https://github.com/seatgeek/fuzzywuzzy) (with [python-Levenshtein](https://github.com/ztane/python-Levenshtein)), [NumPy](https://numpy.org), [openpyxl](https://openpyxl.readthedocs.io/en/stable/), [pandas](https://pandas.pydata.org), [pdftotext](https://github.com/jalan/pdftotext), [scikit-learn](https://scikit-learn.org/stable/), and [Stanza](https://github.com/stanfordnlp/stanza).
+
 ## Installation
 
-To install auto_extract from GitHub repository, do:
+To install auto_extract from the GitHub repository, do:
 
 ```console
 git clone https://github.com/Transparency-in-the-non-profit-sector/np-transparency.git
 cd np-transparency
 python3 -m pip install .
+python3 auto_extract/Install_stanza_NL.py
 ```
 
-Auto_extract requires the following Python packages: [FuzzyWuzzy](https://github.com/seatgeek/fuzzywuzzy), [pdftotext](https://github.com/jalan/pdftotext), [NumPy](https://numpy.org), [pandas](https://pandas.pydata.org), and [Stanza](https://github.com/stanfordnlp/stanza).
+Auto_extract requires the following Python packages: [FuzzyWuzzy](https://github.com/seatgeek/fuzzywuzzy) (with [python-Levenshtein](https://github.com/ztane/python-Levenshtein)), [NumPy](https://numpy.org), [openpyxl](https://openpyxl.readthedocs.io/en/stable/), [pandas](https://pandas.pydata.org), [pdftotext](https://github.com/jalan/pdftotext), [scikit-learn](https://scikit-learn.org/stable/), and [Stanza](https://github.com/stanfordnlp/stanza).
 <br/><br/>
 
 ## Contributing
