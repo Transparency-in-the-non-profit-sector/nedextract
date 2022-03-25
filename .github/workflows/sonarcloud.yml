@@ -24,7 +24,7 @@ jobs:
           which python3
           python3 --version
       - name: Install poppler dependecy
-        run: conda install -c conda-forge poppler
+        run: conda-forge/label/gcc7 poppler
       - name: Install dependencies
         run: python3 -m pip install .[dev]
       - name: Check style against standards using prospector
