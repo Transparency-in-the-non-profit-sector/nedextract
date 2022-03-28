@@ -41,7 +41,7 @@ jobs:
           python3 --version
       - name: Install Poppler
         run: |
-          conda install -c conda-forge/label/gcc7 poppler
+          conda install -c conda-forge poppler
       - name: Upgrade pip and install dependencies
         run: |
           python3 -m pip install --upgrade pip setuptools
