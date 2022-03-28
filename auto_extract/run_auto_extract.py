@@ -8,7 +8,7 @@ import time
 import argparse
 from argparse import RawTextHelpFormatter
 
-from read_pdf import extract_pdf
+from auto_extract.read_pdf import extract_pdf
 from auto_extract.preprocessing import download_pdf, delete_downloaded_pdf
 
 desc = """This script can read annual report pdf files and extract relevant information about:
