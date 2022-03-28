@@ -1,15 +1,16 @@
 # Copyright 2022 Netherlands eScience Center and Vrije Universiteit Amsterdam
 # Licensed under the Apache License, version 2.0. See LICENSE for details.
 
-import os
-import pandas as pd
-from datetime import datetime
-import time
 import argparse
+import os
+import time
 from argparse import RawTextHelpFormatter
-
+from datetime import datetime
+import pandas as pd
+from auto_extract.preprocessing import delete_downloaded_pdf
+from auto_extract.preprocessing import download_pdf
 from auto_extract.read_pdf import extract_pdf
-from auto_extract.preprocessing import download_pdf, delete_downloaded_pdf
+
 
 desc = """This script can read annual report pdf files and extract relevant information about:
 - Board members (directors, bestuur, raad van toezicht, kascommissie, controlecommissie, ledenraad)

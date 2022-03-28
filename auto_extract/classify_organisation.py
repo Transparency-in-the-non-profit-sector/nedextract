@@ -1,16 +1,16 @@
 # Copyright 2022 Netherlands eScience Center and Vrije Universiteit Amsterdam
 # Licensed under the Apache License, version 2.0. See LICENSE for details.
 
-import pandas as pd
-from sklearn.naive_bayes import MultinomialNB
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.model_selection import train_test_split
-from sklearn import metrics
-from joblib import dump, load
 import argparse
 from argparse import RawTextHelpFormatter
 from datetime import datetime
-
+import pandas as pd
+from joblib import dump
+from joblib import load
+from sklearn import metrics
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import MultinomialNB
 from auto_extract.preprocessing import preprocess_pdf
 
 

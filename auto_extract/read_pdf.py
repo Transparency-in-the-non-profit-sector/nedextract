@@ -2,14 +2,13 @@
 # Licensed under the Apache License, version 2.0. See LICENSE for details.
 
 import os
-import stanza
-import numpy as np
 from datetime import datetime
-
-from auto_extract.preprocessing import preprocess_pdf
+import numpy as np
+import stanza
+from auto_extract.classify_organisation import predict_main_sector
 from auto_extract.extract_persons import extract_persons
 from auto_extract.extract_related_orgs import extract_orgs
-from auto_extract.classify_organisation import predict_main_sector
+from auto_extract.preprocessing import preprocess_pdf
 
 
 def extract_pdf(infile, opd_p, opd_g, opd_o, tasks):
