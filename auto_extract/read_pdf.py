@@ -22,37 +22,22 @@ def extract_pdf(infile, opd_p, opd_g, opd_o, tasks):
                                           './Pretrained/labels_sector_classifier.joblib',
                                           './Pretrained/tf_idf_vectorizer.joblib',
                                           text)
-        persons, organization, ambassadors, board, board_positions, orgs_details = ([], [], [], [],
-                                                                                    [], [])
     else:
         # Apply pre-trained Dutch stanza pipeline to text
         download_stanza_NL()
-        nlp = stanza.Pipeline(lang='nl', processors='tokenize,ner')
-        doc = nlp(text)
+        doc = stanza.Pipeline(lang='nl', processors='tokenize,ner')(text)
 
         # Extract all unique persons and organizations from the text using
         # the named entity recognition function of stanza
-        persons = np.unique([f'{ent.text}' for ent in doc.ents if ent.type == "PER"])
-        orgs = [f'{ent.text}' for ent in doc.ents if ent.type == "ORG"]
-        organizations, corg = np.unique(orgs, return_counts=True)
+        organizations, corg = np.unique([f'{ent.text}' for ent in doc.ents if ent.type == "ORG"],
+                                        return_counts=True)
 
         try:
-            imc = np.argmax(corg)
-            organization = organizations[imc]
+            organization = organizations[np.argmax(corg)]
             if 'people' in tasks or 'all' in tasks:
-                (ambassadors, board, board_positions, p_directeur, p_rvt, p_bestuur, p_ledenraad,
-                 p_kasc, p_controlec) = extract_persons(doc, persons)
-                # try again if unlikely results
-                if ((len(p_rvt) == 0 and len(p_bestuur) == 0) or (len(p_rvt) > 10)
-                   or (len(p_bestuur) > 10)):
-                    text2 = preprocess_pdf(infile, '. ')
-                    doc2 = nlp(text2)
-                    persons2 = np.unique([f'{ent.text}' for ent in doc2.ents
-                                          if ent.type == "PER"])
-                    (ambassadors, board, board_positions, p_directeur, p_rvt, p_bestuur,
-                     p_ledenraad, p_kasc, p_controlec) = extract_persons(doc2, persons2)
+                outp_people = output_people(infile, doc)
             else:
-                ambassadors, board, board_positions = [], [], []
+                outp_people = [[], [], [], [], [], [], [], [], [], []]
             if 'orgs' in tasks or 'all' in tasks:
                 orgs_details = extract_orgs(text, organizations)
             else:
@@ -65,20 +50,13 @@ def extract_pdf(infile, opd_p, opd_g, opd_o, tasks):
             else:
                 main_sector = []
         except ValueError:
-            (organization, ambassadors, board, board_positions, p_directeur, p_rvt, p_bestuur,
-             p_ledenraad, p_kasc, p_controlec, main_sector,
-             orgs_details) = ([], [], [], [], [], [], [], [], [], [], [], [])
+            organization = []
+            outp_people = [[], [], [], [], [], [], [], [], [], []]
+            main_sector = []
+            orgs_details = []
 
     # Output
-    output = [infile, organization, main_sector, ots(persons), ots(ambassadors), ots(board),
-              ots(board_positions)]
-    output.extend(atc(p_directeur, 5))
-    output.extend(atc(p_rvt, 20))
-    output.extend(atc(p_bestuur, 20))
-    output.extend(atc(p_ledenraad, 30))
-    output.extend(atc(p_kasc, 5))
-    output.extend(atc(p_controlec, 5))
-    opd_p.append(output)
+    opd_p.append(outp_people)
     opd_g.append([infile, organization, main_sector])
     opd_o.append([infile, organization, ots(orgs_details)])
 
@@ -86,27 +64,50 @@ def extract_pdf(infile, opd_p, opd_g, opd_o, tasks):
     return opd_p, opd_g, opd_o
 
 
-def ots(input):
+def output_people(infile, doc):
+    """ Gather information about people and structure the output."""
+    persons = np.unique([f'{ent.text}' for ent in doc.ents if ent.type == "PER"])
+    (ambassadors, board_positions, p_directeur, p_rvt, p_bestuur, p_ledenraad,
+     p_kasc, p_controlec) = extract_persons(doc, persons)
+    board = np.concatenate([p_directeur, p_bestuur, p_rvt, p_ledenraad, p_kasc, p_controlec])
+    # try again if unlikely results
+    if ((len(p_rvt) == 0 and len(p_bestuur) == 0) or (len(p_rvt) > 10) or (len(p_bestuur) > 10)):
+        text = preprocess_pdf(infile, '. ')
+        doc = stanza.Pipeline(lang='nl', processors='tokenize,ner')(text)
+        persons = np.unique([f'{ent.text}' for ent in doc.ents if ent.type == "PER"])
+        (ambassadors, board_positions, p_directeur, p_rvt, p_bestuur,
+         p_ledenraad, p_kasc, p_controlec) = extract_persons(doc, persons)
+        board = np.concatenate([p_directeur, p_bestuur, p_rvt, p_ledenraad, p_kasc, p_controlec])
+    output = [infile, ots(persons), ots(ambassadors), ots(board), ots(board_positions)]
+    output.extend(atc(p_directeur, 5))
+    output.extend(atc(p_rvt, 20))
+    output.extend(atc(p_bestuur, 20))
+    output.extend(atc(p_ledenraad, 30))
+    output.extend(atc(p_kasc, 5))
+    output.extend(atc(p_controlec, 5))
+    return output
+
+
+def ots(inp):
     """ Output to string: Convert array output to a backspace-seperated string """
     out_string = ""
-    for element in input:
+    for element in inp:
         out_string += str(element) + "\n"
     return out_string
 
 
-def atc(input, length):
+def atc(inp, length):
     """ Array to columns: Split array into 5 variables which will be converted into columns
         in the final output"""
     outlist = ['']*length
-    if input is not None:
-        for i in range(len(input)):
-            if i == length - 1 and len(input) > length:
+    if inp is not None:
+        for i, c_inp in enumerate(inp):
+            if i == length - 1 and len(inp) > length:
                 print("Problem: there are more persons in one of the categories than allocated "
                       "columns.")
-                outlist[i] = ots(input[i:])
+                outlist[i] = ots(inp[i:])
                 break
-            else:
-                outlist[i] = input[i]
+            outlist[i] = c_inp
     return outlist
 
 
