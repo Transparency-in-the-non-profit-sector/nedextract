@@ -245,9 +245,9 @@ def identify_potential_people(doc, all_persons):
     people = []  # list of all writing forms of names of people in pot_per
     for sentence in doc.sentences:
         stripped_sentence = sentence.text.lower().replace(',', ' ').replace('.', ' ')
-        if any(item in stripped_sentence for item in 
+        if any(item in stripped_sentence for item in
                (JobKeywords.main_job_all + JobKeywords.sub_job_all)):
-            pot_per = np.append(pot_per, 
+            pot_per = np.append(pot_per,
                                 [f'{ent.text}' for ent in sentence.ents if ent.type == "PER"])
 
     # Find duplicates (i.e. J Brown and James Brown) and concatenate all ways of writing
