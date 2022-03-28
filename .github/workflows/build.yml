@@ -44,6 +44,8 @@ jobs:
           if [ "$RUNNER_OS" == "Linux" ]; then
             conda update openssl ca-certificates certifi
             conda install -c conda-forge/label/gcc7 poppler
+            sudo apt-get update -y
+            sudo apt-get install -y libpoppler-cpp-dev
           else
             conda install -c conda-forge poppler
           fi
