@@ -34,8 +34,9 @@ jobs:
           auto-update-conda: true
           python-version: ${{ matrix.python-version }}
           activate-environment: npt-env
-      - name: Python info
+      - name: Activate conda environment and get python info
         run: |
+          conda activate npt-env
           which python3
           python3 --version
       - name: Install Poppler
