@@ -23,13 +23,13 @@ def count_orgs(text, org):
     return text.count(org)
 
 
-def classify_relation_type(orgs):
+def classify_relation_type():
     ''' Classify the relationship between a mentioned organization and the main organization'''
     relation_type = 'none'
     return relation_type
 
 
-def classify_org_type(orgs):
+def classify_org_type():
     ''' Classify what kind of organization '''
     org_type = 'none'
     return org_type
@@ -38,10 +38,10 @@ def classify_org_type(orgs):
 def extract_orgs(text, orgs):
     ''' Extract the details of all organizations mentioned in text'''
     orgs_details = np.empty(len(orgs), dtype='U200')
-    for i in range(len(orgs)):
-        org_count = count_orgs(text, orgs[i])
-        rel_type = classify_relation_type(orgs[i])
-        org_type = classify_org_type(orgs[i])
-        orgs_details[i] = (str(orgs[i]) + ' - ' + str(org_count) + ' - ' + str(rel_type) + ' - ' +
+    for i, org in enumerate(orgs):
+        org_count = count_orgs(text, org)
+        rel_type = classify_relation_type()
+        org_type = classify_org_type()
+        orgs_details[i] = (str(org) + ' - ' + str(org_count) + ' - ' + str(rel_type) + ' - ' +
                            str(org_type))
     return orgs_details

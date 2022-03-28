@@ -28,27 +28,26 @@ def train(data, train_size, alpha):
     # Factorize the categories
     sector_f, label = data['Sector'].factorize()
     # Split data in train and test set
-    X_train, X_test, y_train, y_test = train_test_split(data['text'],
+    x_train, x_test, y_train, y_test = train_test_split(data['text'],
                                                         sector_f,
                                                         train_size=train_size, random_state=1)
     # Term frequency, normalized for total terms in document
     tf_idf = TfidfVectorizer()
     # Apply tf idf to training data
-    X_train_tf = tf_idf.fit_transform(X_train)
+    x_train_tf = tf_idf.fit_transform(x_train)
     # Transform test data tinto tf-vectorized matrix
-    X_test_tf = tf_idf.transform(X_test)
+    x_test_tf = tf_idf.transform(x_test)
     # Train a Naive Bayes classifier on the training data
     clf = MultinomialNB(alpha=alpha)
-    clf.fit(X_train_tf, y_train)
+    clf.fit(x_train_tf, y_train)
     # Predict sector of test data
-    predicted = clf.predict(X_test_tf)
+    predicted = clf.predict(x_test_tf)
     # calculate accuracy of predictions
     accuracy = metrics.accuracy_score(y_test, predicted)
-    print('Total accuracy classification score: {}'.format(accuracy))
-    cm = metrics.confusion_matrix(y_test, predicted)
+    print(f'Total accuracy classification score: {accuracy}')
     print('Confusion matrix for the following labels:')
     print(label)
-    print(cm)
+    print(metrics.confusion_matrix(y_test, predicted))
     # save the model
     dump(clf, './Pretrained_model/trained_sector_classifier.joblib')
     dump(label, './Pretrained_model/labels_sector_classifier.joblib')

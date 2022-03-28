@@ -36,11 +36,10 @@ def preprocess_pdf(infile, r_blankline):
 
 def download_pdf(url):
     """ Download a pdf file from a url and safe it in the cwd """
-    urlfile = urllib.request.urlopen(url)
-    filename = os.path.join(os.getcwd(), "downloaded.pdf")
-    file = open(filename, 'wb')
-    file.write(urlfile.read())
-    file.close()
+    with urllib.request.urlopen(url) as urlfile:
+        filename = os.path.join(os.getcwd(), "downloaded.pdf")
+        with open(filename, 'wb') as file:
+            file.write(urlfile.read())
     return filename
 
 
@@ -48,4 +47,3 @@ def delete_downloaded_pdf():
     """ Delete the file that is downloaded with the function download_pdf and saved as
     downloaded.pdf from the cwd."""
     os.remove(os.path.join(os.getcwd(), "downloaded.pdf"))
-    return

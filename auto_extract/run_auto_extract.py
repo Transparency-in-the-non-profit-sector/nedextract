@@ -84,7 +84,7 @@ elif args.url:
     opd_p, opd_g, opd_o = extract_pdf(infile, opd_p, opd_g, opd_o, tasks)
     delete_downloaded_pdf()
 elif args.url_file:
-    with open(args.url_file, 'r') as u:
+    with open(args.url_file, mode='r', encoding='UTF-8') as u:
         urls = u.readlines()
     for url in urls:
         print(url)
@@ -97,12 +97,12 @@ elif args.url_file:
 if 'all' in tasks or 'people' in tasks:
     cols_p = ['Input_file', 'Organization', 'Main_sector', 'Persons', 'Ambassadors',
               'Board_members', 'Job_description']
-    cols_p.extend(['directeur%s' % n for n in range(1, 6)])
-    cols_p.extend(['rvt%s' % n for n in range(1, 21)])
-    cols_p.extend(['bestuur%s' % n for n in range(1, 21)])
-    cols_p.extend(['ledenraad%s' % n for n in range(1, 31)])
-    cols_p.extend(['kascommissie%s' % n for n in range(1, 6)])
-    cols_p.extend(['controlecommissie%s' % n for n in range(1, 6)])
+    cols_p.extend([f'directeur{n}' for n in range(1, 6)])
+    cols_p.extend([f'rvt{n}' for n in range(1, 21)])
+    cols_p.extend([f'bestuur{n}' for n in range(1, 21)])
+    cols_p.extend([f'ledenraad{n}' for n in range(1, 31)])
+    cols_p.extend([f'kascommissie{n}' for n in range(1, 6)])
+    cols_p.extend([f'controlecommissie{n}' for n in range(1, 6)])
     df1 = pd.DataFrame(opd_p, columns=cols_p)
     df1.to_excel(opf_p)
 
