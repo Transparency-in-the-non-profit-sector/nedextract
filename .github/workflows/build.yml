@@ -46,9 +46,6 @@ jobs:
             conda install -c conda-forge/label/gcc7 poppler
             sudo apt-get update -y
             sudo apt-get install build-essential libpoppler-cpp-dev pkg-config python-dev
-          elif [ "$RUNNER_OS" == "Windows" ]; then
-            conda install -c conda-forge poppler
-            sudo apt-get install build-essential libpoppler-cpp-dev pkg-config python-dev
           else
             conda install -c conda-forge poppler
           fi

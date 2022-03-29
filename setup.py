@@ -4,6 +4,8 @@
 # Licensed under the Apache License, version 2.0. See LICENSE for details.
 
 from setuptools import setup
+import os
+import platform
 
 
 # see setup.cfg
@@ -24,3 +26,10 @@ setup(name='run_auto_extract',
       license='Apache Software License',
       url='https://github.com/Transparency-in-the-non-profit-sector/np-transparency'
       )
+
+if platform.system() in ['Windows']:
+    conda_dir = os.getenv('CONDA_PREFIX')
+    anaconda_poppler_include_dir = os.path.join(conda_dir, 'Library\include')
+    anaconda_poppler_library_dir = os.path.join(conda_dir, 'Library\lib')
+    include_dirs = [anaconda_poppler_include_dir]
+    library_dirs = [anaconda_poppler_library_dir]
