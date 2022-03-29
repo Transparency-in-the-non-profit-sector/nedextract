@@ -29,7 +29,8 @@ setup(name='run_auto_extract',
 
 if platform.system() in ['Windows']:
     conda_dir = os.getenv('CONDA_PREFIX')
-    anaconda_poppler_include_dir = os.path.join(conda_dir, 'Library\include')
-    anaconda_poppler_library_dir = os.path.join(conda_dir, 'Library\lib')
+    conda_lib = os.path.join(conda_dir, 'Library')
+    anaconda_poppler_include_dir = os.path.join(conda_lib, 'include')
+    anaconda_poppler_library_dir = os.path.join(conda_lib, 'lib')
     include_dirs = [anaconda_poppler_include_dir]
     library_dirs = [anaconda_poppler_library_dir]
