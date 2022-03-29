@@ -54,7 +54,8 @@ jobs:
           python3 -m pip install --upgrade pip setuptools
           python3 -m pip install .[dev,publishing]
       - name: List packagae dir
-        run:
+        run: |
+          conda list
           cd C:\Users\runneradmin\conda_pkgs_dir
           ls
       - name: Check style against standards using prospector
