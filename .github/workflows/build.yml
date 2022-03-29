@@ -36,7 +36,11 @@ jobs:
           activate-environment: npt-env
       - name: Activate conda environment and get python info
         run: |
+          conda env list
           conda activate npt-env
+          echo $CONDA_DEFAULT_ENV
+          which python
+          python --version
           which python3
           python3 --version
       - name: Install Poppler
