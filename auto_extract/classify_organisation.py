@@ -5,6 +5,7 @@ import argparse
 from argparse import RawTextHelpFormatter
 from datetime import datetime
 import pandas as pd
+import os
 from joblib import dump
 from joblib import load
 from sklearn import metrics
@@ -23,7 +24,7 @@ def file_to_pd(inputfile):
     return df
 
 
-def train(data, train_size, alpha):
+def train(data, train_size, alpha, save=False):
     '''Train a MultinomialNB classifier to classify texts into the main sector categories'''
     # Factorize the categories
     sector_f, label = data['Sector'].factorize()
@@ -43,15 +44,18 @@ def train(data, train_size, alpha):
     # Predict sector of test data
     predicted = clf.predict(x_test_tf)
     # calculate accuracy of predictions
-    accuracy = metrics.accuracy_score(y_test, predicted)
-    print(f'Total accuracy classification score: {accuracy}')
+    print(f'Total accuracy classification score: {metrics.accuracy_score(y_test, predicted)}')
     print('Confusion matrix for the following labels:')
     print(label)
     print(metrics.confusion_matrix(y_test, predicted))
     # save the model
-    dump(clf, './Pretrained_model/trained_sector_classifier.joblib')
-    dump(label, './Pretrained_model/labels_sector_classifier.joblib')
-    dump(tf_idf, './Pretrained_model/tf_idf_vectorizer.joblib')
+    if save:
+        dump(clf, os.path.join(os.path.join(os.getcwd(), 'Pretrained'),
+                               'trained_sector_classifier.joblib'))
+        dump(label, os.path.join(os.path.join(os.getcwd(), 'Pretrained'),
+                                 'labels_sector_classifier.joblib'))
+        dump(tf_idf, os.path.join(os.path.join(os.getcwd(), 'Pretrained'),
+                                  'tf_idf_vectorizer.joblib'))
     return clf, label
 
 
@@ -91,6 +95,7 @@ if __name__ == "__main__":
                         help='smoothing parameter used by MultinomialNB.')
     parser.add_argument('-t', '--train_size', default=0.8,
                         help='fraction of data to be used as training data.')
+    parser.add_argument('-s', '--save', default=False, help='save the trained model')
     args = parser.parse_args()
 
     if not (args.inputfile):
@@ -99,5 +104,5 @@ if __name__ == "__main__":
     data = file_to_pd(args.inputfile)
     print(f"{datetime.now():%Y-%m-%d %H:%M:%S}",
           'Finished preprocssing the input data. Starting training.')
-    clf, label = train(data, args.train_size, args.alpha)
+    clf, label = train(data, args.train_size, args.alpha, args.save)
     print(f"{datetime.now():%Y-%m-%d %H:%M:%S}", 'Finished training and saved the trained model.')
