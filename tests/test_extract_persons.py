@@ -1,13 +1,23 @@
-from auto_extract.extract_persons import (abbreviate, get_tsr, identify_potential_people,
-                                          strip_names_from_title, find_duplicate_persons,
-                                          surrounding_words, count_occurrence, relevant_sentences,
-                                          determine_main_job, determine_sub_job, append_p_position,
-                                          array_p_position, director_check, check_rvt,
-                                          check_bestuur, extract_persons)
-from auto_extract.preprocessing import preprocess_pdf
 import os
-import stanza
 import numpy as np
+import stanza
+from auto_extract.extract_persons import abbreviate
+from auto_extract.extract_persons import append_p_position
+from auto_extract.extract_persons import array_p_position
+from auto_extract.extract_persons import check_bestuur
+from auto_extract.extract_persons import check_rvt
+from auto_extract.extract_persons import count_occurrence
+from auto_extract.extract_persons import determine_main_job
+from auto_extract.extract_persons import determine_sub_job
+from auto_extract.extract_persons import director_check
+from auto_extract.extract_persons import extract_persons
+from auto_extract.extract_persons import find_duplicate_persons
+from auto_extract.extract_persons import get_tsr
+from auto_extract.extract_persons import identify_potential_people
+from auto_extract.extract_persons import relevant_sentences
+from auto_extract.extract_persons import strip_names_from_title
+from auto_extract.extract_persons import surrounding_words
+from auto_extract.preprocessing import preprocess_pdf
 
 
 indir = os.path.join(os.getcwd(), 'tests')

@@ -1,8 +1,12 @@
 import os
 import numpy as np
 import stanza
-from auto_extract.read_pdf import download_stanza_NL, ots, atc, output_people, extract_pdf
 from auto_extract.preprocessing import preprocess_pdf
+from auto_extract.read_pdf import atc
+from auto_extract.read_pdf import download_stanza_NL
+from auto_extract.read_pdf import extract_pdf
+from auto_extract.read_pdf import ots
+from auto_extract.read_pdf import output_people
 
 
 def test_stanza_NL():

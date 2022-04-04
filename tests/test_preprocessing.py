@@ -1,5 +1,7 @@
-from auto_extract.preprocessing import preprocess_pdf, download_pdf, delete_downloaded_pdf
 import os
+from auto_extract.preprocessing import delete_downloaded_pdf
+from auto_extract.preprocessing import download_pdf
+from auto_extract.preprocessing import preprocess_pdf
 
 
 def test_preprocess_pdf():

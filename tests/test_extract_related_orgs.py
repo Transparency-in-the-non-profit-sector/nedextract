@@ -1,9 +1,12 @@
 import os
 import numpy as np
 import stanza
+from auto_extract.extract_related_orgs import classify_org_type
+from auto_extract.extract_related_orgs import classify_relation_type
+from auto_extract.extract_related_orgs import count_orgs
+from auto_extract.extract_related_orgs import extract_orgs
 from auto_extract.preprocessing import preprocess_pdf
-from auto_extract.extract_related_orgs import (count_orgs, classify_relation_type,
-                                               classify_org_type, extract_orgs)
+
 
 indir = os.path.join(os.getcwd(), 'tests')
 infile = os.path.join(indir, 'test_report.pdf')

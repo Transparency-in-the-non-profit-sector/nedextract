@@ -1,6 +1,9 @@
-from auto_extract.classify_organisation import file_to_pd, train, predict_main_sector
 import os
 import pandas as pd
+from auto_extract.classify_organisation import file_to_pd
+from auto_extract.classify_organisation import predict_main_sector
+from auto_extract.classify_organisation import train
+
 
 infolder = os.path.join(os.getcwd(), 'tests')
 inputfile = os.path.join(infolder, 'test_excel.xlsx')

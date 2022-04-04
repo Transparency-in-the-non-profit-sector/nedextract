@@ -2,10 +2,10 @@
 # Licensed under the Apache License, version 2.0. See LICENSE for details.
 
 import argparse
+import os
 from argparse import RawTextHelpFormatter
 from datetime import datetime
 import pandas as pd
-import os
 from joblib import dump
 from joblib import load
 from sklearn import metrics
