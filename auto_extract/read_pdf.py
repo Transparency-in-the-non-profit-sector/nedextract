@@ -21,6 +21,9 @@ def extract_pdf(infile, opd_p, opd_g, opd_o, tasks):
                                           './Pretrained/labels_sector_classifier.joblib',
                                           './Pretrained/tf_idf_vectorizer.joblib',
                                           text)
+        outp_people = [[], [], [], [], [], [], [], [], [], [], []]
+        orgs_details = []
+        organization = ''
     else:
         # Apply pre-trained Dutch stanza pipeline to text
         download_stanza_NL()
@@ -34,9 +37,9 @@ def extract_pdf(infile, opd_p, opd_g, opd_o, tasks):
         try:
             organization = organizations[np.argmax(corg)]
             if 'people' in tasks or 'all' in tasks:
-                outp_people = output_people(infile, doc)
+                outp_people = output_people(infile, doc, organization)
             else:
-                outp_people = [[], [], [], [], [], [], [], [], [], []]
+                outp_people = [[], [], [], [], [], [], [], [], [], [], []]
             if 'orgs' in tasks or 'all' in tasks:
                 orgs_details = extract_orgs(text, organizations)
             else:
@@ -50,7 +53,7 @@ def extract_pdf(infile, opd_p, opd_g, opd_o, tasks):
                 main_sector = []
         except ValueError:
             organization = []
-            outp_people = [[], [], [], [], [], [], [], [], [], []]
+            outp_people = [[], [], [], [], [], [], [], [], [], [], []]
             main_sector = []
             orgs_details = []
 
@@ -63,7 +66,7 @@ def extract_pdf(infile, opd_p, opd_g, opd_o, tasks):
     return opd_p, opd_g, opd_o
 
 
-def output_people(infile, doc):
+def output_people(infile, doc, organization):
     """ Gather information about people and structure the output."""
     persons = np.unique([f'{ent.text}' for ent in doc.ents if ent.type == "PER"])
     (ambassadors, board_positions, p_directeur, p_rvt, p_bestuur, p_ledenraad,
@@ -77,7 +80,8 @@ def output_people(infile, doc):
         (ambassadors, board_positions, p_directeur, p_rvt, p_bestuur,
          p_ledenraad, p_kasc, p_controlec) = extract_persons(doc, persons)
         board = np.concatenate([p_directeur, p_bestuur, p_rvt, p_ledenraad, p_kasc, p_controlec])
-    output = [infile, ots(persons), ots(ambassadors), ots(board), ots(board_positions)]
+    output = [infile, organization, ots(persons), ots(ambassadors), ots(board),
+              ots(board_positions)]
     output.extend(atc(p_directeur, 5))
     output.extend(atc(p_rvt, 20))
     output.extend(atc(p_bestuur, 20))
@@ -96,7 +100,7 @@ def ots(inp):
 
 
 def atc(inp, length):
-    """ Array to columns: Split array into 5 variables which will be converted into columns
+    """ Array to columns: Split array into [length] variables which will be converted into columns
         in the final output"""
     outlist = ['']*length
     if inp is not None:
