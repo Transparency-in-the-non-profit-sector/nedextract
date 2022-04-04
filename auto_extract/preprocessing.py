@@ -6,7 +6,7 @@ import urllib.request
 import pdftotext
 
 
-def preprocess_pdf(infile, r_blankline):
+def preprocess_pdf(infile, r_blankline=' '):
     with open(infile, 'rb') as f:
         pdf = pdftotext.PDF(f)
     text = "\n\n".join(pdf)
