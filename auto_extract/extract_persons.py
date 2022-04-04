@@ -23,7 +23,7 @@ class JobKeywords:
     main_jobs_no_amb = [directeur, bestuur, rvt, ledenraad, kascommissie, controlecommissie]
     main_jobs_backup = [bestuur, rvt, ledenraad, kascommissie, controlecommissie, ambassadeur]
     main_jobs_backup_noamb = [bestuur, rvt, ledenraad, kascommissie, controlecommissie]
-
+    #
     # words and categories for sub jobs
     vicevoorzitter = ['vice-voorzitter', 'vicevoorzitter', 'vice voorzitter']
     voorzitter = ['voorzitter']
@@ -62,6 +62,8 @@ def abbreviate(name, n_ab):
 
 
 def get_tsr(p_i, p_j):
+    '''Determine the token set ratio for two names p_i and p_j, and the required score,
+    depending on what kind of names they are'''
     token_set_ratio = fuzz.token_set_ratio(p_i, p_j)
     # if the second name is only one word
     if len(p_j.split()) == 1:
@@ -74,7 +76,7 @@ def get_tsr(p_i, p_j):
     elif p_i.count('.') >= 1:
         tsr = np.array(0)
         for n_initials in range(1, p_i.count('.') + 1):
-            tsr = np.append(tsr, fuzz.token_set_ratio(p_i, abbreviate(p_i, n_initials)))
+            tsr = np.append(tsr, fuzz.token_set_ratio(p_i, abbreviate(p_j, n_initials)))
         token_set_ratio = max(tsr)
         req_score = 95
     elif p_j.count('.') >= 1:
@@ -89,6 +91,20 @@ def get_tsr(p_i, p_j):
     return token_set_ratio, req_score
 
 
+def strip_names_from_title(persons):
+    titles = ['prof.', 'dr.', 'mr.', 'ir.', 'drs.', 'bacc.', 'kand.', 'dr.h.c.', 'ing.', 'bc.',
+              'phd', 'phd.', 'dhr.', 'mevr.', 'mw.', 'ds.', 'mgr.']
+    # strip names from titles
+    p = []
+    for per in persons:
+        name = per.lower()
+        for title in titles:
+            if title in name:
+                name = name.replace(title, '')
+        p.extend([name])
+    return p
+
+
 def find_duplicate_persons(persons):
     ''' From a list of names, find which names represent different writings of the same name,
     e.g. James Brown and J. Brown. Returns a list consisting of sublists, in which each sublist
@@ -97,13 +113,11 @@ def find_duplicate_persons(persons):
     comparing two names where one contains initials (i.e. James Brown versus J. Brown), the first
     name is abbreviated to try to determine the initials.'''
     outnames = []
-    titles = ['prof.', 'dr.', 'mr.', 'ir.', 'drs.', 'bacc.', 'kand.', 'dr.h.c.', 'ing.', 'bc.',
-              'phd.', 'dhr.', 'mevr.', 'mw.', 'ds.', 'mgr.']
-    # strip names from titles
-    for title in titles:
-        p = [person.lower().replace(title, '') for person in persons]
+    #
+    p = strip_names_from_title(persons)
     # loop through list of input names to find matches
-    for i, [same_name] in enumerate(persons):
+    for i, sn in enumerate(persons):
+        same_name = [sn]
         # if a name consists of one term only, do not try to find matches (This prevents James from
         # being matched with both James Brown and James White, which would imply James Brown and
         # James White are also the same person. The remainder of the loop will make sure James
@@ -119,14 +133,13 @@ def find_duplicate_persons(persons):
                     same_name.extend([j_names])
             same_name.sort()
             outnames.append(same_name)
-
     outnames.sort(key=len, reverse=True)
-
+    #
     # remove duplicate lists of names
     for i in range(len(outnames)-1, -1, -1):
         if any(all(elem in names for elem in outnames[i]) for names in outnames[0:i]):
             outnames.pop(i)
-
+    #
     # remove items that appear in two sublists
     outlist = []
     for j, o_names in enumerate(outnames):
@@ -135,7 +148,12 @@ def find_duplicate_persons(persons):
             if any(elem in o_names for elem in restlist):
                 x = [k for k in o_names if k not in restlist]
         outlist.append(x)
-
+    #
+    # remove duplicate lists of names again
+    for i in range(len(outlist)-1, -1, -1):
+        if any(all(elem in names for elem in outlist[i]) for names in outlist[0:i]):
+            outlist.pop(i)
+    #
     return outlist
 
 
@@ -146,7 +164,7 @@ def surrounding_words(text, search_names):
     text = np.array2string(text, separator=' ')
     search_names.sort(key=len, reverse=True)
     for search_name in search_names:
-        text = text.replace(search_name.lower(), 'search4term')
+        text = text.lower().replace(search_name.lower(), 'search4term')
     text = re.sub('[^0-9a-zA-Z ]+', ' ', text)
     text = text.replace('vice voorzitter', 'vicevoorzitter')
     text = text.replace('algemeen', '')
@@ -166,16 +184,20 @@ def count_occurrence(text, search_words):
     ''' return the summed total of occurrences of search words in text'''
     fulltext = np.array2string(text, separator=' ')
     fulltext = re.sub(r"[\[\]']", '', fulltext)
+    fulltext = fulltext.replace('vice voorzitter', 'vicevoorzitter')
+    fulltext = fulltext.replace('vice-voorzitter', 'vicevoorzitter')
     totalcount = 0
     totalcount_sentence = 0
     for item in search_words:
         escape_item = re.escape(item)
-        totalcount += sum(1 for _ in re.finditer(f'\b{escape_item}\b', fulltext))
+        totalcount += sum(1 for _ in re.finditer(r'\b' + escape_item + r'\b', fulltext))
     for sentence in text:
+        sentence = sentence.replace('vice voorzitter', 'vicevoorzitter')
+        sentence = sentence.replace('vice-voorzitter', 'vicevoorzitter')
         count = 0
         for item in search_words:
             escape_item = re.escape(item)
-            count = count + sum(1 for _ in re.finditer(f'\b{escape_item}\b', sentence))
+            count = count + sum(1 for _ in re.finditer(r'\b' + escape_item + r'\b', sentence))
         if count > 0:
             totalcount_sentence += 1
     return totalcount, totalcount_sentence
@@ -197,8 +219,7 @@ def determine_main_job(main_jobs, sentences, surroundings):
     main_job = np.array([mj[0] for mj in main_jobs])
     for m, m_j in enumerate(main_jobs):
         ft[m], fs[m] = count_occurrence(sentences, m_j)
-        fts[m], fss[m] = count_occurrence(np.append(sentences, surroundings), m_j)
-
+        fts[m], fss[m] = count_occurrence(surroundings, m_j)
     if (max(fs) > 0 and len(np.where(fs == max(fs))[0]) == 1):
         main_cat = main_job[np.where(fs == max(fs))[0]][0]
     elif (max(fss) > 0 and len(np.where(fss == max(fss))[0]) == 1):
@@ -227,7 +248,6 @@ def determine_sub_job(members, sentences, main_cat):
             c_sub_job = np.append(c_sub_job, count_occurrence(surrounding_w, sj)[0])
     else:
         c_sub_job = np.append(c_sub_job, 0)
-
     if max(c_sub_job) > 0 and len(np.where(c_sub_job == max(c_sub_job))[0]) == 1:
         sub_cat = backup_sub_cat = JobKeywords.sub_job[np.where(c_sub_job == max(c_sub_job))[0]][0]
         if main_cat == 'directeur' and sub_cat != 'directeur':
@@ -249,7 +269,7 @@ def identify_potential_people(doc, all_persons):
                (JobKeywords.main_job_all + JobKeywords.sub_job_all)):
             pot_per = np.append(pot_per,
                                 [f'{ent.text}' for ent in sentence.ents if ent.type == "PER"])
-
+    #
     # Find duplicates (i.e. J Brown and James Brown) and concatenate all ways of writing
     # the name of one persons that is potentially of interest
     peoples = find_duplicate_persons(list(np.unique(all_persons)))
@@ -270,6 +290,8 @@ def relevant_sentences(doc, members):
             sentences = np.append(sentences, sentence.text.lower())
             if prevsentence not in list(surroundings):
                 surroundings = np.append(surroundings, prevsentence)
+            if sentence not in list(surroundings):
+                surroundings = np.append(surroundings, sentence.text.lower())
             need_next_sentence = True
         elif need_next_sentence:
             if sentence.text.lower() not in surroundings:
@@ -281,8 +303,8 @@ def relevant_sentences(doc, members):
 
 def append_p_position(p_position, main, name):
     for pos in p_position:
-        if pos[1][0] == main:
-            pos[1].extend([name])
+        if pos[0] == main:
+            pos.extend([name])
     return p_position
 
 
@@ -294,34 +316,33 @@ def extract_persons(doc, all_persons):
     the frequency of key words occuring in sentences in which names are mentioned, or the sentences
     surrounding those in which names are mentioned.
     Sub positions are determined based on the frequency of key words directly next to the name.
-
+    #
     For the position of director, an additional filter is applied: if more than 2 persons are
     identified as director, persons are not considered a director if:
     - they are mentioned in director context < 2 (ft), while the max mentioning is > 2
     - the subposition (obtained from words directly surrounding name) is not director.'''
     b_position = np.array([])   # people with significant positions + main and sub position
-    pot_director = []  # list potential directors, subjob, and context count
+    # potential directors: name, sub_cat, ft_director, main_cat, backup_sub_cat,fts_bestuur,fts_rvt
+    pot_director = []
     pot_rvt = []  # list of potential rvt members
     pot_bestuur = []  # list of potential board member
     p_position = [[p[0]] for p in JobKeywords.main_jobs]
-
+    #
     people = identify_potential_people(doc, all_persons)
-
+    #
     # Determine most likely position of board members
     # Collect all sentences containing a particular board member name +
     # the sentences before and after the occurrences
     for members in people:
         # Determine relevant sentences
         sentences, surroundings = relevant_sentences(doc, members)
-
+        #
         # Determine main job category
         m_ft_dbr = determine_main_job(JobKeywords.main_jobs, sentences, surroundings)
-        if m_ft_dbr[0] is None:
-            continue
-
+        #
         # Determine sub job category based on positions mentioned directely before or after name
         sub_cat = determine_sub_job(members, sentences, m_ft_dbr[0])
-
+        #
         # Add final results
         member = max(members, key=len)
         if m_ft_dbr[0] == 'ambassadeur':
@@ -332,6 +353,8 @@ def extract_persons(doc, all_persons):
             else:
                 p_position = append_p_position(p_position, m_ft_dbr[0], member)
         if m_ft_dbr[0] != 'ambassadeur':
+            if m_ft_dbr[0] is None:
+                continue
             b_position = np.append(b_position, member + ' - ' + m_ft_dbr[0] + ' - ' + sub_cat[0])
             if m_ft_dbr[0] == 'directeur':
                 if sub_cat[0] == '':
@@ -348,7 +371,7 @@ def extract_persons(doc, all_persons):
                 pot_bestuur.append([member, sub_cat[0], m_ft_dbr[2]])
             elif m_ft_dbr[0] in JobKeywords.main_job[:-1]:
                 p_position = append_p_position(p_position, m_ft_dbr[0], member)
-
+    #
     # **** Additional checks
     pot_director = np.array(pot_director, dtype=object)
     if len(pot_director) > 1:
@@ -357,16 +380,19 @@ def extract_persons(doc, all_persons):
                                                                         pot_rvt,
                                                                         pot_bestuur,
                                                                         p_position)
-
+    elif len(pot_director) == 1:
+        p_position = append_p_position(p_position, 'directeur', pot_director[0][0])
+    #
     # If there are more than 10 people in rvt or bestuur, remove them if they have an fts <= 3
     # and do not have an sub position assigned
     pot_rvt = np.array(pot_rvt, dtype=object)
     b_position, p_position = check_rvt(pot_rvt, b_position, p_position)
-
+    #
     pot_bestuur = np.array(pot_bestuur, dtype=object)
     b_position, p_position = check_bestuur(pot_bestuur, b_position, p_position)
-
-    return (array_p_position(p_position, 'ambassadeur'), b_position,
+    #
+    return (array_p_position(p_position, 'ambassadeur'),
+            b_position,
             array_p_position(p_position, 'directeur'),
             array_p_position(p_position, 'rvt'),
             array_p_position(p_position, 'bestuur'),
@@ -376,7 +402,9 @@ def extract_persons(doc, all_persons):
 
 
 def array_p_position(p_position, position):
-    return np.array([i for i in p_position if i[0] == position][0])
+    '''returns an array made out of sublist of the list p_position. The sublist must start with
+    the term position'''
+    return np.array([i[1:] for i in p_position if i[0] == position][0])
 
 
 def director_check(pot_director, b_position, pot_rvt, pot_bestuur, p_position):
@@ -398,26 +426,28 @@ def director_check(pot_director, b_position, pot_rvt, pot_bestuur, p_position):
             elif str(pot_director[i, 3]) in JobKeywords.main_job:
                 p_position = append_p_position(p_position, str(pot_director[i, 3]),
                                                pot_director[i, 0])
-            if (pot_director[i, 3] == 'ambassadeur') and (pot_director[i, 3] is not None):
+            if pot_director[i, 3] != 'ambassadeur':
                 b_position = np.append(b_position, (str(pot_director[i, 0]) + ' - ' +
-                                       str(pot_director[i, 3]) + ' - ' + str(pot_director[i, 4])))
+                                       str(pot_director[i, 3]) + ' - ' + str(pot_director[i, 1])))
+        else:
+            p_position = append_p_position(p_position, 'directeur', pot_director[i, 0])
     return b_position, pot_rvt, pot_bestuur, p_position
 
 
 def check_rvt(pot_rvt, b_position, p_position):
-    for i in range(len(pot_rvt)):
-        if len(pot_rvt) > 10 and pot_rvt[i, 2] <= 3:
-            b_position = b_position[b_position != pot_rvt[i, 0] + ' - rvt - ' + pot_rvt[i, 1]]
+    for rvt in enumerate(pot_rvt):
+        if len(pot_rvt) > 10 and rvt[1][2] <= 3:
+            b_position = b_position[b_position != rvt[1][0] + ' - rvt - ' + rvt[1][1]]
         else:
-            p_position = append_p_position(p_position, 'rvt', pot_rvt[i, 0])
+            p_position = append_p_position(p_position, 'rvt', rvt[1][0])
     return b_position, p_position
 
 
 def check_bestuur(pot_bestuur, b_position, p_position):
-    for i in range(len(pot_bestuur)):
-        if len(pot_bestuur) > 10 and pot_bestuur[i, 2] <= 3:
-            b_position = b_position[b_position != (pot_bestuur[i, 0] + ' - bestuur - ' +
-                                                   pot_bestuur[i, 1])]
+    for bestuur in enumerate(pot_bestuur):
+        if len(pot_bestuur) > 10 and bestuur[1][2] <= 3:
+            b_position = b_position[b_position != (bestuur[1][0] + ' - bestuur - ' +
+                                                   bestuur[1][1])]
         else:
-            p_position = append_p_position(p_position, 'bestuur', pot_bestuur[i, 0])
+            p_position = append_p_position(p_position, 'bestuur', bestuur[1][0])
     return b_position, p_position
