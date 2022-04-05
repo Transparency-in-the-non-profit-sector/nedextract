@@ -138,7 +138,7 @@ def test_extract_pdf():
     op, og, oo = extract_pdf(infile, opd_p, opd_g, opd_o, tasks)
     assert(op == [[[], [], [], [], [], [], [], [], [], [], []]])
     assert(og == ([[infile, 'Bedrijf', []]]))
-    assert(e_oo == oo)
+    assert(e_oo == oo or e_oo2 == oo)
     infile = os.path.join(indir, 'test_report3.pdf')
     opd_p = []
     opd_g = []
