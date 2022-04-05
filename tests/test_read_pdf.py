@@ -113,7 +113,7 @@ def test_extract_pdf():
                'Raad van Toezicht RvT - 1 - none - none\nRvT - 2 - none - none\n']])
     assert(e_op == op)
     assert(e_og == og)
-    assert(e_oo == oo or e_oo2 == oo)
+    assert(oo in (e_oo, e_oo2))
     opd_p = []
     opd_g = []
     opd_o = []
@@ -138,7 +138,7 @@ def test_extract_pdf():
     op, og, oo = extract_pdf(infile, opd_p, opd_g, opd_o, tasks)
     assert(op == [[[], [], [], [], [], [], [], [], [], [], []]])
     assert(og == ([[infile, 'Bedrijf', []]]))
-    assert(e_oo == oo or e_oo2 == oo)
+    assert(oo in (e_oo, e_oo2))
     infile = os.path.join(indir, 'test_report3.pdf')
     opd_p = []
     opd_g = []
@@ -172,4 +172,4 @@ def test_extract_pdf():
                '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
                '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
                '', '', '', '', '', '', '', '', '', '', '', '', '']])
-    assert(op == e_op or op == e_op2)
+    assert(op in (e_op, e_op2))
