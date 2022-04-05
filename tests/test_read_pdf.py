@@ -164,7 +164,8 @@ def test_extract_pdf():
                'J. Doe\nJane Doe\nQuirine de Bruin\nRudolph de Bruin\nSimon de Zwart\n' +
                'Tinus de Zwart\nVictor Wit\nWillem Wit\nXantippe de Bruin\n',
                '',
-               'Jane Doe - directeur - directeur',
+               'Jane Doe\n',
+               'Jane Doe - directeur - directeur\n',
                'Jane Doe', '', '', '', '',
                '', '', '', '',
                '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
