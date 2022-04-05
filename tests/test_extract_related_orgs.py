@@ -9,7 +9,7 @@ from auto_extract.preprocessing import preprocess_pdf
 from auto_extract.read_pdf import download_stanza_NL
 
 
-download_stanza_NL
+download_stanza_NL()
 indir = os.path.join(os.getcwd(), 'tests')
 infile = os.path.join(indir, 'test_report.pdf')
 text = preprocess_pdf(infile, ' ')
