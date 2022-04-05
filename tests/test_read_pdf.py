@@ -150,6 +150,7 @@ def test_extract_pdf():
               'J. Doe\nJane Doe\nQuirine de Bruin\nRudolph de Bruin\nSimon de Zwart\n' +
               'Tinus de Zwart\nVictor Wit\nWillem Wit\nXantippe de Bruin\n',
               '',
+              'Jane Doe\nA.B. de Wit\nHendrik Doe\nBernard Zwartjes\nCornelis Geel\n',
               'A.B. de Wit - rvt - vice-voorzitter\nHendrik Doe - rvt - voorzitter\n' +
               'Jane Doe - directeur - directeur\nBernard Zwartjes - rvt - \n' +
               'Cornelis Geel - rvt - lid\n',
