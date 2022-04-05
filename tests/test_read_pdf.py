@@ -107,9 +107,13 @@ def test_extract_pdf():
               'Bedrijf - 11 - none - none\nBedrijf2 - 1 - none - none\n' +
               'Financiën - 1 - none - none\nRaad van Toezicht RvT - 1 - none - none\n' +
               'RvT - 2 - none - none\n']])
+    e_oo2 = ([[infile, 'Bedrijf',
+               'Bedrijf - 11 - none - none\nBedrijf2 - 1 - none - none\n' +
+               'Bedrijf3 - 1 - none - none\nFinanciën - 1 - none - none\n' +
+               'Raad van Toezicht RvT - 1 - none - none\nRvT - 2 - none - none\n']])
     assert(e_op == op)
     assert(e_og == og)
-    assert(e_oo == oo)
+    assert(e_oo == oo or e_oo2 == oo)
     opd_p = []
     opd_g = []
     opd_o = []
