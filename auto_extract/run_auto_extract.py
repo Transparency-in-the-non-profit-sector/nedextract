@@ -44,10 +44,11 @@ def main(testarg=None):
     parser.add_argument('-uf', '--url_file', help='File containing url paths to be processed.')
     parser.add_argument('-t', '--tasks', choices=['all', 'people', 'orgs', 'sectors'],
                         nargs='*', default='all', help='tasks to be performed. Default=all')
-    args = parser.parse_args()
 
     if testarg:
-        args.file = testarg
+        args = parser.parse_args(testarg)
+    else:
+        args = parser.parse_args()
 
     if not (args.directory or args.file or args.url or args.url_file):
         raise Exception('No input provided. Run with -h for help on arguments to be provided.')
