@@ -159,4 +159,16 @@ def test_extract_pdf():
               '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
               '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
               '', '', '', '', '', '', '', '', '', '', '', '', '']])
-    assert(op == e_op)
+    e_op2 = ([[infile, 'Bedrijf',
+               'A.B. de Wit\nAnna de Wit\nBernard Zwartjes\nCornelis Geel\nH. Doe\nHendrik Doe\n' +
+               'J. Doe\nJane Doe\nQuirine de Bruin\nRudolph de Bruin\nSimon de Zwart\n' +
+               'Tinus de Zwart\nVictor Wit\nWillem Wit\nXantippe de Bruin\n',
+               '',
+               'Jane Doe - directeur - directeur',
+               'Jane Doe', '', '', '', '',
+               '', '', '', '',
+               '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
+               '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
+               '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
+               '', '', '', '', '', '', '', '', '', '', '', '', '']])
+    assert(op == e_op or op == e_op2)
