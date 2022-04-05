@@ -77,7 +77,7 @@ Here YYYYMMDD and HHMMSS refer to the date and time at which the execution start
 <br/><br/>
 
 ## Prerequisites
-1. [Python 3.7, 3.8, or 3.9](https://www.python.org/downloads/)
+1. [Python 3.8, or 3.9](https://www.python.org/downloads/)
 2. If you are using Microsoft Visual Studio Code, the Microsoft Visual C++ Build Tools are required, which can be found under ['Build Tools for Visual Studio'](https://visualstudio.microsoft.com/downloads/). 
 3. [Poppler](https://anaconda.org/conda-forge/poppler)
 4. Auto_extract requires the following Python packages: [FuzzyWuzzy](https://github.com/seatgeek/fuzzywuzzy) (with [python-Levenshtein](https://github.com/ztane/python-Levenshtein)), [NumPy](https://numpy.org), [openpyxl](https://openpyxl.readthedocs.io/en/stable/), [pandas](https://pandas.pydata.org), [pdftotext](https://github.com/jalan/pdftotext), [scikit-learn](https://scikit-learn.org/stable/), and [Stanza](https://github.com/stanfordnlp/stanza).
