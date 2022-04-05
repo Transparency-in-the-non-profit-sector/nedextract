@@ -18,8 +18,10 @@ from auto_extract.extract_persons import relevant_sentences
 from auto_extract.extract_persons import strip_names_from_title
 from auto_extract.extract_persons import surrounding_words
 from auto_extract.preprocessing import preprocess_pdf
+from auto_extract.read_pdf import download_stanza_NL
 
 
+download_stanza_NL()
 indir = os.path.join(os.getcwd(), 'tests')
 infile = os.path.join(indir, 'test_report.pdf')
 text = preprocess_pdf(infile, ' ')
