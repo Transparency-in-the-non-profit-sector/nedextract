@@ -15,7 +15,7 @@ def extract_pdf(infile, opd_p, opd_g, opd_o, tasks):
     """ Extract information from a pdf file using a stanza pipline. """
 
     print(f"{datetime.now():%Y-%m-%d %H:%M:%S}", 'Working on file:', infile)
-    text = preprocess_pdf(infile, ' ')
+    text = preprocess_pdf(infile, ', ')
     if tasks == ['sectors']:
         main_sector = predict_main_sector('./Pretrained/trained_sector_classifier.joblib',
                                           './Pretrained/labels_sector_classifier.joblib',
@@ -73,7 +73,8 @@ def output_people(infile, doc, organization):
      p_kasc, p_controlec) = extract_persons(doc, persons)
     board = np.concatenate([p_directeur, p_bestuur, p_rvt, p_ledenraad, p_kasc, p_controlec])
     # try again if unlikely results
-    if ((len(p_rvt) == 0 and len(p_bestuur) == 0) or (len(p_rvt) > 10) or (len(p_bestuur) > 10)):
+    if (len(p_rvt) > 12 or len(p_bestuur) > 12 or (len(p_rvt) == 0 and len(p_bestuur) == 0) or
+            len(board_positions) <= 3):
         text = preprocess_pdf(infile, '. ')
         doc = stanza.Pipeline(lang='nl', processors='tokenize,ner')(text)
         persons = np.unique([f'{ent.text}' for ent in doc.ents if ent.type == "PER"])
