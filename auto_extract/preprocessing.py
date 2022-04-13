@@ -6,7 +6,7 @@ import urllib.request
 import pdftotext
 
 
-def preprocess_pdf(infile, r_blankline=' '):
+def preprocess_pdf(infile, r_blankline=', '):
     with open(infile, 'rb') as f:
         pdf = pdftotext.PDF(f)
     text = "\n\n".join(pdf)
@@ -14,9 +14,10 @@ def preprocess_pdf(infile, r_blankline=' '):
     text = text.replace('\r', ' ').replace('(', '').replace(')', '').replace(';', ',')
     text = text.replace('\x0c', ' ').replace('\x07', ' ').replace('\xad', ' ')
     text = text.replace('•', ', ').replace('', ', ').replace('◼', ', ').replace('\uf0b7', ' ')
+    text = text.replace('/', ' / ')
     while ':.' in text:
         text = text.replace(':.', ':')
-    text = text.replace(':', ' ')
+    text = text.replace(':', ', ')
     while '  ' in text:
         text = text.replace('  ', ' ')
     while ', ,' in text:
@@ -25,6 +26,7 @@ def preprocess_pdf(infile, r_blankline=' '):
         text = text.replace(',,', ',')
     while(' ,') in text:
         text = text.replace(' ,', ',')
+    text = text.replace('.,', '.')
     while '. .' in text:
         text = text.replace('. .', '.')
     while '..' in text:
