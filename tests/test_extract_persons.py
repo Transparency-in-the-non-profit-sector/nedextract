@@ -69,11 +69,11 @@ def test_strip_names_from_title():
 
 
 def test_find_duplicate_persons():
-    persons = ['Dr. Jane Doe', 'Jane Doe', 'John Doe', 'Jane', 'J. Doe', 'Jane Elaine Doe',
-               'J.E. Doe', 'Jane White', 'William Doe']
+    persons = ['Dr. Jane Doe', 'Jane Doe', 'J. Doe', 'Jane Elaine Doe',
+               'J.E. Doe', 'Jane White', 'William Doe', 'Jane']
     outnames = find_duplicate_persons(persons)
     expected = [['Dr. Jane Doe', 'J. Doe', 'J.E. Doe', 'Jane Doe', 'Jane Elaine Doe'],
-                ['John Doe'], ['Jane White'], ['William Doe']]
+                ['Jane White'], ['William Doe']]
     assert(isinstance(outnames, list))
     assert(outnames == expected)
 
@@ -309,11 +309,12 @@ def test_check_rvt():
     assert(check_p == exp_p)
     pot_rvt = [['Piet de Wit', 'voorzitter', 4], ['Ab', 'vicevoorzitter', 2], ['Co', '', 3],
                ['Bo', '', 4], ['Do', '', 5], ['Ed', '', 2], ['Jo', '', 3], ['Fi', '', 2],
-               ['Lo', '', 5], ['Mo', '', 2], ['Ap', '', 5]]
+               ['Lo', '', 5], ['Mo', '', 2], ['Ap', '', 5], ['Ab', '', 1], ['Ma', '', 1]]
     b_position = np.array(['Jane Doe - directeur - directeur', 'Piet de Wit - rvt - voorzitter',
                            'Ab - rvt - vicevoorzitter', 'Co - rvt - ', 'Bo - rvt - ',
                            'Do - rvt - ', 'Ed - rvt - ', 'Jo - rvt - ', 'Fi - rvt - ',
-                           'Lo - rvt - ', 'Mo - rvt - ', 'Ap - rvt - '])
+                           'Lo - rvt - ', 'Mo - rvt - ', 'Ap - rvt - ', 'Ab - rvt - ',
+                           'Ma - rvt - '])
     p_position = [['directeur', 'Jane Doe'], ['rvt']]
     exp_b = np.array(['Jane Doe - directeur - directeur', 'Piet de Wit - rvt - voorzitter',
                       'Bo - rvt - ', 'Do - rvt - ', 'Lo - rvt - ', 'Ap - rvt - '])
@@ -334,13 +335,13 @@ def test_check_bestuur():
     assert(check_p == exp_p)
     pot_bestuur = [['Piet de Wit', 'voorzitter', 4], ['Ab', 'vicevoorzitter', 2], ['Co', '', 3],
                    ['Bo', '', 4], ['Do', '', 5], ['Ed', '', 2], ['Jo', '', 3], ['Fi', '', 2],
-                   ['Lo', '', 5], ['Mo', '', 2], ['Ap', '', 5]]
+                   ['Lo', '', 5], ['Mo', '', 2], ['Ap', '', 5], ['Ab', '', 1], ['Ma', '', 1]]
     b_position = np.array(['Jane Doe - directeur - directeur',
                            'Piet de Wit - bestuur - voorzitter',
                            'Ab - bestuur - vicevoorzitter', 'Co - bestuur - ', 'Bo - bestuur - ',
                            'Do - bestuur - ', 'Ed - bestuur - ', 'Jo - bestuur - ',
                            'Fi - bestuur - ', 'Lo - bestuur - ', 'Mo - bestuur - ',
-                           'Ap - bestuur - '])
+                           'Ap - bestuur - ', 'Ab - bestuur - ', 'Ma - bestuur - '])
     p_position = [['directeur', 'Jane Doe'], ['bestuur']]
     exp_b = np.array(['Jane Doe - directeur - directeur', 'Piet de Wit - bestuur - voorzitter',
                       'Bo - bestuur - ', 'Do - bestuur - ', 'Lo - bestuur - ', 'Ap - bestuur - '])
