@@ -9,7 +9,8 @@ from fuzzywuzzy import fuzz
 
 class JobKeywords:
     # words and categories for main jobs
-    directeur = ['directeur', 'directrice', 'directie', 'bestuurder', 'directeuren']
+    directeur = ['directeur', 'directrice', 'directie', 'bestuurder', 'directeuren',
+                 'directeur-bestuurder']
     bestuur = ['bestuur', 'db', 'ab', 'rvb', 'bestuurslid', 'bestuursleden', 'hoofdbestuur',
                'bestuursvoorzitter']
     rvt = ['rvt', 'raad van toezicht', 'raad v. toezicht', 'auditcommissie', 'audit commissie']
@@ -92,22 +93,44 @@ def get_tsr(p_i, p_j):
 
 
 def strip_names_from_title(persons):
+    ''' strip names from titles. If the remainder of the name is not longer than 1 letter,
+    add to p_remove '''
     titles = ['prof.', 'dr.', 'mr.', 'ir.', 'drs.', 'bacc.', 'kand.', 'dr.h.c.', 'ing.', 'bc.',
-              'phd', 'phd.', 'dhr.', 'mevr.', 'mw.', 'ds.', 'mgr.', 'mevrouw', 'meneer']
-    # strip names from titles
+              'phd', 'phd.', 'dhr.', 'mevr.', 'mw.', 'ds.', 'mgr.', 'mevrouw', 'meneer', 'jhr.']
     p = []
+    p_remove = []
     for per in persons:
         name = per.lower()
         for title in titles:
             if title in name:
                 name = name.replace(title, '')
-        p.extend([name])
-    return p
+        if len(re.sub('[^a-zA-Z]', '', name)) > 1:
+            p.extend([name])
+        else:
+            p_remove.extend([per])
+    return p, p_remove
+
+
+def sort_select_name(names):
+    ''' Sort names in a list: set the longest name that does not contain points,
+        but does contain spaces, as first. '''
+    ideal = 0
+    names.sort(key=len, reverse=True)
+    maxlen = len(names[0])
+    for i, n in enumerate(names):
+        if n.count('.') >= 1 and len(names) > i+1:
+            if len(names[i+1]) > maxlen/2. and names[i+1].count(' ') >= 1:
+                ideal = i + 1
+        else:
+            break
+    names.insert(0, names.pop(ideal))
+    return names
 
 
 def find_similar_names(persons):
     outnames = []
-    p = strip_names_from_title(persons)
+    p, p_remove = strip_names_from_title(persons)
+    persons = [n for n in persons if n not in p_remove]
     # loop through list of input names to find matches
     for i, sn in enumerate(persons):
         same_name = [sn]
@@ -124,7 +147,7 @@ def find_similar_names(persons):
                 # check if required score is exceeded
                 if token_set_ratio >= req_score:
                     same_name.extend([j_names])
-            same_name.sort()
+            same_name = sort_select_name(same_name)
             outnames.append(same_name)
     outnames.sort(key=len, reverse=True)
 
@@ -143,7 +166,7 @@ def find_duplicate_persons(persons):
     comparing two names where one contains initials (i.e. James Brown versus J. Brown), the first
     name is abbreviated to try to determine the initials.'''
     outnames = find_similar_names(persons)
-
+    #
     # check if the longest item in a list is in multiple sublists
     # which might mess things up, so in that case remove and restart
     was_true = False
@@ -180,8 +203,8 @@ def surrounding_words(text, search_names):
     found before and after the search word"""
     surrounding_words = np.array([])
     text = np.array2string(text, separator=' ')
-    search_names.sort(key=len, reverse=True)
-    for search_name in search_names:
+    searchnames = sorted(search_names, key=len, reverse=True)
+    for search_name in searchnames:
         text = text.lower().replace(search_name.lower(), 'search4term')
     text = re.sub('[^0-9a-zA-Z ]+', ' ', text)
     text = text.replace('vice voorzitter', 'vicevoorzitter')
@@ -356,6 +379,7 @@ def extract_persons(doc, all_persons):
     p_position = [[p[0]] for p in JobKeywords.main_jobs]
 
     people = identify_potential_people(doc, all_persons)
+
     # Determine most likely position of board members
     # Collect all sentences containing a particular board member name +
     # the sentences before and after the occurrences
@@ -369,7 +393,8 @@ def extract_persons(doc, all_persons):
         sub_cat = determine_sub_job(members, sentences, m_ft_dbr[0])
         #
         # Add final results
-        member = max(members, key=len)
+        member = members[0]
+
         if m_ft_dbr[0] == 'ambassadeur':
             # ambassadeur unlikely if sub_cat is determined
             if sub_cat[0] != '':
@@ -469,6 +494,8 @@ def check_rvt(pot_rvt, b_position, p_position):
     for rvt in enumerate(pot_rvt):
         if len(pot_rvt) >= 12 and rvt[1][2] <= 3:
             b_position = b_position[b_position != rvt[1][0] + ' - rvt - ' + rvt[1][1]]
+        elif len(pot_rvt) >= 8 and rvt[1][2] == 1:
+            b_position = b_position[b_position != rvt[1][0] + ' - rvt - ' + rvt[1][1]]
         else:
             p_position = append_p_position(p_position, 'rvt', rvt[1][0])
     return b_position, p_position
@@ -477,6 +504,9 @@ def check_rvt(pot_rvt, b_position, p_position):
 def check_bestuur(pot_bestuur, b_position, p_position):
     for bestuur in enumerate(pot_bestuur):
         if len(pot_bestuur) >= 12 and bestuur[1][2] <= 3:
+            b_position = b_position[b_position != (bestuur[1][0] + ' - bestuur - ' +
+                                                   bestuur[1][1])]
+        elif len(pot_bestuur) >= 8 and bestuur[1][2] == 1:
             b_position = b_position[b_position != (bestuur[1][0] + ' - bestuur - ' +
                                                    bestuur[1][1])]
         else:
