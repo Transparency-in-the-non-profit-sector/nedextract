@@ -63,16 +63,18 @@ def test_get_tsr():
 
 
 def test_strip_names_from_title():
-    inp = ['Prof. Dr. Jane Doe', 'John Doe, PhD']
-    expected = ['  jane doe', 'john doe, ']
-    assert(strip_names_from_title(inp) == expected)
+    inp = ['Prof. Dr. Jane Doe', 'John Doe, PhD', 'Dr. J.']
+    expected, expected_removed = ['  jane doe', 'john doe, '], ['Dr. J.']
+    out, out_r = strip_names_from_title(inp)
+    assert(out == expected)
+    assert(out_r == expected_removed)
 
 
 def test_find_duplicate_persons():
     persons = ['Dr. Jane Doe', 'Jane Doe', 'J. Doe', 'Jane Elaine Doe',
                'J.E. Doe', 'Jane White', 'William Doe', 'Jane']
     outnames = find_duplicate_persons(persons)
-    expected = [['Dr. Jane Doe', 'J. Doe', 'J.E. Doe', 'Jane Doe', 'Jane Elaine Doe'],
+    expected = [['Jane Elaine Doe', 'Dr. Jane Doe', 'Jane Doe', 'J.E. Doe', 'J. Doe'],
                 ['Jane White'], ['William Doe']]
     assert(isinstance(outnames, list))
     assert(outnames == expected)
@@ -210,13 +212,13 @@ def test_append_p_position():
 
 def test_extract_persons():
     e_a = np.array(['Sarah', 'Thomas'])
-    e_bp = np.array(['A.B. de Wit - rvt - vice-voorzitter',
+    e_bp = np.array(['Anna de Wit - rvt - vice-voorzitter',
                      'Dirkje Rooden - bestuur - lid',
                      'Eduard van Grijs - bestuur - ',
                      'Ferdinand de Blauw - bestuur - ',
                      'Gerard Roze - kascommissie - voorzitter',
                      'Hendrik Doe - rvt - voorzitter',
-                     'Mr. H. Hendrik Groen - kascommissie - ',
+                     'Hendrik Groen - kascommissie - ',
                      'Jane Doe - directeur - directeur',
                      'Cornelis Geel - rvt - lid',
                      'Isaak Paars - ledenraad - voorzitter',
@@ -227,10 +229,10 @@ def test_extract_persons():
                      'Mohammed El Idrissi - controlecommissie - ',
                      'Saïda Benali - controlecommissie - ',
                      'Bernard Zwartjes - rvt - '])
-    e_r = np.array(['A.B. de Wit', 'Hendrik Doe', 'Cornelis Geel', 'Bernard Zwartjes'])
+    e_r = np.array(['Anna de Wit', 'Hendrik Doe', 'Cornelis Geel', 'Bernard Zwartjes'])
     e_b = np.array(['Dirkje Rooden', 'Eduard van Grijs', 'Ferdinand de Blauw'])
     e_l = np.array(['Isaak Paars', 'Jan van Oranje', 'Karel', 'Lodewijk', 'Maria'])
-    e_k = np.array(['Gerard Roze', 'Mr. H. Hendrik Groen'])
+    e_k = np.array(['Gerard Roze', 'Hendrik Groen'])
     e_c = np.array(['Mohammed El Idrissi', 'Saïda Benali'])
     a, b_p, d, r, b, l, k, c = extract_persons(doc, all_persons)
     assert(np.array_equal(e_a, a))

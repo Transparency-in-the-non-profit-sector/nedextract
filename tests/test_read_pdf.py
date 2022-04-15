@@ -34,13 +34,13 @@ def test_ouput_people():
               'Jan van Oranje\nJane Doe\nKarel\nLodewijk\nMaria\nMohammed El Idrissi\n' +
               'Mr. H. Hendrik Groen\nNico\nOtto\nPieter\nSarah\nSaïda Benali\nThomas\n')
     bestuursmensen = ('Jane Doe\nDirkje Rooden\nEduard van Grijs\nFerdinand de Blauw\n' +
-                      'A.B. de Wit\nHendrik Doe\nCornelis Geel\nBernard Zwartjes\nIsaak Paars\n' +
+                      'Anna de Wit\nHendrik Doe\nCornelis Geel\nBernard Zwartjes\nIsaak Paars\n' +
                       'Jan van Oranje\nKarel\nLodewijk\nMaria\nGerard Roze\n' +
-                      'Mr. H. Hendrik Groen\nMohammed El Idrissi\nSaïda Benali\n')
-    posities = ('A.B. de Wit - rvt - vice-voorzitter\nDirkje Rooden - bestuur - lid\n' +
+                      'Hendrik Groen\nMohammed El Idrissi\nSaïda Benali\n')
+    posities = ('Anna de Wit - rvt - vice-voorzitter\nDirkje Rooden - bestuur - lid\n' +
                 'Eduard van Grijs - bestuur - \nFerdinand de Blauw - bestuur - \n' +
                 'Gerard Roze - kascommissie - voorzitter\nHendrik Doe - rvt - voorzitter\n' +
-                'Mr. H. Hendrik Groen - kascommissie - \nJane Doe - directeur - directeur\n' +
+                'Hendrik Groen - kascommissie - \nJane Doe - directeur - directeur\n' +
                 'Cornelis Geel - rvt - lid\nIsaak Paars - ledenraad - voorzitter\n' +
                 'Jan van Oranje - ledenraad - penningmeester\nKarel - ledenraad - lid\n' +
                 'Lodewijk - ledenraad - \nMaria - ledenraad - \n' +
@@ -53,14 +53,14 @@ def test_ouput_people():
                         bestuursmensen,
                         posities,
                         'Jane Doe', '', '', '', '',
-                        'A.B. de Wit', 'Hendrik Doe', 'Cornelis Geel', 'Bernard Zwartjes', '', '',
+                        'Anna de Wit', 'Hendrik Doe', 'Cornelis Geel', 'Bernard Zwartjes', '', '',
                         '', '', '', '', '', '', '', '', '', '', '', '', '', '',
                         'Dirkje Rooden', 'Eduard van Grijs', 'Ferdinand de Blauw', '', '', '', '',
                         '', '', '', '', '', '', '', '', '', '', '', '', '',
                         'Isaak Paars', 'Jan van Oranje', 'Karel', 'Lodewijk', 'Maria', '', '', '',
                         '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
                         '', '', '',
-                        'Gerard Roze', 'Mr. H. Hendrik Groen', '', '', '',
+                        'Gerard Roze', 'Hendrik Groen', '', '', '',
                         'Mohammed El Idrissi', 'Saïda Benali', '', '', ''])
     assert(output_people(infile, doc, 'Bedrijf') == expected_output)
 
@@ -80,27 +80,27 @@ def test_extract_pdf():
               'Jan van Oranje\nJane Doe\nKarel\nLodewijk\nMaria\nMohammed El Idrissi\n' +
               'Mr. H. Hendrik Groen\nNico\nOtto\nPieter\nSarah\nSaïda Benali\nThomas\n',
               'Sarah\nThomas\n',
-              'Jane Doe\nDirkje Rooden\nEduard van Grijs\nFerdinand de Blauw\nA.B. de Wit\n' +
+              'Jane Doe\nDirkje Rooden\nEduard van Grijs\nFerdinand de Blauw\nAnna de Wit\n' +
               'Hendrik Doe\nCornelis Geel\nBernard Zwartjes\nIsaak Paars\nJan van Oranje\n' +
-              'Karel\nLodewijk\nMaria\nGerard Roze\nMr. H. Hendrik Groen\nMohammed El Idrissi\n' +
+              'Karel\nLodewijk\nMaria\nGerard Roze\nHendrik Groen\nMohammed El Idrissi\n' +
               'Saïda Benali\n',
-              'A.B. de Wit - rvt - vice-voorzitter\nDirkje Rooden - bestuur - lid\n' +
+              'Anna de Wit - rvt - vice-voorzitter\nDirkje Rooden - bestuur - lid\n' +
               'Eduard van Grijs - bestuur - \nFerdinand de Blauw - bestuur - \n' +
               'Gerard Roze - kascommissie - voorzitter\nHendrik Doe - rvt - voorzitter\n' +
-              'Mr. H. Hendrik Groen - kascommissie - \nJane Doe - directeur - directeur\n' +
+              'Hendrik Groen - kascommissie - \nJane Doe - directeur - directeur\n' +
               'Cornelis Geel - rvt - lid\nIsaak Paars - ledenraad - voorzitter\n' +
               'Jan van Oranje - ledenraad - penningmeester\nKarel - ledenraad - lid\n' +
               'Lodewijk - ledenraad - \nMaria - ledenraad - \n' +
               'Mohammed El Idrissi - controlecommissie - \nSaïda Benali - controlecommissie - \n' +
               'Bernard Zwartjes - rvt - \n',
               'Jane Doe', '', '', '', '',
-              'A.B. de Wit', 'Hendrik Doe', 'Cornelis Geel', 'Bernard Zwartjes', '', '', '', '',
+              'Anna de Wit', 'Hendrik Doe', 'Cornelis Geel', 'Bernard Zwartjes', '', '', '', '',
               '', '', '', '', '', '', '', '', '', '', '', '',
               'Dirkje Rooden', 'Eduard van Grijs', 'Ferdinand de Blauw', '', '', '', '', '', '',
               '', '', '', '', '', '', '', '', '', '', '',
               'Isaak Paars', 'Jan van Oranje', 'Karel', 'Lodewijk', 'Maria', '', '', '', '', '',
               '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
-              'Gerard Roze', 'Mr. H. Hendrik Groen', '', '', '',
+              'Gerard Roze', 'Hendrik Groen', '', '', '',
               'Mohammed El Idrissi', 'Saïda Benali', '', '', '']])
     e_og = [[infile, 'Bedrijf', 'Natuur en milieu']]
     e_oo = ([[infile, 'Bedrijf',
@@ -148,14 +148,14 @@ def test_extract_pdf():
     e_op = ([[infile, 'Bedrijf',
               'A.B. de Wit\nAnna de Wit\nBernard Zwartjes\nCornelis Geel\nH. Doe\nHendrik Doe\n' +
               'J. Doe\nJane Doe\nQuirine de Bruin\nRudolph de Bruin\nSimon de Zwart\n' +
-              'Tinus de Zwart\nVictor Wit\nWillem Wit\nXantippe de Bruin\n',
+              'Tinus de Zwart\nVictor Wit\nWillem Wit\nXantippe de Bruin\nYolanda\nZander\n',
               '',
-              'Jane Doe\nA.B. de Wit\nHendrik Doe\nBernard Zwartjes\nCornelis Geel\n',
-              'A.B. de Wit - rvt - vice-voorzitter\nHendrik Doe - rvt - voorzitter\n' +
+              'Jane Doe\nAnna de Wit\nHendrik Doe\nBernard Zwartjes\nCornelis Geel\n',
+              'Anna de Wit - rvt - vice-voorzitter\nHendrik Doe - rvt - voorzitter\n' +
               'Jane Doe - directeur - directeur\nBernard Zwartjes - rvt - \n' +
               'Cornelis Geel - rvt - lid\n',
               'Jane Doe', '', '', '', '',
-              'A.B. de Wit', 'Hendrik Doe', 'Bernard Zwartjes', 'Cornelis Geel',
+              'Anna de Wit', 'Hendrik Doe', 'Bernard Zwartjes', 'Cornelis Geel',
               '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
               '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
               '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
