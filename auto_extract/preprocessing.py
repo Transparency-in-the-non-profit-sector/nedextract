@@ -9,8 +9,7 @@ import pdftotext
 def preprocess_pdf(infile, r_blankline=', '):
     with open(infile, 'rb') as f:
         pdf = pdftotext.PDF(f)
-    text = "\n\n".join(pdf)
-    print(text)
+    text = "\n".join(pdf)
     text = text.replace('\n\n', r_blankline).replace('\r\n\r\n', r_blankline).replace('\n', ' ')
     text = text.replace('\r', ' ').replace('\t', ' ')
     text = text.replace('(', '').replace(')', '').replace(';', ',')
@@ -35,7 +34,6 @@ def preprocess_pdf(infile, r_blankline=', '):
         text = text.replace('..', '.')
     while(' .') in text:
         text = text.replace(' .', '.')
-    print('finaltext', text)
     return text
 
 
