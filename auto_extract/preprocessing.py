@@ -35,6 +35,7 @@ def preprocess_pdf(infile, r_blankline=', '):
         text = text.replace('..', '.')
     while(' .') in text:
         text = text.replace(' .', '.')
+    print('finaltext', text)
     return text
 
 
