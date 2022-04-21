@@ -39,7 +39,7 @@ def extract_pdf(infile, opd_p, opd_g, opd_o, tasks):
             if 'people' in tasks or 'all' in tasks:
                 outp_people = output_people(infile, doc, organization)
             else:
-                outp_people = [[], [], [], [], [], [], [], [], [], [], []]
+                outp_people = atc([infile], 91)
             if 'orgs' in tasks or 'all' in tasks:
                 orgs_details = extract_orgs(text, organizations)
             else:
@@ -53,7 +53,7 @@ def extract_pdf(infile, opd_p, opd_g, opd_o, tasks):
                 main_sector = []
         except ValueError:
             organization = []
-            outp_people = [[], [], [], [], [], [], [], [], [], [], []]
+            outp_people = atc([infile], 91)
             main_sector = []
             orgs_details = []
 
