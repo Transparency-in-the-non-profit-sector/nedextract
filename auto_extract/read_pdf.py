@@ -21,7 +21,7 @@ def extract_pdf(infile, opd_p, opd_g, opd_o, tasks):
                                           './Pretrained/labels_sector_classifier.joblib',
                                           './Pretrained/tf_idf_vectorizer.joblib',
                                           text)
-        outp_people = [[], [], [], [], [], [], [], [], [], [], []]
+        outp_people = atc([infile], 91)
         orgs_details = []
         organization = ''
     else:
