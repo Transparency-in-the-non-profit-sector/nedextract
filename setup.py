@@ -20,7 +20,8 @@ setup(name='run_auto_extract',
                         'openpyxl==3.0.9',
                         'pdftotext==2.2.2',
                         'scikit-learn==1.0.2',
-                        'stanza==1.3.0'],
+                        'stanza==1.3.0',
+                        'xlsxwriter'],
       license='Apache Software License',
       url='https://github.com/Transparency-in-the-non-profit-sector/np-transparency'
       )
