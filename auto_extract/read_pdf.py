@@ -7,7 +7,8 @@ import numpy as np
 import stanza
 from auto_extract.classify_organisation import predict_main_sector
 from auto_extract.extract_persons import extract_persons
-from auto_extract.extract_related_orgs import extract_orgs
+from auto_extract.extract_related_orgs import collect_orgs
+from auto_extract.extract_related_orgs import count_number_of_mentions
 from auto_extract.preprocessing import preprocess_pdf
 
 
@@ -41,7 +42,7 @@ def extract_pdf(infile, opd_p, opd_g, opd_o, tasks):
             else:
                 outp_people = [[], [], [], [], [], [], [], [], [], [], []]
             if 'orgs' in tasks or 'all' in tasks:
-                orgs_details = extract_orgs(text, organizations)
+                orgs_details = output_related_orgs(infile, doc)
             else:
                 orgs_details = []
             if 'sectors' in tasks or 'all' in tasks:
@@ -59,8 +60,9 @@ def extract_pdf(infile, opd_p, opd_g, opd_o, tasks):
 
     # Output
     opd_p.append(outp_people)
-    opd_g.append([infile, organization, main_sector])
-    opd_o.append([infile, organization, ots(orgs_details)])
+    opd_g.append([os.path.basename(infile), organization, main_sector])
+    for org_details in orgs_details:
+        opd_o.append(org_details)
 
     print(f"{datetime.now():%Y-%m-%d %H:%M:%S}", 'Finished file:', infile)
     return opd_p, opd_g, opd_o
@@ -81,7 +83,7 @@ def output_people(infile, doc, organization):
         (ambassadors, board_positions, p_directeur, p_rvt, p_bestuur,
          p_ledenraad, p_kasc, p_controlec) = extract_persons(doc, persons)
         board = np.concatenate([p_directeur, p_bestuur, p_rvt, p_ledenraad, p_kasc, p_controlec])
-    output = [infile, organization, ots(persons), ots(ambassadors), ots(board),
+    output = [os.path.basename(infile), organization, ots(persons), ots(ambassadors), ots(board),
               ots(board_positions)]
     output.extend(atc(p_directeur, 5))
     output.extend(atc(p_rvt, 20))
@@ -89,6 +91,19 @@ def output_people(infile, doc, organization):
     output.extend(atc(p_ledenraad, 30))
     output.extend(atc(p_kasc, 5))
     output.extend(atc(p_controlec, 5))
+    return output
+
+
+def output_related_orgs(infile, doc):
+    """ Gather information about all mentioned orgnaisations in the text and structure the
+    output."""
+    orgs = collect_orgs(infile)
+    output = []
+    for o in orgs:
+        n_org = count_number_of_mentions(doc, o)
+        op = [os.path.basename(infile), o, str(n_org)]
+        if n_org > 0:
+            output.append(op)
     return output
 
 
