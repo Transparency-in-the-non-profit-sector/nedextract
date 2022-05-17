@@ -115,19 +115,19 @@ def write_output(tasks, opd_p, opd_g, opd_o):
         cols_p.extend([f'kascommissie{n}' for n in range(1, 6)])
         cols_p.extend([f'controlecommissie{n}' for n in range(1, 6)])
         df1 = pd.DataFrame(opd_p, columns=cols_p)
-        df1.to_excel(opf_p)
+        df1.to_excel(opf_p, engine='xlsxwriter')
         print('Output people written to:', opf_p)
 
     if 'all' in tasks or 'sectors' in tasks:
         cols_g = ['Input_file', 'Organization', 'Main_sector']
         df2 = pd.DataFrame(opd_g, columns=cols_g)
-        df2.to_excel(opf_g)
+        df2.to_excel(opf_g, engine='xlsxwriter')
         print('Output sectors written to:', opf_g)
 
     if 'all' in tasks or 'orgs' in tasks:
         cols_o = ['Input_file', 'Organization', 'Related_organizations']
         df3 = pd.DataFrame(opd_o, columns=cols_o)
-        df3.to_excel(opf_o)
+        df3.to_excel(opf_o, engine='xlsxwriter')
         print('Output organisations written to:', opf_o)
 
 

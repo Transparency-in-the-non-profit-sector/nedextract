@@ -103,7 +103,7 @@ def test_extract_pdf():
               'Gerard Roze', 'Hendrik Groen', '', '', '',
               'Mohammed El Idrissi', 'Saïda Benali', '', '', '']])
     e_og = [[os.path.basename(infile), 'Bedrijf', 'Natuur en milieu']]
-    e_oo = ([[os.path.basename(infile), 'Bedrijf',
+    e_oo = ([[infile, 'Bedrijf',
                'Bedrijf - 11 - none - none\nBedrijf2 - 1 - none - none\n' +
                'Bedrijf3 - 1 - none - none\nFinanciën - 1 - none - none\n' +
                'Raad van Toezicht RvT - 1 - none - none\nRvT - 2 - none - none\n']])
@@ -125,7 +125,7 @@ def test_extract_pdf():
                    '', '', '', '', '', '', '', '', '', '',
                    '', '', '', '', '', '', '', '', '', '']])
     assert(og == ([[os.path.basename(infile), '', 'Natuur en milieu']]))
-    assert(oo == [[os.path.basename(infile), '', '']])
+    assert(oo == [[infile, '', '']])
     opd_p = []
     opd_g = []
     opd_o = []
@@ -134,7 +134,7 @@ def test_extract_pdf():
     assert(e_op == op)
     assert(og == ([[os.path.basename(infile), 'Bedrijf',
                     []]]))
-    assert(oo == [[os.path.basename(infile), 'Bedrijf', '']])
+    assert(oo == [[infile, 'Bedrijf', '']])
     opd_p = []
     opd_g = []
     opd_o = []
