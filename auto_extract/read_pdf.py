@@ -59,7 +59,7 @@ def extract_pdf(infile, opd_p, opd_g, opd_o, tasks):
 
     # Output
     opd_p.append(outp_people)
-    opd_g.append([infile, organization, main_sector])
+    opd_g.append([os.path.basename(infile), organization, main_sector])
     opd_o.append([infile, organization, ots(orgs_details)])
 
     print(f"{datetime.now():%Y-%m-%d %H:%M:%S}", 'Finished file:', infile)
@@ -81,7 +81,7 @@ def output_people(infile, doc, organization):
         (ambassadors, board_positions, p_directeur, p_rvt, p_bestuur,
          p_ledenraad, p_kasc, p_controlec) = extract_persons(doc, persons)
         board = np.concatenate([p_directeur, p_bestuur, p_rvt, p_ledenraad, p_kasc, p_controlec])
-    output = [infile, organization, ots(persons), ots(ambassadors), ots(board),
+    output = [os.path.basename(infile), organization, ots(persons), ots(ambassadors), ots(board),
               ots(board_positions)]
     output.extend(atc(p_directeur, 5))
     output.extend(atc(p_rvt, 20))
