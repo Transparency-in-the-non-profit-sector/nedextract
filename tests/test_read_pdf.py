@@ -46,7 +46,7 @@ def test_ouput_people():
                 'Lodewijk - ledenraad - \nMaria - ledenraad - \n' +
                 'Mohammed El Idrissi - controlecommissie - \n' +
                 'Saïda Benali - controlecommissie - \nBernard Zwartjes - rvt - \n')
-    expected_output = ([infile,
+    expected_output = ([os.path.basename(infile),
                        'Bedrijf',
                         people,
                         'Sarah\nThomas\n',
@@ -73,7 +73,7 @@ def test_extract_pdf():
     opd_g = []
     opd_o = []
     op, og, oo = extract_pdf(infile, opd_p, opd_g, opd_o, tasks)
-    e_op = ([[infile, 'Bedrijf',
+    e_op = ([[os.path.basename(infile), 'Bedrijf',
               'A.B. de Wit\nAnna de Wit\nBernard Zwartjes\nCornelis Geel\nD.A. Rooden\n' +
               'Dirkje Rooden\nE. van Grijs\nEduard van Grijs\nF. de Blauw\nFerdinand de Blauw\n' +
               'G. Roze\nGerard Roze\nH. Doe\nHendrik Doe\nHendrik Groen\nIsaak Paars\nJ. Doe\n' +
@@ -102,8 +102,8 @@ def test_extract_pdf():
               '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
               'Gerard Roze', 'Hendrik Groen', '', '', '',
               'Mohammed El Idrissi', 'Saïda Benali', '', '', '']])
-    e_og = [[infile, 'Bedrijf', 'Natuur en milieu']]
-    e_oo = ([[infile, 'Bedrijf',
+    e_og = [[os.path.basename(infile), 'Bedrijf', 'Natuur en milieu']]
+    e_oo = ([[os.path.basename(infile), 'Bedrijf',
                'Bedrijf - 11 - none - none\nBedrijf2 - 1 - none - none\n' +
                'Bedrijf3 - 1 - none - none\nFinanciën - 1 - none - none\n' +
                'Raad van Toezicht RvT - 1 - none - none\nRvT - 2 - none - none\n']])
@@ -115,7 +115,7 @@ def test_extract_pdf():
     opd_o = []
     tasks = ['sectors']
     op, og, oo = extract_pdf(infile, opd_p, opd_g, opd_o, tasks)
-    assert(op == [[infile, '', '', '', '', '', '', '', '', '', '',
+    assert(op == [[os.path.basename(infile), '', '', '', '', '', '', '', '', '', '',
                    '', '', '', '', '', '', '', '', '', '',
                    '', '', '', '', '', '', '', '', '', '',
                    '', '', '', '', '', '', '', '', '', '',
@@ -124,23 +124,23 @@ def test_extract_pdf():
                    '', '', '', '', '', '', '', '', '', '',
                    '', '', '', '', '', '', '', '', '', '',
                    '', '', '', '', '', '', '', '', '', '']])
-    assert(og == ([[infile, '', 'Natuur en milieu']]))
-    assert(oo == [[infile, '', '']])
+    assert(og == ([[os.path.basename(infile), '', 'Natuur en milieu']]))
+    assert(oo == [[os.path.basename(infile), '', '']])
     opd_p = []
     opd_g = []
     opd_o = []
     tasks = ['people']
     op, og, oo = extract_pdf(infile, opd_p, opd_g, opd_o, tasks)
     assert(e_op == op)
-    assert(og == ([[infile, 'Bedrijf',
+    assert(og == ([[os.path.basename(infile), 'Bedrijf',
                     []]]))
-    assert(oo == [[infile, 'Bedrijf', '']])
+    assert(oo == [[os.path.basename(infile), 'Bedrijf', '']])
     opd_p = []
     opd_g = []
     opd_o = []
     tasks = ['orgs']
     op, og, oo = extract_pdf(infile, opd_p, opd_g, opd_o, tasks)
-    assert(op == [[infile, '', '', '', '', '', '', '', '', '', '',
+    assert(op == [[os.path.basename(infile), '', '', '', '', '', '', '', '', '', '',
                    '', '', '', '', '', '', '', '', '', '',
                    '', '', '', '', '', '', '', '', '', '',
                    '', '', '', '', '', '', '', '', '', '',
@@ -149,7 +149,7 @@ def test_extract_pdf():
                    '', '', '', '', '', '', '', '', '', '',
                    '', '', '', '', '', '', '', '', '', '',
                    '', '', '', '', '', '', '', '', '', '']])
-    assert(og == ([[infile, 'Bedrijf', []]]))
+    assert(og == ([[os.path.basename(infile), 'Bedrijf', []]]))
     assert(oo == e_oo)
     infile = os.path.join(indir, 'test_report3.pdf')
     opd_p = []
@@ -157,7 +157,7 @@ def test_extract_pdf():
     opd_o = []
     tasks = ['people']
     op, og, oo = extract_pdf(infile, opd_p, opd_g, opd_o, tasks)
-    e_op = ([[infile, 'Bedrijf',
+    e_op = ([[os.path.basename(infile), 'Bedrijf',
               'A.B. de Wit\nAnna de Wit\nBernard Zwartjes\nCornelis Geel\nH. Doe\nHendrik Doe\n' +
               'J. Doe\nJane Doe\nQuirine de Bruin\nRudolph de Bruin\nSimon de Zwart\n' +
               'Tinus de Zwart\nVictor Wit\nWillem Wit\nXantippe de Bruin\nYolanda\nZander\n',
