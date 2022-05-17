@@ -21,7 +21,7 @@ def extract_pdf(infile, opd_p, opd_g, opd_o, tasks):
                                           './Pretrained/labels_sector_classifier.joblib',
                                           './Pretrained/tf_idf_vectorizer.joblib',
                                           text)
-        outp_people = atc([infile], 91)
+        outp_people = atc([os.path.basename(infile)], 91)
         orgs_details = []
         organization = ''
     else:
@@ -39,7 +39,7 @@ def extract_pdf(infile, opd_p, opd_g, opd_o, tasks):
             if 'people' in tasks or 'all' in tasks:
                 outp_people = output_people(infile, doc, organization)
             else:
-                outp_people = atc([infile], 91)
+                outp_people = atc([os.path.basename(infile)], 91)
             if 'orgs' in tasks or 'all' in tasks:
                 orgs_details = extract_orgs(text, organizations)
             else:
