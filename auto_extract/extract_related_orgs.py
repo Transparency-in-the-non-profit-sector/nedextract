@@ -275,21 +275,19 @@ def count_number_of_mentions(doc, org):
 
 def match_anbis(df_in, anbis_file):
     df = pd.read_csv(anbis_file, usecols=["rsin", "currentStatutoryName", "shortBusinessName"])
-    df_out = df_in
-    df_out['matched_anbi'] = df_out['mentioned_organization'].apply(lambda x: apply_matching(df,
-                                                                    x, 'currentStatutoryName',
-                                                                    'shortBusinessName'))
-    df2 = df_out
-    print('df_out', df_out)
-    print('df2', df2)
-    df_out = df_out.merge(df[df['currentStatutoryName'].notnull()], how='left',
-                          left_on='matched_anbi', right_on='currentStatutoryName')
-    df2 = df2.merge(df[df['shortBusinessName'].notnull()], how='left',
-                    left_on='matched_anbi', right_on='shortBusinessName')
-    print('df_out', df_out)
-    print('df2', df2)
-    df_out.loc[df_out['rsin'].isna()] = df2
-    print('df_out', df_out)
+    df_match = df_in
+    df_match['matched_anbi'] = df_match['mentioned_organization'].apply(lambda x: apply_matching(
+                                                                        df,
+                                                                        x, 'currentStatutoryName',
+                                                                        'shortBusinessName'))
+    df1 = df_match.merge(df[df['currentStatutoryName'].notnull()], how='left',
+                         left_on='matched_anbi', right_on='currentStatutoryName')
+    df2 = df1[df1['rsin'].isna()][['Input_file', 'mentioned_organization', 'n_mentions',
+                                   'matched_anbi']]
+    df1_out = df1[df1['rsin'].notnull()]
+    df2_out = df2.merge(df[df['shortBusinessName'].notnull()], how='left',
+                        left_on='matched_anbi', right_on='shortBusinessName')
+    df_out = pd.concat([df1_out, df2_out])
     return df_out
 
 
