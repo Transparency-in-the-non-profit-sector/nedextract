@@ -121,7 +121,7 @@ def collect_orgs(infile):
                 single_orgs.append(org)
     for org in single_orgs:
         true_orgs = check_single_orgs(org, true_orgs, doc_c)
-    return list(set(true_orgs))
+    return sorted(list(set(true_orgs)))
 
 
 def decide_org(org, pco_p, pco_c, org_pp, org_c):
@@ -288,7 +288,7 @@ def match_anbis(df_in, anbis_file):
     df2_out = df2.merge(df[df['shortBusinessName'].notnull()], how='left',
                         left_on='matched_anbi', right_on='shortBusinessName')
     df_out = pd.concat([df1_out, df2_out])
-    return df_out
+    return df_out.sort_values(by=['Input_file', 'mentioned_organization'])
 
 
 def apply_matching(df, m, c2, c3):
