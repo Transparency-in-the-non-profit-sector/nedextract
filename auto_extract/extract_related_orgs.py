@@ -18,11 +18,7 @@ import re
 #   - onderwijs-/kennisinstelling
 import numpy as np
 import pandas as pd
-import stanza
 from auto_extract.preprocessing import preprocess_pdf
-
-
-nlp = stanza.Pipeline(lang='nl', processors='tokenize, ner')
 
 
 class Org_Keywords:
@@ -87,7 +83,7 @@ class Org_Keywords:
     functies = ['hoofdfuncties', 'hoofdfunctie', 'nevenfuncties', 'nevenfunctie']
 
 
-def collect_orgs(infile):
+def collect_orgs(infile, nlp):
     '''Determine all ORGs in the text using Stanza NER. Select candidates by applying NER
     to different preprocessing choices. Perform additional checks to determine which
     candidates are most likely true orgs.'''
@@ -95,10 +91,10 @@ def collect_orgs(infile):
     single_orgs = []
     doc_c = nlp(preprocess_pdf(infile, r_blankline=', ', r_par=', '))
     org_c = np.unique([ent.text.rstrip('.') for ent in doc_c.ents if ent.type == "ORG"],
-                      return_counts=True)
+                        return_counts=True)
     doc_p = nlp(preprocess_pdf(infile, r_blankline='. ', r_par=', '))
     org_p = np.unique([ent.text.rstrip('.') for ent in doc_p.ents if ent.type == "ORG"],
-                      return_counts=True)
+                        return_counts=True)
     doc_pp = nlp(preprocess_pdf(infile, r_blankline='. ', r_eol='. ', r_par=', '))
     org_pp = np.unique([ent.text.rstrip('.') for ent in doc_pp.ents if ent.type == "ORG"])
     org_all = np.unique(np.concatenate((org_c[0], org_p[0], org_pp)))
@@ -110,10 +106,8 @@ def collect_orgs(infile):
         if n_org != org and len(n_org) >= 3:
             single_orgs.append(n_org)
         else:
-            pco_c = percentage_considered_org(doc_c, org, org_c[0], org_c[1])
-            pco_p = percentage_considered_org(doc_p, org, org_p[0], org_p[1])
-            decision = decide_org(org, pco_p, pco_c, org_pp, org_c)
-            # input()
+            pco = percentage_considered_org(doc_c, org, org_c[0], org_c[1]), percentage_considered_org(doc_p, org, org_p[0], org_p[1])
+            decision = decide_org(org, pco, org_pp, org_c, nlp)
             # process conclusion
             if decision is True:
                 true_orgs.append(org)
@@ -124,7 +118,7 @@ def collect_orgs(infile):
     return sorted(list(set(true_orgs)))
 
 
-def decide_org(org, pco_p, pco_c, org_pp, org_c):
+def decide_org(org, pco, org_pp, org_c, nlp):
     ''' Decision tree to determine if an potential ORG is likely to be a true org.
     Decisions are based on: the overall number of mentions of the pot. org in the text,
     the percentage of mentions in which it was actually considered an ORG by Stanza,
@@ -132,9 +126,8 @@ def decide_org(org, pco_p, pco_c, org_pp, org_c):
     the precense of keywords that make it likely that the pot. org is an org,
     the precense of keywords that make it likely that the pot. org is NOT an org.'''
     final = False
-    is_org = single_org_check(org)
-    per_p, n_p = pco_p
-    per_c, n_c = pco_c
+    is_org = single_org_check(org, nlp)
+    per_c, n_c, per_p, n_p = pco[0][0], pco[0][1], pco[1][0], pco[1][1]
     # decision tree
     if n_p >= 5 or n_c >= 5:
         if per_p >= 50. and per_c >= 50.:
@@ -216,7 +209,7 @@ def part_of_other(orgs, org, doc):
     return is_part
 
 
-def single_org_check(org):
+def single_org_check(org, nlp):
     '''Check if an potential ORG is considered and ORG if just that name is analysed by Stanza NER.
     (Without the context of any sentences)'''
     doc_o = nlp(org)
