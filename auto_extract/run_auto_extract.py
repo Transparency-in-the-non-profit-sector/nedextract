@@ -6,6 +6,7 @@ import os
 import time
 from argparse import RawTextHelpFormatter
 from datetime import datetime
+import numpy as np
 import pandas as pd
 from auto_extract.extract_related_orgs import match_anbis
 from auto_extract.preprocessing import delete_downloaded_pdf
@@ -60,9 +61,9 @@ def main(testarg=None):
     # Create the output directory if it does not exist already
     if not os.path.exists(os.path.join(os.getcwd(), 'Output')):
         os.makedirs(os.path.join(os.getcwd(), 'Output'))
-    opd_p = []
-    opd_g = []
-    opd_o = []
+    opd_p = np.array([]).reshape(0,91)
+    opd_g = np.array([]).reshape(0,3)
+    opd_o = np.array([]).reshape(0,3)
 
     # convert tasks to list
     args.tasks = [args.tasks] if isinstance(args.tasks, str) else args.tasks
