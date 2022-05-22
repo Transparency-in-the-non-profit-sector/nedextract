@@ -69,11 +69,11 @@ def test_extract_pdf():
     indir = os.path.join(os.getcwd(), 'tests')
     infile = os.path.join(indir, 'test_report.pdf')
     tasks = ['all']
-    opd_p = []
-    opd_g = []
-    opd_o = []
+    opd_p = np.array([]).reshape(0,91)
+    opd_g = np.array([]).reshape(0,3)
+    opd_o = np.array([]).reshape(0,3)
     op, og, oo = extract_pdf(infile, opd_p, opd_g, opd_o, tasks)
-    e_op = ([[os.path.basename(infile), 'Bedrijf',
+    e_op = np.array([[os.path.basename(infile), 'Bedrijf',
               'A.B. de Wit\nAnna de Wit\nBernard Zwartjes\nCornelis Geel\nD.A. Rooden\n' +
               'Dirkje Rooden\nE. van Grijs\nEduard van Grijs\nF. de Blauw\nFerdinand de Blauw\n' +
               'G. Roze\nGerard Roze\nH. Doe\nHendrik Doe\nHendrik Groen\nIsaak Paars\nJ. Doe\n' +
@@ -102,60 +102,43 @@ def test_extract_pdf():
               '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
               'Gerard Roze', 'Hendrik Groen', '', '', '',
               'Mohammed El Idrissi', 'Saïda Benali', '', '', '']])
-    e_og = [[os.path.basename(infile), 'Bedrijf', 'Natuur en milieu']]
-    e_oo = [[os.path.basename(infile), 'Bedrijf2', '1'],
-            [os.path.basename(infile), 'Bedrijf3', '1']]
-    assert(e_op == op)
-    assert(e_og == og)
-    assert(e_oo == oo)
-    opd_p = []
-    opd_g = []
-    opd_o = []
+    e_og = np.array([[os.path.basename(infile), 'Bedrijf', 'Natuur en milieu']])
+    e_oo = np.array([[os.path.basename(infile), 'Bedrijf2', '1'],
+            [os.path.basename(infile), 'Bedrijf3', '1']])
+    assert(np.alltrue(e_op == op))
+    assert(np.alltrue(e_og == og))
+    assert(np.alltrue(e_oo == oo))
+    opd_p = np.array([]).reshape(0,91)
+    opd_g = np.array([]).reshape(0,3)
+    opd_o = np.array([]).reshape(0,3)
     tasks = ['sectors']
     op, og, oo = extract_pdf(infile, opd_p, opd_g, opd_o, tasks)
-    assert(op == [[os.path.basename(infile), '', '', '', '', '', '', '', '', '', '',
-                   '', '', '', '', '', '', '', '', '', '',
-                   '', '', '', '', '', '', '', '', '', '',
-                   '', '', '', '', '', '', '', '', '', '',
-                   '', '', '', '', '', '', '', '', '', '',
-                   '', '', '', '', '', '', '', '', '', '',
-                   '', '', '', '', '', '', '', '', '', '',
-                   '', '', '', '', '', '', '', '', '', '',
-                   '', '', '', '', '', '', '', '', '', '']])
-    assert(og == ([[os.path.basename(infile), '', 'Natuur en milieu']]))
-    assert(oo == [])
-    opd_p = []
-    opd_g = []
-    opd_o = []
+    assert(np.alltrue(op == opd_p))
+    assert(np.alltrue(og == np.array([[os.path.basename(infile), '', 'Natuur en milieu']])))
+    assert(np.alltrue(oo == opd_o))
+    opd_p = np.array([]).reshape(0,91)
+    opd_g = np.array([]).reshape(0,3)
+    opd_o = np.array([]).reshape(0,3)
     tasks = ['people']
     op, og, oo = extract_pdf(infile, opd_p, opd_g, opd_o, tasks)
-    assert(e_op == op)
-    assert(og == ([[os.path.basename(infile), 'Bedrijf',
-                    []]]))
-    assert(oo == [])
-    opd_p = []
-    opd_g = []
-    opd_o = []
+    assert(np.alltrue(e_op == op))
+    assert(np.alltrue(og == opd_g))
+    assert(np.alltrue(oo == opd_o))
+    opd_p = np.array([]).reshape(0,91)
+    opd_g = np.array([]).reshape(0,3)
+    opd_o = np.array([]).reshape(0,3)
     tasks = ['orgs']
     op, og, oo = extract_pdf(infile, opd_p, opd_g, opd_o, tasks)
-    assert(op == [[os.path.basename(infile), '', '', '', '', '', '', '', '', '', '',
-                   '', '', '', '', '', '', '', '', '', '',
-                   '', '', '', '', '', '', '', '', '', '',
-                   '', '', '', '', '', '', '', '', '', '',
-                   '', '', '', '', '', '', '', '', '', '',
-                   '', '', '', '', '', '', '', '', '', '',
-                   '', '', '', '', '', '', '', '', '', '',
-                   '', '', '', '', '', '', '', '', '', '',
-                   '', '', '', '', '', '', '', '', '', '']])
-    assert(og == ([[os.path.basename(infile), 'Bedrijf', []]]))
-    assert(oo == e_oo)
+    assert(np.alltrue(op == opd_p))
+    assert(np.alltrue(og == opd_g))
+    assert(np.alltrue(oo == e_oo))
     infile = os.path.join(indir, 'test_report3.pdf')
-    opd_p = []
-    opd_g = []
-    opd_o = []
+    opd_p = np.array([]).reshape(0,91)
+    opd_g = np.array([]).reshape(0,3)
+    opd_o = np.array([]).reshape(0,3)
     tasks = ['people']
     op, og, oo = extract_pdf(infile, opd_p, opd_g, opd_o, tasks)
-    e_op = ([[os.path.basename(infile), 'Bedrijf',
+    e_op = np.array(([[os.path.basename(infile), 'Bedrijf',
               'A.B. de Wit\nAnna de Wit\nBernard Zwartjes\nCornelis Geel\nH. Doe\nHendrik Doe\n' +
               'J. Doe\nJane Doe\nQuirine de Bruin\nRudolph de Bruin\nSimon de Zwart\n' +
               'Tinus de Zwart\nVictor Wit\nWillem Wit\nXantippe de Bruin\nYolanda\nZander\n',
@@ -169,5 +152,5 @@ def test_extract_pdf():
               '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
               '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
               '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
-              '', '', '', '', '', '', '', '', '', '', '', '', '']])
-    assert(op == e_op)
+              '', '', '', '', '', '', '', '', '', '', '', '', '']]))
+    assert(np.alltrue(op == e_op))
