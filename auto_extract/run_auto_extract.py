@@ -6,7 +6,9 @@ import os
 import time
 from argparse import RawTextHelpFormatter
 from datetime import datetime
+import numpy as np
 import pandas as pd
+from auto_extract.extract_related_orgs import match_anbis
 from auto_extract.preprocessing import delete_downloaded_pdf
 from auto_extract.preprocessing import download_pdf
 from auto_extract.read_pdf import extract_pdf
@@ -44,6 +46,9 @@ def main(testarg=None):
     parser.add_argument('-uf', '--url_file', help='File containing url paths to be processed.')
     parser.add_argument('-t', '--tasks', choices=['all', 'people', 'orgs', 'sectors'],
                         nargs='*', default='all', help='tasks to be performed. Default=all')
+    parser.add_argument('-af', '--anbis_file',
+                        default=os.path.join(os.path.join(os.getcwd(), 'Data'), 'anbis_clean.csv'),
+                        help='CSV file to be used for org matching,conly used for task org')
 
     if testarg:
         args = parser.parse_args(testarg)
@@ -56,9 +61,9 @@ def main(testarg=None):
     # Create the output directory if it does not exist already
     if not os.path.exists(os.path.join(os.getcwd(), 'Output')):
         os.makedirs(os.path.join(os.getcwd(), 'Output'))
-    opd_p = []
-    opd_g = []
-    opd_o = []
+    opd_p = np.array([]).reshape(0,91)
+    opd_g = np.array([]).reshape(0,3)
+    opd_o = np.array([]).reshape(0,3)
 
     # convert tasks to list
     args.tasks = [args.tasks] if isinstance(args.tasks, str) else args.tasks
@@ -90,7 +95,7 @@ def main(testarg=None):
             opd_p, opd_g, opd_o = extract_pdf(infile, opd_p, opd_g, opd_o, args.tasks)
             delete_downloaded_pdf()
 
-    write_output(args.tasks, opd_p, opd_g, opd_o)
+    write_output(args.tasks, opd_p, opd_g, opd_o, args.anbis_file)
 
     # end time
     print('The start time was: ', start_time)
@@ -98,13 +103,15 @@ def main(testarg=None):
     return(args)
 
 
-def write_output(tasks, opd_p, opd_g, opd_o):
+def write_output(tasks, opd_p, opd_g, opd_o, anbis_file):
     '''Return extracted information to output'''
-    outdir_path = os.path.join(os.getcwd(), 'Output')
     outtime = time.strftime("%Y%m%d_%H%M%S", time.localtime())
-    opf_p = os.path.join(outdir_path, 'output' + str(outtime) + '_people.xlsx')
-    opf_g = os.path.join(outdir_path, 'output' + str(outtime) + '_general.xlsx')
-    opf_o = os.path.join(outdir_path, 'output' + str(outtime) + '_related_organizations.xlsx')
+    opf_p = os.path.join(os.path.join(os.getcwd(), 'Output'),
+                         'output' + str(outtime) + '_people.xlsx')
+    opf_g = os.path.join(os.path.join(os.getcwd(), 'Output'),
+                         'output' + str(outtime) + '_general.xlsx')
+    opf_o = os.path.join(os.path.join(os.getcwd(), 'Output'),
+                         'output' + str(outtime) + '_related_organizations.xlsx')
     if 'all' in tasks or 'people' in tasks:
         cols_p = ['Input_file', 'Organization', 'Persons', 'Ambassadors',
                   'Board_members', 'Job_description']
@@ -125,8 +132,9 @@ def write_output(tasks, opd_p, opd_g, opd_o):
         print('Output sectors written to:', opf_g)
 
     if 'all' in tasks or 'orgs' in tasks:
-        cols_o = ['Input_file', 'Organization', 'Related_organizations']
+        cols_o = ['Input_file', 'mentioned_organization', 'n_mentions']
         df3 = pd.DataFrame(opd_o, columns=cols_o)
+        df3 = match_anbis(df3, anbis_file)
         df3.to_excel(opf_o, engine='xlsxwriter')
         print('Output organisations written to:', opf_o)
 

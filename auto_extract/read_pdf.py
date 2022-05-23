@@ -7,7 +7,8 @@ import numpy as np
 import stanza
 from auto_extract.classify_organisation import predict_main_sector
 from auto_extract.extract_persons import extract_persons
-from auto_extract.extract_related_orgs import extract_orgs
+from auto_extract.extract_related_orgs import collect_orgs
+from auto_extract.extract_related_orgs import count_number_of_mentions
 from auto_extract.preprocessing import preprocess_pdf
 
 
@@ -21,13 +22,14 @@ def extract_pdf(infile, opd_p, opd_g, opd_o, tasks):
                                           './Pretrained/labels_sector_classifier.joblib',
                                           './Pretrained/tf_idf_vectorizer.joblib',
                                           text)
-        outp_people = atc([os.path.basename(infile)], 91)
-        orgs_details = []
-        organization = ''
+        opd_g = np.concatenate((opd_g,
+                                np.array([[os.path.basename(infile), '', main_sector]])),
+                                axis=0)
     else:
         # Apply pre-trained Dutch stanza pipeline to text
         download_stanza_NL()
-        doc = stanza.Pipeline(lang='nl', processors='tokenize,ner')(text)
+        nlp = stanza.Pipeline(lang='nl', processors='tokenize,ner')
+        doc = nlp(text)
 
         # Extract all unique persons and organizations from the text using
         # the named entity recognition function of stanza
@@ -38,29 +40,28 @@ def extract_pdf(infile, opd_p, opd_g, opd_o, tasks):
             organization = organizations[np.argmax(corg)]
             if 'people' in tasks or 'all' in tasks:
                 outp_people = output_people(infile, doc, organization)
-            else:
-                outp_people = atc([os.path.basename(infile)], 91)
+                opd_p = np.concatenate((opd_p, np.array([outp_people])), axis=0)
             if 'orgs' in tasks or 'all' in tasks:
-                orgs_details = extract_orgs(text, organizations)
-            else:
-                orgs_details = []
+                orgs_details = output_related_orgs(infile, doc, nlp)
+                for org_details in orgs_details:
+                    opd_o = np.concatenate((opd_o, np.array([org_details])), axis=0)
             if 'sectors' in tasks or 'all' in tasks:
                 main_sector = predict_main_sector('./Pretrained/trained_sector_classifier.joblib',
                                                   './Pretrained/labels_sector_classifier.joblib',
                                                   './Pretrained/tf_idf_vectorizer.joblib',
                                                   text)
-            else:
-                main_sector = []
+                opd_g = np.concatenate((opd_g,
+                           np.array([[os.path.basename(infile), organization, main_sector]])),
+                           axis=0)
         except ValueError:
-            organization = []
-            outp_people = atc([infile], 91)
-            main_sector = []
-            orgs_details = []
-
-    # Output
-    opd_p.append(outp_people)
-    opd_g.append([os.path.basename(infile), organization, main_sector])
-    opd_o.append([infile, organization, ots(orgs_details)])
+            print('in valuerror')
+            organization = ''
+            outp_people = atc([os.path.basename(infile)], 91)
+            opd_p = np.concatenate((opd_p, np.array([outp_people])), axis=0)
+            opd_g = np.concatenate((opd_g,
+                           np.array([[os.path.basename(infile), organization, '']])),
+                           axis=0)
+            opd_o = np.concatenate((opd_o, np.array([['', '', '']])), axis=0)
 
     print(f"{datetime.now():%Y-%m-%d %H:%M:%S}", 'Finished file:', infile)
     return opd_p, opd_g, opd_o
@@ -89,6 +90,19 @@ def output_people(infile, doc, organization):
     output.extend(atc(p_ledenraad, 30))
     output.extend(atc(p_kasc, 5))
     output.extend(atc(p_controlec, 5))
+    return output
+
+
+def output_related_orgs(infile, doc, nlp):
+    """ Gather information about all mentioned orgnaisations in the text and structure the
+    output."""
+    orgs = collect_orgs(infile, nlp)
+    output = []
+    for o in orgs:
+        n_org = count_number_of_mentions(doc, o)
+        op = [os.path.basename(infile), o, str(n_org)]
+        if n_org > 0:
+            output.append(op)
     return output
 
 

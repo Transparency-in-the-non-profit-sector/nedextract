@@ -6,13 +6,13 @@ import urllib.request
 import pdftotext
 
 
-def preprocess_pdf(infile, r_blankline=', '):
+def preprocess_pdf(infile, r_blankline=', ', r_eol=' ', r_par=''):
     with open(infile, 'rb') as f:
         pdf = pdftotext.PDF(f)
     text = "\n".join(pdf)
-    text = text.replace('\n\n', r_blankline).replace('\r\n\r\n', r_blankline).replace('\n', ' ')
+    text = text.replace('\n\n', r_blankline).replace('\r\n\r\n', r_blankline).replace('\n', r_eol)
     text = text.replace('\r', ' ').replace('\t', ' ')
-    text = text.replace('(', '').replace(')', '').replace(';', ',')
+    text = text.replace('(', r_par).replace(')', r_par).replace(';', ',')
     text = text.replace('\x0c', ' ').replace('\x07', ' ').replace('\x08', ' ').replace('\xad', ' ')
     text = text.replace('•', ', ').replace('', ', ').replace('◼', ', ').replace('\uf0b7', ' ')
     text = text.replace('/', ' / ')
