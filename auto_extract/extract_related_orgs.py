@@ -2,20 +2,6 @@
 # Licensed under the Apache License, version 2.0. See LICENSE for details.
 
 import re
-# Extract all named organisations in annual report
-# Count the number of times each is mentioned
-# Classify relation type:
-#   - interne organisatieafhankelijkheid (i.e. daughter or mother company)
-#   - financiële relatie
-#   - partner (supplies funds, knowledge, goods, people)
-#   - marktrelatie (hired to do something)
-#   - politiek (is a political bystander or opponent)
-# Classify type of organisation:
-#   - bedrijf
-#   - overheidsinstantie
-#   - politieke/belangenorganisatie
-#   - NGO
-#   - onderwijs-/kennisinstelling
 import numpy as np
 import pandas as pd
 from auto_extract.preprocessing import preprocess_pdf
