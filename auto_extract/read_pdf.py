@@ -54,7 +54,6 @@ def extract_pdf(infile, opd_p, opd_g, opd_o, tasks):
                            np.array([[os.path.basename(infile), organization, main_sector]])),
                            axis=0)
         except ValueError:
-            print('in valuerror')
             organization = ''
             outp_people = atc([os.path.basename(infile)], 91)
             opd_p = np.concatenate((opd_p, np.array([outp_people])), axis=0)

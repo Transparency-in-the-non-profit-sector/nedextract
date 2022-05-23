@@ -77,9 +77,9 @@ def main(testarg=None):
         totalfiles = len([name for name in os.listdir(os.path.join(os.getcwd(), args.directory))
                          if name.lower().endswith('.pdf')])
         for filename in os.listdir(os.path.join(os.getcwd(), args.directory)):
-            countfiles += 1
-            print('Working on file:', countfiles, 'out of', totalfiles)
             if filename.lower().endswith('.pdf'):
+                countfiles += 1
+                print('Working on file:', countfiles, 'out of', totalfiles)
                 infile = os.path.join(os.getcwd(), args.directory, filename)
                 opd_p, opd_g, opd_o = extract_pdf(infile, opd_p, opd_g, opd_o, args.tasks)
     elif args.url:
