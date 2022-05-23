@@ -267,7 +267,8 @@ def count_number_of_mentions(doc, org):
 
 
 def match_anbis(df_in, anbis_file):
-    df = pd.read_csv(anbis_file, usecols=["rsin", "currentStatutoryName", "shortBusinessName"])
+    df = pd.read_csv(anbis_file, usecols=["rsin", "currentStatutoryName", "shortBusinessName"],
+                    dtype=str)
     df_match = df_in
     df_match['matched_anbi'] = df_match['mentioned_organization'].apply(lambda x: apply_matching(
                                                                         df,
