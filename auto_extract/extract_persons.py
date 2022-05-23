@@ -148,7 +148,7 @@ def find_similar_names(persons):
                 if token_set_ratio >= req_score:
                     same_name.extend([j_names])
             same_name = sort_select_name(same_name)
-            outnames.append(same_name)
+        outnames.append(same_name)
     outnames.sort(key=len, reverse=True)
 
     # remove duplicate lists of names
@@ -310,7 +310,6 @@ def identify_potential_people(doc, all_persons):
                for item in (JobKeywords.main_job_all + JobKeywords.sub_job_all)):
             pot_per = np.append(pot_per,
                                 [f'{ent.text}' for ent in sentence.ents if ent.type == "PER"])
-
     for pp in pot_per:
         # Remove search words identified as persons
         if pp.lower() in (JobKeywords.main_job_all + JobKeywords.sub_job_all):
@@ -388,10 +387,8 @@ def extract_persons(doc, all_persons):
         sentences, surroundings = relevant_sentences(doc, members)
         # Determine main job category
         m_ft_dbr = determine_main_job(JobKeywords.main_jobs, sentences, surroundings)
-        #
         # Determine sub job category based on positions mentioned directely before or after name
         sub_cat = determine_sub_job(members, sentences, m_ft_dbr[0])
-        #
         # Add final results
         member = members[0]
 
@@ -432,7 +429,6 @@ def extract_persons(doc, all_persons):
                                                                         p_position)
     elif len(pot_director) == 1:
         p_position = append_p_position(p_position, 'directeur', pot_director[0][0])
-
     # If there are more than 10 people in rvt or bestuur, remove them if they have an fts <= 3
     # and do not have an sub position assigned
     pot_rvt = np.array(pot_rvt, dtype=object)
