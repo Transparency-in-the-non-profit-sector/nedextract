@@ -129,10 +129,9 @@ def atc(inp, length):
 
 
 def download_stanza_NL():
-    '''Download stanza Dutch library if not already present.'''
-    outpath = os.path.join(os.getcwd(), 'stanza_resources')
-    outf = os.path.join(outpath, 'nl')
-    outfile = os.path.join(outf, 'default.zip')
-    if not os.path.exists(outfile):
+    '''Download stanza Dutch and English library if not already present.'''
+    outpath = os.path.join(os.path.expanduser("~"), 'stanza_resources')
+    if not os.path.exists(os.path.join(os.path.join(outpath, 'nl'), 'default.zip')):
         stanza.download('nl', model_dir=outpath)
-    return outfile
+    if not os.path.exists(os.path.join(os.path.join(outpath, 'en'), 'default.zip')):
+        stanza.download('en', model_dir=outpath)
