@@ -1,5 +1,13 @@
-# Copyright 2022 Netherlands eScience Center and Vrije Universiteit Amsterdam
-# Licensed under the Apache License, version 2.0. See LICENSE for details.
+"""Classify the sector in which the organisation is active.
+
+- Read the required input data into a dataframe
+- train a classifier model
+- predict the sector using input text and a pretrained classifier model.
+
+Copyright 2022 Netherlands eScience Center and Vrije Universiteit Amsterdam
+Licensed under the Apache License, version 2.0. See LICENSE for details.
+"""
+
 
 import argparse
 import os
