@@ -1,3 +1,4 @@
+"""Tests for functions included in read_pdf"""
 import os
 import numpy as np
 import stanza
@@ -10,10 +11,32 @@ from auto_extract.read_pdf import output_people
 
 
 def test_stanza_NL():
+    """Unit test function for the 'download_stanza_NL' function.
+
+    This function tests the 'download_stanza_NL' function by checking if the downloaded
+    stanza data file exists. The function downloads the required Stanza
+    (NLP library) data for the Dutch language.
+    
+    Raises:
+        AssertionError: If the 'download_stanza_NL' function fails to download the data
+                        or if the downloaded file does not exist.
+    """
     assert(os.path.exists(download_stanza_NL()))
 
 
 def test_ots():
+    """Unit test function for the 'ots' function.
+
+    This function tests the 'ots' function, which converts a NumPy array of strings
+    into a single concatenated string with each element separated by a newline.
+
+    The test creates a sample NumPy array ('test') containing two strings, 'test' and 'test2',
+    and asserts that the output of the 'ots' function matches the expected string:
+    "test\ntest2\n".
+
+    Raises:
+        AssertionError: If the output of the 'ots' function does not match the expected string.
+    """
     test = np.array(['test', 'test2'])
     assert(ots(test) == str('test\ntest2\n'))
 
