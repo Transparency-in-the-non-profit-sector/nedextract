@@ -1,3 +1,4 @@
+"""Unit tests for the file /extract_pdf/classify_organisations."""
 import os
 import pandas as pd
 from auto_extract.classify_organisation import file_to_pd
