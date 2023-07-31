@@ -28,7 +28,6 @@ def main(testarg=None):
     - Determine activities
     - Determine the type of related organizations (use kvk data/wiki data?)
     - Determine the type of relationship with related organizations
-    - Determine financial information
 
     The information is converted into structured output in the form of an Excel file.
 
@@ -56,7 +55,7 @@ def main(testarg=None):
         args = parser.parse_args()
 
     if not (args.directory or args.file or args.url or args.url_file):
-        raise Exception('No input provided. Run with -h for help on arguments to be provided.')
+        raise FileNotFoundError('No input provided. Run with -h for help on arguments to be provided.')
 
     # Create the output directory if it does not exist already
     if not os.path.exists(os.path.join(os.getcwd(), 'Output')):
@@ -100,7 +99,7 @@ def main(testarg=None):
     # end time
     print('The start time was: ', start_time)
     print('The end time is: ', f"{datetime.now():%Y-%m-%d %H:%M:%S}")
-    return(args)
+    return args
 
 
 def write_output(tasks, opd_p, opd_g, opd_o, anbis_file):
