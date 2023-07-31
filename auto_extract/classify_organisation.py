@@ -16,6 +16,19 @@ from auto_extract.preprocessing import preprocess_pdf
 
 
 def file_to_pd(inputfile):
+    """Read data from an Excel file and preprocess the text data.
+
+    1. Read data from the specified Excel file ('inputfile') using pandas.
+    2. Drop rows with missing values in the 'Sector' and 'Problem' columns. 
+    3. Assign the content of the 'Bestand' column to a new 'text' column in the DataFrame. 
+    4. Preprocess the text column using the 'preprocess_pdf' function.
+
+    Args:
+        inputfile (str): The path to the Excel file to be read.
+
+    Returns:
+        pandas.DataFrame: A pandas DataFrame containing the processed data.
+    """
     df = pd.read_excel(inputfile)
     df.dropna(subset=["Sector"], inplace=True)
     df.dropna(subset=["Problem"], inplace=True)
@@ -25,7 +38,7 @@ def file_to_pd(inputfile):
 
 
 def train(data, train_size, alpha, save=False):
-    '''Train a MultinomialNB classifier to classify texts into the main sector categories'''
+    """Train a MultinomialNB classifier to classify texts into the main sector categories"""
     # Factorize the categories
     sector_f, label = data['Sector'].factorize()
     # Split data in train and test set
