@@ -31,7 +31,7 @@ def test_train():
     classifier to classify texts into main sector categories.
 
     The test function performs the following steps:
-    1. Reads data from the test inputfile using the 'file_to_pd' function into df.
+    1. Reads data from the test inputfile using the 'file_to_pd' function into a df.
     2. Calls the 'train' function with the 'df' DataFrame, train_size=0.99, alpha=0.99,
        and save=False. The function returns a tuple, and the second element of the tuple
        ('label') represents the label encoding for sectors.
@@ -48,6 +48,24 @@ def test_train():
 
 
 def test_predict_main_sector():
+    """Unit test function for function 'predict_main_sector'.
+    
+    This function tests the 'predict_main_sector' function, which predicts the main sector 
+    label of an organisation based on input text, using a saved pretrained model 
+    (can be pretrained with the 'train()' function).
+
+    The test function performs the following steps:
+    1. read the pretrained files (pretrained classifier, label encoding, 
+    tf-idf vectorization).
+    2. use file_to_pd to read the defined 'inputfile' to a pandas dataframe.
+    3. determine the prediction sector for the dataframe using the 'predict_main_sector' function
+    for the first text in the dataframe
+    4. asserts that the predicted sector is 'Natuur en milieu'
+
+    Raises:
+        AssertionError: If the resulting label obtained from the 'train' function does not match
+                        the expected sector label 'Natuur en milieu'.
+    """
     saved_clf = os.path.join(os.path.join(os.getcwd(), 'Pretrained'),
                              'trained_sector_classifier.joblib')
     saved_labels = os.path.join(os.path.join(os.getcwd(), 'Pretrained'),
