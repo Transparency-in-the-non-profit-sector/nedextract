@@ -38,7 +38,34 @@ def file_to_pd(inputfile):
 
 
 def train(data, train_size, alpha, save=False):
-    """Train a MultinomialNB classifier to classify texts into the main sector categories"""
+    """Train a MultinomialNB classifier to classify texts into the main sector categories.
+    
+    This function trains a Multinomial Naive Bayes classifier to classify text data into
+    main sector categories. It uses the given dataset ('data') containing 'text' and 'Sector'
+    columns. The 'text' column contains the textual data, and the 'Sector' column represents
+    the main sector categories that the texts belong to.
+
+    The function performs the following steps:
+    1. Factorizes the 'Sector' column to convert categories into numerical labels.
+    2. Splits the data into training and testing sets based on the specified 'train_size'.
+    3. Applies Term Frequency-Inverse Document Frequency (TF-IDF) vectorization to the
+       training data to transform text features into numerical vectors.
+    4. Trains a Multinomial Naive Bayes classifier using the training data.
+    5. Predicts the sectors of the test data using the trained classifier.
+    6. Calculates and prints the total accuracy classification score and the confusion matrix
+       for the predicted labels.
+    7. Save the trained model to joblib files if the 'save' argument is True
+
+    Args:
+        data (pandas.DataFrame): The dataset containing the 'text' and 'Sector' columns.
+        train_size (float): The proportion of the dataset to be used for training (0.0 to 1.0).
+        alpha (float): The additive (Laplace/Lidstone) smoothing parameter for the Naive Bayes model.
+        save (bool, optional): Whether to save the trained classifier, labels, and TF-IDF vectorizer
+                               to files in the 'Pretrained' directory. Defaults to False.
+
+    Returns:
+        tuple: A tuple containing the trained classifier, the label encoding for sectors, and the TF-IDF vectorizer.
+    """
     # Factorize the categories
     sector_f, label = data['Sector'].factorize()
     # Split data in train and test set
