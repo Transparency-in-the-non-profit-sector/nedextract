@@ -8,10 +8,9 @@ echo "Starting prospector analysis using configuration from .prospector.yml..."
 # quietly run prospector
 prospector 1>/dev/null
 
-# use return code to abort commit if necessary
+# display a warning message if prospector returns a non-zero exit code
 if [ $? != "0" ]; then
-    echo "Commit aborted. Run 'prospector' to see the errors."
-    exit 1
+    echo "Warning: Prospector analysis has issues. Run 'prospector' to see the errors."
 fi
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #

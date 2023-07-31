@@ -5,12 +5,13 @@
 output-format: grouped
 
 strictness: medium
-doc-warnings: false
+doc-warnings: true
 test-warnings: true
 member-warnings: false
 
 ignore-paths:
   - docs
+  - build
 
 pyroma:
     run: true
@@ -19,6 +20,7 @@ pycodestyle:
     full: true
 
 pydocstyle:
+    run: true
     disable: [
         # Disable because not part of PEP257 official convention:
         # see http://pep257.readthedocs.io/en/latest/error_codes.html
