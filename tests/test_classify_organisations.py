@@ -10,6 +10,16 @@ inputfile = os.path.join(infolder, 'test_excel.xlsx')
 
 
 def test_file_to_pd():
+    """Unit test function for the 'file_to_pd' function.
+
+    The 'file_to_pdf' function reads an excel file into a pandas dataframe and 
+    pefrforms some preprocssing steps.
+
+    This test asserts for the inputfile 'test_excel.xslx' if the returned value is a pandas dataframe
+
+    Raises:
+        AssertionError: if the output iof the 'file_to_pd' function is not a pandas dataframe.
+    """
     result = file_to_pd(inputfile)
     assert(isinstance(result, pd.DataFrame))
 
