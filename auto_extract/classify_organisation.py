@@ -15,7 +15,7 @@ from sklearn.naive_bayes import MultinomialNB
 from auto_extract.preprocessing import preprocess_pdf
 
 
-def file_to_pd(inputfile):
+def file_to_pd(inputfile: str):
     """Read data from an Excel file and preprocess the text data.
 
     1. Read data from the specified Excel file ('inputfile') using pandas.
@@ -37,7 +37,7 @@ def file_to_pd(inputfile):
     return df
 
 
-def train(data, train_size, alpha, save=False):
+def train(data: pd.DataFrame, train_size: float, alpha: float, save: bool = False):
     """Train a MultinomialNB classifier to classify texts into the main sector categories.
     
     This function trains a Multinomial Naive Bayes classifier to classify text data into
