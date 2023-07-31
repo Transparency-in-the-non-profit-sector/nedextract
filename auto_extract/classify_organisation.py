@@ -46,7 +46,7 @@ def train(data, train_size, alpha, save=False):
     the main sector categories that the texts belong to.
 
     The function performs the following steps:
-    1. Factorizes the 'Sector' column to convert categories into numerical labels.
+    1. Factorizes the 'Sector' column, which contains the labels, to convert categories into numerical labels.
     2. Splits the data into training and testing sets based on the specified 'train_size'.
     3. Applies Term Frequency-Inverse Document Frequency (TF-IDF) vectorization to the
        training data to transform text features into numerical vectors.
@@ -99,7 +99,24 @@ def train(data, train_size, alpha, save=False):
     return clf, label
 
 
-def predict_main_sector(saved_clf, saved_labels, saved_vector, text):
+def predict_main_sector(saved_clf: str, saved_labels: str, saved_vector: str, text: str):
+    """
+    Predict the main sector category for a given text using a trained classifier.
+
+    This function predicts the main sector category for a given text using a pre-trained
+    Multinomial Naive Bayes classifier (which can be created using the function 'train').
+    It loads the classifier, label encoding for sectors, and the TF-IDF vectorizer from the saved files
+    ('saved_clf', 'saved_labels', and 'saved_vector') and then processes the input 'text' to predict its main sector.
+
+    Args:
+        saved_clf (str): The file path to the saved pre-trained classifier (joblib file).
+        saved_labels (str): The file path to the saved label encoding for sectors (joblib file).
+        saved_vector (str): The file path to the saved TF-IDF vectorizer (joblib file).
+        text (str): The text for which the main sector category needs to be predicted.
+
+    Returns:
+        str: The predicted main sector category for the input text.
+    """
     clf = load(saved_clf)
     labels = load(saved_labels)
     tf_idf = load(saved_vector)
