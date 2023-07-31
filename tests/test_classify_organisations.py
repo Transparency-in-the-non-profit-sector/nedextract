@@ -25,6 +25,23 @@ def test_file_to_pd():
 
 
 def test_train():
+    """Unit test function for the 'train' function.
+
+    This function tests the 'train' function, which trains a Multinomial Naive Bayes
+    classifier to classify texts into main sector categories.
+
+    The test function performs the following steps:
+    1. Reads data from the test inputfile using the 'file_to_pd' function into df.
+    2. Calls the 'train' function with the 'df' DataFrame, train_size=0.99, alpha=0.99,
+       and save=False. The function returns a tuple, and the second element of the tuple
+       ('label') represents the label encoding for sectors.
+    3. Asserts that the 'label' obtained from the 'train' function matches the expected
+       sector label 'Natuur'.
+
+    Raises:
+        AssertionError: If the 'label' obtained from the 'train' function does not match
+                        the expected sector label 'Natuur'.
+    """
     df = file_to_pd(inputfile)
     label = train(df, 0.99, 0.99, False)[1]
     assert(label == 'Natuur')
