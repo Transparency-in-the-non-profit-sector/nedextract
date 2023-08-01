@@ -27,12 +27,14 @@ class PDFInformationExtractor:
     for sector classification and named entity recognition.
 
     Attributes:
+        tasks (list): A list of tasks to perform during extraction, e.g., ['sectors'],
+                     ['people'], ['orgs'], or ['all'].
         pf_m (str): The path to the pretrained classifier file for sector prediction.
         pf_l (str): The path to the pretrained label encoding file for sector prediction.
         pf_v (str): The path to the pretrained tf-idf vectorizer file for sector prediction.
 
     Methods:
-        extract_pdf(infile: str, opd_p: np.array, opd_g: np.array, opd_o: np.array, tasks: list):
+        extract_pdf(infile: str, opd_p: np.array, opd_g: np.array, opd_o: np.array):
             Extract information from a PDF file using the stanza pipeline
         output_people(infile: str, doc, organization: str): Gathers information about people 
                                                             and structures the output.
@@ -43,7 +45,7 @@ class PDFInformationExtractor:
         download_stanza_NL(): Downloads the stanza Dutch library if not already present.
     """
     
-    def __init__(self, pf_m=None, pf_l=None, pf_v=None):
+    def __init__(self, tasks, pf_m=None, pf_l=None, pf_v=None):
         """Initialize the PDFInformationExtractor class with pretrained model file paths.
 
         Args:
@@ -51,13 +53,14 @@ class PDFInformationExtractor:
             pf_l (str): The path to the pretrained label encoding file for sector prediction.
             pf_v (str): The path to the pretrained tf-idf vectorizer file for sector prediction.
         """
+        self.tasks = tasks
         self.pf_m = pf_m or os.path.join(os.getcwd(), 'Pretrained', 'trained_sector_classifier.joblib')
         self.pf_l = pf_l or os.path.join(os.getcwd(), 'Pretrained', 'labels_sector_classifier.joblib')
         self.pf_v = pf_v or os.path.join(os.getcwd(), 'Pretrained', 'tf_idf_vectorizer.joblib')
         self.nlp = None
 
 
-    def extract_pdf(self, infile: str, opd_p: np.array, opd_g: np.array, opd_o: np.array, tasks: list):
+    def extract_pdf(self, infile: str, opd_p: np.array, opd_g: np.array, opd_o: np.array):
         """Extract information from a PDF file using the stanza pipeline.
 
         This function extracts information from a given PDF file ('infile') using the stanza pipeline.
@@ -78,8 +81,6 @@ class PDFInformationExtractor:
             opd_p (numpy.ndarray): A numpy array containing output for people mentioned in pdf.
             opd_g (numpy.ndarray): A numpy array containing predicted sector in a pdf.
             opd_o (numpy.ndarray): A numpy array containing related organizations mentioned in a pdf.
-            tasks (list): A list of tasks to perform during extraction, e.g., ['sectors'],
-                        ['people'], ['orgs'], or ['all'].
 
         Returns:
             opd_p (identified people), opd_g (predicted sector), opd_o (related organisations); all stored
@@ -87,8 +88,8 @@ class PDFInformationExtractor:
         """
         print(f"{datetime.now():%Y-%m-%d %H:%M:%S}", 'Working on file:', infile)
         text = preprocess_pdf(infile, ', ')
-        if tasks == ['sectors']:
-            main_sector = predict_main_sector(pf_m, pf_l, pf_v, text)
+        if self.tasks == ['sectors']:
+            main_sector = predict_main_sector(self.pf_m, self.pf_l, self.pf_v, text)
             opd_g = np.concatenate((opd_g,
                                     np.array([[os.path.basename(infile), '', main_sector]])),
                                     axis=0)
@@ -105,14 +106,14 @@ class PDFInformationExtractor:
 
             try:
                 organization = organizations[np.argmax(corg)]
-                if 'people' in tasks or 'all' in tasks:
+                if 'people' in self.tasks or 'all' in self.tasks:
                     outp_people = self.output_people(infile, doc, organization)
                     opd_p = np.concatenate((opd_p, np.array([outp_people])), axis=0)
-                if 'orgs' in tasks or 'all' in tasks:
+                if 'orgs' in self.tasks or 'all' in self.tasks:
                     orgs_details = self.output_related_orgs(infile, doc, nlp)
                     for org_details in orgs_details:
                         opd_o = np.concatenate((opd_o, np.array([org_details])), axis=0)
-                if 'sectors' in tasks or 'all' in tasks:
+                if 'sectors' in self.tasks or 'all' in self.tasks:
                     main_sector = predict_main_sector(self.pf_m, self.pf_l, self.pf_v, text)
                     opd_g = np.concatenate((opd_g,
                             np.array([[os.path.basename(infile), organization, main_sector]])),

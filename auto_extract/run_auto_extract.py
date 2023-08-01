@@ -78,13 +78,13 @@ def main(testarg=None):
     args.tasks = [args.tasks] if isinstance(args.tasks, str) else args.tasks
 
     # Create an instance of the PDFInformationExtractor class
-    pdf_extractor = PDFInformationExtractor(args.pf_m, args.pf_l, args.pf_v)
+    pdf_extractor = PDFInformationExtractor(args.tasks, args.pf_m, args.pf_l, args.pf_v)
 
     # Read all files
     countfiles = 0
     if args.file:
         infile = os.path.join(os.getcwd(), args.file)
-        opd_p, opd_g, opd_o = pdf_extractor.extract_pdf(infile, opd_p, opd_g, opd_o, args.tasks)
+        opd_p, opd_g, opd_o = pdf_extractor.extract_pdf(infile, opd_p, opd_g, opd_o)
     elif args.directory:
         totalfiles = len([name for name in os.listdir(os.path.join(os.getcwd(), args.directory))
                          if name.lower().endswith('.pdf')])
@@ -93,10 +93,10 @@ def main(testarg=None):
                 countfiles += 1
                 print('Working on file:', countfiles, 'out of', totalfiles)
                 infile = os.path.join(os.getcwd(), args.directory, filename)
-                opd_p, opd_g, opd_o = pdf_extractor.extract_pdf(infile, opd_p, opd_g, opd_o, args.tasks)
+                opd_p, opd_g, opd_o = pdf_extractor.extract_pdf(infile, opd_p, opd_g, opd_o)
     elif args.url:
         infile = download_pdf(args.url)
-        opd_p, opd_g, opd_o = pdf_extractor.extract_pdf(infile, opd_p, opd_g, opd_o, args.tasks)
+        opd_p, opd_g, opd_o = pdf_extractor.extract_pdf(infile, opd_p, opd_g, opd_o)
         delete_downloaded_pdf()
     elif args.url_file:
         with open(args.url_file, mode='r', encoding='UTF-8') as u:
@@ -104,7 +104,7 @@ def main(testarg=None):
         for url in urls:
             print(url)
             infile = download_pdf(url)
-            opd_p, opd_g, opd_o = pdf_extractor.extract_pdf(infile, opd_p, opd_g, opd_o, args.tasks)
+            opd_p, opd_g, opd_o = pdf_extractor.extract_pdf(infile, opd_p, opd_g, opd_o)
             delete_downloaded_pdf()
 
     write_output(args.tasks, opd_p, opd_g, opd_o, args.anbis_file)
