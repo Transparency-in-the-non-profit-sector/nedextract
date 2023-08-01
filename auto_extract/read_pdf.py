@@ -173,6 +173,10 @@ def output_related_orgs(infile, doc, nlp):
 def ots(inp: np.array):
     """Output to string: Convert array output to a backspace-seperated string.
     
+    Steps:
+    - define an empty string 'out_string'
+    - for each element in 'inp', add the element to 'out_string', followed by the string '\n'
+
     Args:
         inp (np.array): array to be converted to string
     
@@ -190,6 +194,14 @@ def atc(inp, length):
     """Array to columns: Split array into [length] variables which will be converted into columns
         in the final output.
     
+    This function takes the following steps:
+
+    - Initializes an output list ('outlist') with [length] empty strings.
+    - If the input array 'inp' is not None, the function iterates through its elements and fills
+      the 'outlist' with the first [length] elements. If there are more elements in the 'inp' array
+      than the specified 'length', it prints a warning message and includes the remaining elements
+      as a single element in the last column.
+
     Args:
         inp (list or None): The input array to be split into columns.
         length (int): The number of columns desired in the final output.
@@ -212,7 +224,20 @@ def atc(inp, length):
 
 
 def download_stanza_NL():
-    '''Download stanza Dutch library if not already present.'''
+    '''Download stanza Dutch library if not already present.
+    
+    This function checks if the stanza Dutch library is already downloaded. If not, it downloads
+    the necessary files for Dutch language processing and saves them to the 'stanza_resources'
+    directory within the current working directory. The function performs the following steps:
+
+    - Defines the output path and file names for the downloaded Dutch language model files.
+    - Checks if the output file 'outfile' exists in the 'stanza_resources' directory.
+    - If the output file is not present, it uses the 'stanza.download' function to download
+      the Dutch language model ('nl') and saves it in the 'outpath' directory.
+
+    Returns:
+        str: The path to the downloaded Dutch language model file.
+    '''
     outpath = os.path.join(os.getcwd(), 'stanza_resources')
     outf = os.path.join(outpath, 'nl')
     outfile = os.path.join(outf, 'default.zip')
