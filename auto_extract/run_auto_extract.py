@@ -78,7 +78,7 @@ def main(testarg=None):
     args.tasks = [args.tasks] if isinstance(args.tasks, str) else args.tasks
 
     # Create an instance of the PDFInformationExtractor class
-    pdf_extractor = PDFInformationExtractor(args.tasks, args.pf_m, args.pf_l, args.pf_v)
+    pdf_extractor = PDFInformationExtractor(args.tasks, args.file_model, args.file_labels, args.file_vectors)
 
     # Read all files
     countfiles = 0
