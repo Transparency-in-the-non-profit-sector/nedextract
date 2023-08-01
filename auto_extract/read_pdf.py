@@ -12,16 +12,17 @@ from auto_extract.extract_related_orgs import count_number_of_mentions
 from auto_extract.preprocessing import preprocess_pdf
 
 
-def extract_pdf(infile, opd_p, opd_g, opd_o, tasks):
-    """ Extract information from a pdf file using a stanza pipline. """
+def extract_pdf(infile: str, opd_p: np.array, opd_g: np.array, opd_o: np.array, tasks: list,
+                pf_m: str = os.path.join(os.path.join(os.getcwd(), 'Pretrained'), 'trained_sector_classifier.joblib'),
+                pf_l: str = os.path.join(os.path.join(os.getcwd(), 'Pretrained'), 'labels_sector_classifier.joblib'),
+                pf_v: str = os.path.join(os.path.join(os.getcwd(), 'Pretrained'), 'tf_idf_vectorizer.joblib')):
+    """Extract information from a PDF file using the stanza pipeline.
+    """
 
     print(f"{datetime.now():%Y-%m-%d %H:%M:%S}", 'Working on file:', infile)
     text = preprocess_pdf(infile, ', ')
     if tasks == ['sectors']:
-        main_sector = predict_main_sector('./Pretrained/trained_sector_classifier.joblib',
-                                          './Pretrained/labels_sector_classifier.joblib',
-                                          './Pretrained/tf_idf_vectorizer.joblib',
-                                          text)
+        main_sector = predict_main_sector(pf_m, pf_l, pf_v, text)
         opd_g = np.concatenate((opd_g,
                                 np.array([[os.path.basename(infile), '', main_sector]])),
                                 axis=0)
@@ -46,10 +47,7 @@ def extract_pdf(infile, opd_p, opd_g, opd_o, tasks):
                 for org_details in orgs_details:
                     opd_o = np.concatenate((opd_o, np.array([org_details])), axis=0)
             if 'sectors' in tasks or 'all' in tasks:
-                main_sector = predict_main_sector('./Pretrained/trained_sector_classifier.joblib',
-                                                  './Pretrained/labels_sector_classifier.joblib',
-                                                  './Pretrained/tf_idf_vectorizer.joblib',
-                                                  text)
+                main_sector = predict_main_sector(pf_m, pf_l, pf_v, text)
                 opd_g = np.concatenate((opd_g,
                            np.array([[os.path.basename(infile), organization, main_sector]])),
                            axis=0)

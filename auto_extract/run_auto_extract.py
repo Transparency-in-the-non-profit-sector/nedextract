@@ -48,6 +48,16 @@ def main(testarg=None):
     parser.add_argument('-af', '--anbis_file',
                         default=os.path.join(os.path.join(os.getcwd(), 'Data'), 'anbis_clean.csv'),
                         help='CSV file to be used for org matching,conly used for task org')
+    parser.add_argument('-pf_m', '--file_model',
+                        default=os.path.join(os.path.join(os.getcwd(), 'Pretrained'), 'trained_sector_classifier.joblib'),
+                        help = 'file containing pretrained model for sector classification')
+    parser.add_argument('-pf_l', '--file_labels',
+                        default=os.path.join(os.path.join(os.getcwd(), 'Pretrained'), 'labels_sector_classifier.joblib'),
+                        help = 'file containing labels for pretrained sector classification')
+    parser.add_argument('-pf_v', '--file_vectors',
+                        default=os.path.join(os.path.join(os.getcwd(), 'Pretrained'), 'tf_idf_vectorizer.joblib'),
+                        help = 'file containing tf_idf vectors')
+    
 
     if testarg:
         args = parser.parse_args(testarg)
@@ -71,7 +81,8 @@ def main(testarg=None):
     countfiles = 0
     if args.file:
         infile = os.path.join(os.getcwd(), args.file)
-        opd_p, opd_g, opd_o = extract_pdf(infile, opd_p, opd_g, opd_o, args.tasks)
+        opd_p, opd_g, opd_o = extract_pdf(infile, opd_p, opd_g, opd_o, args.tasks,
+                                          args.pf_m, args.pf_l, args.pf_v)
     elif args.directory:
         totalfiles = len([name for name in os.listdir(os.path.join(os.getcwd(), args.directory))
                          if name.lower().endswith('.pdf')])
@@ -80,10 +91,12 @@ def main(testarg=None):
                 countfiles += 1
                 print('Working on file:', countfiles, 'out of', totalfiles)
                 infile = os.path.join(os.getcwd(), args.directory, filename)
-                opd_p, opd_g, opd_o = extract_pdf(infile, opd_p, opd_g, opd_o, args.tasks)
+                opd_p, opd_g, opd_o = extract_pdf(infile, opd_p, opd_g, opd_o, args.tasks,
+                                                  args.pf_m, args.pf_l, args.pf_v)
     elif args.url:
         infile = download_pdf(args.url)
-        opd_p, opd_g, opd_o = extract_pdf(infile, opd_p, opd_g, opd_o, args.tasks)
+        opd_p, opd_g, opd_o = extract_pdf(infile, opd_p, opd_g, opd_o, args.tasks,
+                                          args.pf_m, args.pf_l, args.pf_v)
         delete_downloaded_pdf()
     elif args.url_file:
         with open(args.url_file, mode='r', encoding='UTF-8') as u:
@@ -91,7 +104,8 @@ def main(testarg=None):
         for url in urls:
             print(url)
             infile = download_pdf(url)
-            opd_p, opd_g, opd_o = extract_pdf(infile, opd_p, opd_g, opd_o, args.tasks)
+            opd_p, opd_g, opd_o = extract_pdf(infile, opd_p, opd_g, opd_o, args.tasks,
+                                              args.pf_m, args.pf_l, args.pf_v)
             delete_downloaded_pdf()
 
     write_output(args.tasks, opd_p, opd_g, opd_o, args.anbis_file)
