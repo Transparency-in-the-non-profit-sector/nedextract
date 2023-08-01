@@ -1,5 +1,12 @@
-# Copyright 2022 Netherlands eScience Center and Vrije Universiteit Amsterdam
-# Licensed under the Apache License, version 2.0. See LICENSE for details.
+"""Class and functions to extract information about people mentioned in a text.
+
+In general, the functions try to obtain for each name, what the function of that person is according to the text.
+Various functions are defined that try to reduce the number of duplicate names and determine the correct function
+of the persons based on various (con)textual challenges.
+
+Copyright 2022 Netherlands eScience Center and Vrije Universiteit Amsterdam
+Licensed under the Apache License, version 2.0. See LICENSE for details.
+"""
 
 import itertools
 import re
@@ -8,6 +15,12 @@ from fuzzywuzzy import fuzz
 
 
 class JobKeywords:
+    """Class that stores lists of words and categories for main and sub jobs/company positions.
+
+    This class provides lists of keywords and categories associated with main and sub jobs.
+    The keywords are used for matching job titles and determining job categories in various contexts.
+    """
+
     # words and categories for main jobs
     directeur = ['directeur', 'directrice', 'directie', 'bestuurder', 'directeuren',
                  'directeur-bestuurder']
@@ -25,6 +38,7 @@ class JobKeywords:
     main_jobs_no_amb = [directeur, bestuur, rvt, ledenraad, kascommissie, controlecommissie]
     main_jobs_backup = [bestuur, rvt, ledenraad, kascommissie, controlecommissie, ambassadeur]
     main_jobs_backup_noamb = [bestuur, rvt, ledenraad, kascommissie, controlecommissie]
+
     # words and categories for sub jobs
     vicevoorzitter = ['vice-voorzitter', 'vicevoorzitter', 'vice voorzitter']
     voorzitter = ['voorzitter']
@@ -39,12 +53,15 @@ class JobKeywords:
                 lid, adviseur]
     sub_job = np.array([sj[0] for sj in sub_jobs])
 
+class Tussenvoegsels:
+    """This class stores a list of prefixes commonly found in the Netherlands.
 
-def abbreviate(name, n_ab):
-    '''Abbreviate the first n_ab terms in a name, except if they are tussenvoegsels, and as long
-    as it is not the last term in a name. List of tussenvoegsels is taken from:
+    List of tussenvoegsels is taken from:
     https://publicaties.rvig.nl/dsresource?objectid=c5f84baf-ba01-41ef-a6a0-97cebec1c2d3&type=pdf
-    One-letter tussenvoegsels have been omitted'''
+    One-letter tussenvoegsels have been omitted. 
+    """
+
+    # Common infixes found in the Netherlands
     tussenvoegsels = ["'s", "'m", "'t", "aan", "af", "al", "am", "auf", "ben", "bij", "bin",
                       "boven", "da", "dal", "dal'", "dalla", "das", "de", "deca", "degli", "dei",
                       "del", "della", "dem", "den", "der", "des", "di", "die", "do", "don", "dos",
@@ -52,19 +69,56 @@ def abbreviate(name, n_ab):
                       "of", "onder", "op", "over", "te", "ten", "ter", "tho", "thoe", "thor", "to",
                       "toe", "tot", "uijt", "uit", "unter", "van", "ver", "vom", "von", "voor",
                       "vor", "zu", "zum", "zur"]
+
+class Titles:
+    """Class that stores a list of common (abbreviated) titles.
+    
+    The lists contains titles and abbreviated titles ofter used in combination with their name.
+    """
+
+    titles = ['prof.', 'dr.', 'mr.', 'ir.', 'drs.', 'bacc.', 'kand.', 'dr.h.c.', 'ing.', 'bc.',
+              'phd', 'phd.', 'dhr.', 'mevr.', 'mw.', 'ds.', 'mgr.', 'mevrouw', 'meneer', 'jhr.']
+
+
+def abbreviate(name: str, n_ab: int):
+    """Function to abbreviate names
+    
+    This function abbreviates the first 'n_ab' terms in a 'name', except if they are tussenvoegsels, and as long
+    as it is not the last term in a name. 
+
+    Args:
+        name (str): name to be abbreviated
+        n_ab (int): number of terms in the name to try to abbreviate
+    
+    Returns:
+        abbreviation (str): The abbreviated name based on the specified number of terms.
+    """
     splitname = name.split()
     abbreviation = ''
     for i, n in enumerate(splitname):
-        if i < len(splitname)-1 and i <= n_ab and n not in tussenvoegsels:
+        if i < len(splitname)-1 and i <= n_ab and n not in Tussenvoegsels.tussenvoegsels:
             abbreviation = abbreviation + n[0] + ' '
         else:
             abbreviation = abbreviation + n + ' '
     return abbreviation
 
 
-def get_tsr(p_i, p_j):
-    '''Determine the token set ratio for two names p_i and p_j, and the required score,
-    depending on what kind of names they are'''
+def get_tsr(p_i: str, p_j: str):
+    """Determine the token set ratio for two names and the required score.
+    
+    This function determines the token set ratio for two names p_i and p_j, and the required score,
+    depending on what kind of names they are.
+    
+    Note: The required scores for different name cases is chosen based on experience.
+
+    Args:
+        p_i (str): the first name
+        p_j (str): the second name
+
+    Returns:
+        token_set_ratio, req_score (tuple): A tuple containing the token set ratio (TSR) as an integer, and the
+               required score (req_score) as an integer.
+    """
     token_set_ratio = fuzz.token_set_ratio(p_i, p_j)
     # if the second name is only one word
     if len(p_j.split()) == 1:
@@ -92,16 +146,30 @@ def get_tsr(p_i, p_j):
     return token_set_ratio, req_score
 
 
-def strip_names_from_title(persons):
-    ''' strip names from titles. If the remainder of the name is not longer than 1 letter,
-    add to p_remove '''
-    titles = ['prof.', 'dr.', 'mr.', 'ir.', 'drs.', 'bacc.', 'kand.', 'dr.h.c.', 'ing.', 'bc.',
-              'phd', 'phd.', 'dhr.', 'mevr.', 'mw.', 'ds.', 'mgr.', 'mevrouw', 'meneer', 'jhr.']
+def strip_names_from_title(persons: list):
+    """Strip titles from person names. 
+    
+    This function check if a names contains a title, and remvoes it.
+    It takes the following steps:
+    1. Define empty lists 'p', and 'p_remove'.
+    2. For each name in a list of names ('persons'), check if the lowecsed name contains a title
+        and perform the following steps.
+       - If it does contain a title, remove the title.
+       - If the (remaining) name is longer than 1 letter, add it to the list 'p'
+       - If it does not, add it to the list p_remove
+
+    Args:
+        persons (list): a list of names (str)
+    
+    Returns:
+        p (list), p_remove (list): one containing the names stripped of titles,
+        and one for names that only consist of 1 letter after stripping
+    """
     p = []
     p_remove = []
     for per in persons:
         name = per.lower()
-        for title in titles:
+        for title in Titles.titles:
             if title in name:
                 name = name.replace(title, '')
         if len(re.sub('[^a-zA-Z]', '', name)) > 1:
@@ -111,9 +179,25 @@ def strip_names_from_title(persons):
     return p, p_remove
 
 
-def sort_select_name(names):
-    ''' Sort names in a list: set the longest name that does not contain points,
-        but does contain spaces, as first. '''
+def sort_select_name(names: list):
+    """Sort names in a list
+    
+    This function sort the names in a list: it set the longest name that does not contain points,
+    but does contain spaces, as first element.
+    It takes the following steps:
+
+    1. sort the 'names' according to their length.
+    2. Determine the maximum length of a name in the 'names' list
+    3. Loop through the list and looks for the longest name that has no periods (e.g., initials)
+       and has at least one space..
+    4. If such a name is found, this name will be moved to the first position in the list
+    
+    Args:
+        names (list): a list of names (str)
+    
+    Returns:
+        names (list): the input list in sorted order
+    """
     ideal = 0
     names.sort(key=len, reverse=True)
     maxlen = len(names[0])
