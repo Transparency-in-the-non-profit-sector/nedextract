@@ -17,6 +17,31 @@ def extract_pdf(infile: str, opd_p: np.array, opd_g: np.array, opd_o: np.array, 
                 pf_l: str = os.path.join(os.path.join(os.getcwd(), 'Pretrained'), 'labels_sector_classifier.joblib'),
                 pf_v: str = os.path.join(os.path.join(os.getcwd(), 'Pretrained'), 'tf_idf_vectorizer.joblib')):
     """Extract information from a PDF file using the stanza pipeline.
+
+    This function extracts information from a given PDF file ('infile') using the stanza pipeline.
+    It takes the following steps:
+
+    1. Preprocesses the PDF file using the 'preprocess_pdf' function.
+    2. Based on the specified 'tasks', different extraction processes are performed:
+       - If the only 'task' specified is 'sectors', it predicts the main sector using a 
+         pretrained classifier (given by the files pf_m, pf_l, pf_v) and updates the output 'opd_g'.
+       - Otherwise, it applies the pretrained Dutch stanza pipeline to the text
+         and extracts unique persons and organizations. Next, depending on the specified 'tasks',
+         the functions output_people ('task' 'people'), output_related_orgs ('task' 'orgs'), 
+         and predict_main_sector ('task', 'sectors') are appied. Results are used to update opd_p,
+         opd_o, and opd_g respectively.
+
+    Args:
+        infile (str): The path to the input PDF file for information extraction.
+        opd_p (numpy.ndarray): A numpy array containing output for people mentioned in pdf.
+        opd_g (numpy.ndarray): A numpy array containing predicted sector in a pdf.
+        opd_o (numpy.ndarray): A numpy array containing related organizations mentioned in a pdf.
+        tasks (list): A list of tasks to perform during extraction, e.g., ['sectors'],
+                      ['people'], ['orgs'], or ['all'].
+
+    Returns:
+        opd_p (identified people), opd_g (predicted sector), opd_o (related organisations); all stored
+        in updated np.arrays
     """
 
     print(f"{datetime.now():%Y-%m-%d %H:%M:%S}", 'Working on file:', infile)
