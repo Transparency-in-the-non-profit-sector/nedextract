@@ -90,7 +90,37 @@ def extract_pdf(infile: str, opd_p: np.array, opd_g: np.array, opd_o: np.array, 
 
 
 def output_people(infile, doc, organization):
-    """ Gather information about people and structure the output."""
+    """ Gather information about people and structure the output.
+
+    This function gathers information about people (persons) mentioned in the provided 'doc'
+    (a stanza-processed document) and structures the output for further processing. The function
+    performs the following steps:
+
+    1. Extracts unique persons using named entity recognition (NER) from the 'doc' document.
+    2. Calls the 'extract_persons' function to categorize the extracted persons into different roles,
+       such as ambassadors, board positions, directors, etc.
+    3. If the initial extraction results seem unlikely or insufficient, the function preprocesses the
+       text content of the input PDF file ('infile') and reprocesses it using the stanza pipeline
+       for more accurate results.
+    4. Structures the output data (organization, persons, ambassadors, bestuursleden,
+       and board positions (i.e. directors, raad van toezicht, bestuur, ledenraad, kascommissie, controlecommisie)
+       using the 'ots' and 'atc' functions for formatting.
+
+    Args:
+        infile (str): The path to the input PDF file for information extraction.
+        doc (stanza.Document): A stanza-processed document containing named entity recognition results.
+        organization (str): The main organization mentioned in the text.
+
+    Returns:
+        list: A list containing structured output information, including:
+              - The filename of the input file.
+              - The main organization mentioned in the text, i.e. the analyzed organization.
+              - The extracted persons.
+              - The ambassadors, bestuur.
+              - Specified board member roles for members identified as bestuur:
+                directors, raad van toezicht, bestuursleden, ledenraad, kascommissie, controlecommisie
+    """
+
     persons = np.unique([f'{ent.text}' for ent in doc.ents if ent.type == "PER"])
     (ambassadors, board_positions, p_directeur, p_rvt, p_bestuur, p_ledenraad,
      p_kasc, p_controlec) = extract_persons(doc, persons)
