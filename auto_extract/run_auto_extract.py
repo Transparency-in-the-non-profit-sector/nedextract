@@ -11,7 +11,7 @@ import pandas as pd
 from auto_extract.extract_related_orgs import match_anbis
 from auto_extract.preprocessing import delete_downloaded_pdf
 from auto_extract.preprocessing import download_pdf
-from auto_extract.read_pdf import extract_pdf
+from auto_extract.read_pdf import PDFInformationExtractor
 
 
 def main(testarg=None):
@@ -77,12 +77,14 @@ def main(testarg=None):
     # convert tasks to list
     args.tasks = [args.tasks] if isinstance(args.tasks, str) else args.tasks
 
+    # Create an instance of the PDFInformationExtractor class
+    pdf_extractor = PDFInformationExtractor(args.pf_m, args.pf_l, args.pf_v)
+
     # Read all files
     countfiles = 0
     if args.file:
         infile = os.path.join(os.getcwd(), args.file)
-        opd_p, opd_g, opd_o = extract_pdf(infile, opd_p, opd_g, opd_o, args.tasks,
-                                          args.pf_m, args.pf_l, args.pf_v)
+        opd_p, opd_g, opd_o = pdf_extractor.extract_pdf(infile, opd_p, opd_g, opd_o, args.tasks)
     elif args.directory:
         totalfiles = len([name for name in os.listdir(os.path.join(os.getcwd(), args.directory))
                          if name.lower().endswith('.pdf')])
@@ -91,12 +93,10 @@ def main(testarg=None):
                 countfiles += 1
                 print('Working on file:', countfiles, 'out of', totalfiles)
                 infile = os.path.join(os.getcwd(), args.directory, filename)
-                opd_p, opd_g, opd_o = extract_pdf(infile, opd_p, opd_g, opd_o, args.tasks,
-                                                  args.pf_m, args.pf_l, args.pf_v)
+                opd_p, opd_g, opd_o = pdf_extractor.extract_pdf(infile, opd_p, opd_g, opd_o, args.tasks)
     elif args.url:
         infile = download_pdf(args.url)
-        opd_p, opd_g, opd_o = extract_pdf(infile, opd_p, opd_g, opd_o, args.tasks,
-                                          args.pf_m, args.pf_l, args.pf_v)
+        opd_p, opd_g, opd_o = pdf_extractor.extract_pdf(infile, opd_p, opd_g, opd_o, args.tasks)
         delete_downloaded_pdf()
     elif args.url_file:
         with open(args.url_file, mode='r', encoding='UTF-8') as u:
@@ -104,8 +104,7 @@ def main(testarg=None):
         for url in urls:
             print(url)
             infile = download_pdf(url)
-            opd_p, opd_g, opd_o = extract_pdf(infile, opd_p, opd_g, opd_o, args.tasks,
-                                              args.pf_m, args.pf_l, args.pf_v)
+            opd_p, opd_g, opd_o = pdf_extractor.extract_pdf(infile, opd_p, opd_g, opd_o, args.tasks)
             delete_downloaded_pdf()
 
     write_output(args.tasks, opd_p, opd_g, opd_o, args.anbis_file)
