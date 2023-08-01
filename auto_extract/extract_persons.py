@@ -264,14 +264,24 @@ def find_similar_names(persons):
 
 
 def find_duplicate_persons(persons):
-    """ From a list of names, find which names represent different writings of the same name,
+    """ Function to find duplicate names.
+
+    From a list of names, find which names represent different writings of the same name,
     e.g. James Brown and J. Brown. Returns a list consisting of sublists, in which each sublist
     contains all versions of the same name. The token_set_ratio from the fuzzywuzzy package is
     used to determine how close to names are. Names are stripped from any titles, and when
     comparing two names where one contains initials (i.e. James Brown versus J. Brown), the first
-    name is abbreviated to try to determine the initials."""
+    name is abbreviated to try to determine the initials.
+    
+    Args:
+        persons (list[str]): list of names.
+    
+    Returns:
+        outlist (list[list[str]]): list consisting of sublists, in which each sublist
+        contains all versions of the same name.
+    """
     outnames = find_similar_names(persons)
-    #
+
     # check if the longest item in a list is in multiple sublists
     # which might mess things up, so in that case remove and restart
     was_true = False
@@ -304,8 +314,19 @@ def find_duplicate_persons(persons):
 
 
 def surrounding_words(text, search_names):
-    """ for a given text and search words (names), returns an array of words that are
-    found before and after the search word"""
+    """Determine words surrounding an name in a text.
+
+    For a given 'text' and search words ('search_name'), this function returns an array of words that are
+    found before and after the 'search_name'.
+    
+    Args:
+        text (str): text to search through
+        search_name (str): name to look for in the text
+    
+    Returns:
+        surrounding_words (np.array): array of words that are
+        found before and after the 'search_name'.
+    """
     surrounding_words = np.array([])
     text = np.array2string(text, separator=' ')
     searchnames = sorted(search_names, key=len, reverse=True)
