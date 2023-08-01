@@ -170,8 +170,16 @@ def output_related_orgs(infile, doc, nlp):
     return output
 
 
-def ots(inp):
-    """ Output to string: Convert array output to a backspace-seperated string """
+def ots(inp: np.array):
+    """Output to string: Convert array output to a backspace-seperated string.
+    
+    Args:
+        inp (np.array): array to be converted to string
+    
+    Returns:
+        out_string: a string containing the elements of the of the 'inp' array, 
+        converted into a backspace-separed string
+    """
     out_string = ""
     for element in inp:
         out_string += str(element) + "\n"
@@ -179,8 +187,11 @@ def ots(inp):
 
 
 def atc(inp, length):
-    """ Array to columns: Split array into [length] variables which will be converted into columns
-        in the final output"""
+    """Array to columns: Split array into [length] variables which will be converted into columns
+        in the final output.
+    
+    args:
+    """
     outlist = ['']*length
     if inp is not None:
         for i, c_inp in enumerate(inp):
