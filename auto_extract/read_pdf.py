@@ -1,5 +1,9 @@
-# Copyright 2022 Netherlands eScience Center and Vrije Universiteit Amsterdam
-# Licensed under the Apache License, version 2.0. See LICENSE for details.
+"""Functions to extract, using the stanza Dutch pipeline, information on persons
+and organisations from pdf files and structure the output.
+
+Copyright 2022 Netherlands eScience Center and Vrije Universiteit Amsterdam
+Licensed under the Apache License, version 2.0. See LICENSE for details.
+"""
 
 import os
 from datetime import datetime
@@ -43,7 +47,6 @@ def extract_pdf(infile: str, opd_p: np.array, opd_g: np.array, opd_o: np.array, 
         opd_p (identified people), opd_g (predicted sector), opd_o (related organisations); all stored
         in updated np.arrays
     """
-
     print(f"{datetime.now():%Y-%m-%d %H:%M:%S}", 'Working on file:', infile)
     text = preprocess_pdf(infile, ', ')
     if tasks == ['sectors']:
@@ -120,7 +123,6 @@ def output_people(infile, doc, organization):
               - Specified board member roles for members identified as bestuur:
                 directors, raad van toezicht, bestuursleden, ledenraad, kascommissie, controlecommisie
     """
-
     persons = np.unique([f'{ent.text}' for ent in doc.ents if ent.type == "PER"])
     (ambassadors, board_positions, p_directeur, p_rvt, p_bestuur, p_ledenraad,
      p_kasc, p_controlec) = extract_persons(doc, persons)
