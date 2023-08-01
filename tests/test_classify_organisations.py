@@ -22,7 +22,7 @@ def test_file_to_pd():
         AssertionError: if the output iof the 'file_to_pd' function is not a pandas dataframe.
     """
     result = file_to_pd(inputfile)
-    assert(isinstance(result, pd.DataFrame))
+    assert isinstance(result, pd.DataFrame)
 
 
 def test_train():
@@ -45,7 +45,7 @@ def test_train():
     """
     df = file_to_pd(inputfile)
     label = train(df, 0.99, 0.99, False)[1]
-    assert(label == 'Natuur')
+    assert label == 'Natuur'
 
 
 def test_predict_main_sector():
@@ -76,4 +76,4 @@ def test_predict_main_sector():
     df = file_to_pd(inputfile)
     result = predict_main_sector(saved_clf, saved_labels, saved_vector, df.text[0])
     expected = 'Natuur en milieu'
-    assert(result == expected)
+    assert result == expected
