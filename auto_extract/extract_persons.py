@@ -212,6 +212,27 @@ def sort_select_name(names: list):
 
 
 def find_similar_names(persons):
+    """Find similar names and group them together.
+
+    This function takes a list of persons' names as input and returns a list of lists,
+    where each inner list contains names that are likely to refer to the same person.
+
+    The function uses the following steps:
+    1. Use the 'strip_names_from_title' function to remove titles from the names.
+    2. Filters out the removed names from the original list.
+    3. Iterates through the filtered list of input names to find matches and group similar names together. 
+       Names consisting of one term, are not matched.
+       - For each set input name, calculate the token set ratio (TSR) and the required score by calling 'get_tsr'.
+       - If the TSR meets or exceeds the required score, the names are considered similar and grouped together.
+       - Sort the list of similar names using the 'sort_select_name' function.
+    4. Duplicate lists of names are removed to avoid redundant grouping.
+
+    Args:
+        persons (List[str]): A list of names to be grouped.
+
+    Returns:
+        List[List[str]]: A list of lists, where each inner list contains similar names grouped together.
+    """
     outnames = []
     p, p_remove = strip_names_from_title(persons)
     persons = [n for n in persons if n not in p_remove]
@@ -243,12 +264,12 @@ def find_similar_names(persons):
 
 
 def find_duplicate_persons(persons):
-    ''' From a list of names, find which names represent different writings of the same name,
+    """ From a list of names, find which names represent different writings of the same name,
     e.g. James Brown and J. Brown. Returns a list consisting of sublists, in which each sublist
     contains all versions of the same name. The token_set_ratio from the fuzzywuzzy package is
     used to determine how close to names are. Names are stripped from any titles, and when
     comparing two names where one contains initials (i.e. James Brown versus J. Brown), the first
-    name is abbreviated to try to determine the initials.'''
+    name is abbreviated to try to determine the initials."""
     outnames = find_similar_names(persons)
     #
     # check if the longest item in a list is in multiple sublists
@@ -306,7 +327,7 @@ def surrounding_words(text, search_names):
 
 
 def count_occurrence(text, search_words):
-    ''' return the summed total of occurrences of search words in text'''
+    """return the summed total of occurrences of search words in text."""
     fulltext = np.array2string(text, separator=' ')
     fulltext = re.sub(r"[\[\]']", '', fulltext)
     fulltext = fulltext.replace('vice voorzitter', 'vicevoorzitter')
@@ -329,14 +350,14 @@ def count_occurrence(text, search_words):
 
 
 def determine_main_job(main_jobs, sentences, surroundings):
-    '''Determine main job category based on:
+    """Determine main job category based on:
     The most occuring category in the direct text based on sentence frequency (fs, i.e. number of
     sentences in which category+name is found)
     If none can be identified, or there is a tie: try based on sentence frequency from surrounding
     sentences (fss).
     If none can be identified: try based on overall frequency in main text
     If non can be identified: try based on overall frequency in surrounding text
-    If still none can be identified, eliminate name from board'''
+    If still none can be identified, eliminate name from board"""
     fs = np.empty(len(main_jobs))  # sentence frequency direct sentences
     fss = np.empty(len(main_jobs))  # sentence frequency incl. surrounding sentences
     ft = np.empty(len(main_jobs))  # total frequency direct sentences
