@@ -190,7 +190,14 @@ def atc(inp, length):
     """Array to columns: Split array into [length] variables which will be converted into columns
         in the final output.
     
-    args:
+    Args:
+        inp (list or None): The input array to be split into columns.
+        length (int): The number of columns desired in the final output.
+
+    Returns:
+        list: A list of length 'length' containing the elements of the input array. If the input
+              array has more elements than 'length', the last column will contain the remaining
+              elements as a single element (concatenated using the 'ots' function).
     """
     outlist = ['']*length
     if inp is not None:
