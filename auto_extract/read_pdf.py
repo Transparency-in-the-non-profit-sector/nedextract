@@ -187,7 +187,8 @@ class PDFInformationExtractor:
         return output
 
 
-    def output_related_orgs(self, infile: str, doc, nlp):
+    @staticmethod
+    def output_related_orgs(infile: str, doc, nlp):
         """Gather information about all mentioned orgnaizations in the text and structure the output.
         
         Args:
@@ -211,7 +212,8 @@ class PDFInformationExtractor:
         return output
 
 
-    def ots(self, inp: np.array):
+    @staticmethod
+    def ots(inp: np.array):
         r"""Output to string: Convert array output to a backspace-seperated string.
         
         Steps:
@@ -263,7 +265,8 @@ class PDFInformationExtractor:
         return outlist
 
 
-    def download_stanza_NL(self):
+    @staticmethod
+    def download_stanza_NL():
         """Download stanza Dutch library if not already present.
         
         This function checks if the stanza Dutch library is already downloaded. If not, it downloads
