@@ -49,6 +49,8 @@ class PDFInformationExtractor:
         """Initialize the PDFInformationExtractor class with pretrained model file paths.
 
         Args:
+            tasks (list): a A list of tasks to perform during extraction, e.g., ['sectors'],
+                     ['people'], ['orgs'], or ['all']
             pf_m (str): The path to the pretrained classifier file for sector prediction.
             pf_l (str): The path to the pretrained label encoding file for sector prediction.
             pf_v (str): The path to the pretrained tf-idf vectorizer file for sector prediction.
@@ -169,8 +171,7 @@ class PDFInformationExtractor:
         # try again if unlikely results
         if (len(p_rvt) > 12 or len(p_bestuur) > 12 or (len(p_rvt) == 0 and len(p_bestuur) == 0) or
                 len(board_positions) <= 3):
-            text = preprocess_pdf(infile, '. ')
-            doc = stanza.Pipeline(lang='nl', processors='tokenize,ner')(text)
+            doc = stanza.Pipeline(lang='nl', processors='tokenize,ner')(preprocess_pdf(infile, '. '))
             persons = np.unique([f'{ent.text}' for ent in doc.ents if ent.type == "PER"])
             (ambassadors, board_positions, p_directeur, p_rvt, p_bestuur,
             p_ledenraad, p_kasc, p_controlec) = extract_persons(doc, persons)
