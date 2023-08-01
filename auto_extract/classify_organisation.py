@@ -164,7 +164,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if not (args.inputfile):
-        raise Exception('No inputfile provided. Run with -h for help on arguments to be provided.')
+        raise FileExistsError('No inputfile provided. Run with -h for help on arguments to be provided.')
 
     data = file_to_pd(args.inputfile)
     print(f"{datetime.now():%Y-%m-%d %H:%M:%S}",
