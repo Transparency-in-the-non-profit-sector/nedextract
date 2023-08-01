@@ -146,8 +146,20 @@ def output_people(infile, doc, organization):
 
 
 def output_related_orgs(infile, doc, nlp):
-    """ Gather information about all mentioned orgnaisations in the text and structure the
-    output."""
+    """ Gather information about all mentioned orgnaizations in the text and structure the
+    output.
+    
+    Args:
+        infile (str): The path to the input PDF file for information extraction.
+        doc (stanza.Document): A stanza-processed document containing information about named entities.
+        nlp (stanza.Pipeline): The stanza pipeline object for natural language processing.
+
+    Returns:
+        list: A list of lists, where each sublist contains the following information:
+              - The filename of the input file.
+              - The name of the organization mentioned in the text.
+              - The number of times the organization is mentioned in the text.
+    """
     orgs = collect_orgs(infile, nlp)
     output = []
     for o in orgs:
