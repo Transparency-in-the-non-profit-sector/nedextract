@@ -418,7 +418,7 @@ def determine_main_job(main_jobs, sentences, surroundings):
           is ordered in 'most likely with few number of occureences'
        6. If none can be identified, select first element (main jobs) from the list of condition 2, since the main jobs list
           is ordered in 'most likely with few number of occureences'
-       7. If still none can be identified, eliminate name from board
+       7. If still none can be identified, set main jobs to None
     4. Determine the term frequency of selected main job directeur based on direct sentences
     5. Determine the term frequency of selected main job bestuur and rvt based on surrounding sentences
 
@@ -533,7 +533,7 @@ def determine_sub_job(members, sentences, main_cat):
 
 
 def identify_potential_people(doc, all_persons):
-    '''identify potential ambassadors and board members based on keywords in sentences
+    """identify potential ambassadors and board members based on keywords in sentences
     
     This function analyzes the given 'doc' containing (stanza) processed sentences and identifies
     potential people who may hold ambassadors or board member positions,
@@ -548,7 +548,7 @@ def identify_potential_people(doc, all_persons):
               potentially hold significant positions. The outer list represents groups of
               potentially significant people, and the inner lists contain various ways of
               writing the names of the same individual.
-    '''
+    """
     pot_per = np.array([])  # people with potential significant position
     people = []  # list of all writing forms of names of people in pot_per
 
@@ -642,7 +642,7 @@ def append_p_position(p_position, main, name):
 
 
 def extract_persons(doc, all_persons):
-    ''' Determine from a text which persons (identified with stanza) are ambassadors or
+    """ Determine from a text which persons (identified with stanza) are ambassadors or
     board members, using a rule based method. Identify potential ambassadors and board members
     based on key words occuring in sentences in which a name is mentioned. Next, for board members,
     a main and sub position are identified (if possible). The rules for main position are based on
@@ -653,7 +653,8 @@ def extract_persons(doc, all_persons):
     For the position of director, an additional filter is applied: if more than 2 persons are
     identified as director, persons are not considered a director if:
     - they are mentioned in director context < 2 (ft), while the max mentioning is > 2
-    - the subposition (obtained from words directly surrounding name) is not director.'''
+    - the subposition (obtained from words directly surrounding name) is not director.
+    """
     b_position = np.array([])   # people with significant positions + main and sub position
     # potential directors: name, sub_cat, ft_director, main_cat, backup_sub_cat,fts_bestuur,fts_rvt
     pot_director = []
@@ -713,8 +714,8 @@ def extract_persons(doc, all_persons):
                                                                         p_position)
     elif len(pot_director) == 1:
         p_position = append_p_position(p_position, 'directeur', pot_director[0][0])
-    # If there are more than 10 people in rvt or bestuur, remove them if they have an fts <= 3
-    # and do not have an sub position assigned
+    # If there are more than 8 people in rvt or bestuur, evaluate ther fts and sub_pos and consider
+    # whether some of them need to be removed.
     pot_rvt = np.array(pot_rvt, dtype=object)
     b_position, p_position = check_rvt(pot_rvt, b_position, p_position)
 
@@ -732,8 +733,20 @@ def extract_persons(doc, all_persons):
 
 
 def array_p_position(p_position, position):
-    '''returns an array made out of sublist of the list p_position. The sublist must start with
-    the term position'''
+    """Returns an array made out of sublist of the list p_position.
+    
+    This function returns an array made out of sublist of the list p_position. The sublist must start with
+    the term position.
+
+    Args:
+        p_position (list): A list of sublists, each of which contains a main job category and 
+        names of people for that job if any
+        position (str): a main job position for which the associated names should be extracted.
+    
+    Returns:
+        numpy.ndarray: An array containing the names associated with the specified 'position'. If no sublist
+                       with the given 'position' is found, an empty array is returned.
+    """
     return np.array([i[1:] for i in p_position if i[0] == position][0])
 
 
@@ -771,6 +784,33 @@ def director_check(pot_director, b_position, pot_rvt, pot_bestuur, p_position):
 
 
 def check_rvt(pot_rvt, b_position, p_position):
+    """Determine whether potential rvt memebers can be considered true rvt memebers.
+
+    This function determines whether potential rvt members ('pot_rvt') can be considered true rvt memebers,
+    updating 'b_position' and 'p_position' accordingly.
+
+    Steps:
+    Loop through the pot_rvt array and make the following decisions:
+    1. if there are more than 12 memebers in the array of potential rvt memebrs, remove the member from b_position 
+       if it has a frequency count <= 3.
+    2. if there are more than 8 members in the array of potential rvt members, remove the member from if it has a frequency count of 1.
+    3. Otherwise, add the pot_rvt member to p_position
+    
+    Args:
+        pot_rvt (np.array of lists): An array of lists containing potential 'rvt' (Raad van Toezicht) members.
+                        Each list contains the name of the person, the associated 'rvt' position,
+                        and the count of 'rvt' positions held by that person.
+        b_position (np.ndarray): An array in which each element has the form 'name - main position - sub position'.
+        p_position (list of lists): A list of sublists, each of which contains a main job category and 
+        names of people for that job if any.
+
+    Returns:
+        tuple: A tuple containing two elements:
+               - Updated b_positions (numpy.ndarray) after removing certain 'rvt' members based on
+                 the specified conditions.
+               - Updated p_position categories and associated names after adding any 'rvt' positions
+                 that meet the conditions.
+    """
     for rvt in enumerate(pot_rvt):
         if len(pot_rvt) >= 12 and rvt[1][2] <= 3:
             b_position = b_position[b_position != rvt[1][0] + ' - rvt - ' + rvt[1][1]]
@@ -782,6 +822,33 @@ def check_rvt(pot_rvt, b_position, p_position):
 
 
 def check_bestuur(pot_bestuur, b_position, p_position):
+    """Determine whether potential bestuur memebers can be considered true bestuur memebers.
+
+    This function determines whether potential bestuur members ('pot_bestuur') can be considered true bestuur members,
+    updating 'b_position' and 'p_position' accordingly.
+
+    Steps:
+    Loop through the pot_bestuur array and make the following decisions:
+    1. if there are more than 12 members in the array of potential bestuur memebrs, remove the member from b_position 
+       if it has a frequency count <= 3.
+    2. if there are more than 8 members in the array of potential bestuur members, remove the member from if it has a frequency count of 1.
+    3. Otherwise, add the pot_bestuur member to p_position
+    
+    Args:
+        pot_bestuur (np.array of lists): An array of lists containing potential bestuur members.
+                        Each list contains the name of the person, the associated bestuur position,
+                        and the count of bestuur positions held by that person.
+        b_position (np.ndarray): An array in which each element has the form 'name - main position - sub position'.
+        p_position (list of lists): A list of sublists, each of which contains a main job category and 
+        names of people for that job if any.
+
+    Returns:
+        tuple: A tuple containing two elements:
+               - Updated b_positions (numpy.ndarray) after removing certain bestuur members based on
+                 the specified conditions.
+               - Updated p_position categories and associated names after adding any bestuur positions
+                 that meet the conditions.
+    """
     for bestuur in enumerate(pot_bestuur):
         if len(pot_bestuur) >= 12 and bestuur[1][2] <= 3:
             b_position = b_position[b_position != (bestuur[1][0] + ' - bestuur - ' +

@@ -61,6 +61,10 @@ class TestExtractPersons(unittest.TestCase):
           person and those directly surrounding them.
         - test_append_p_position: tests the 'append_p_position' function that append a person's name to their main position in
           the list of positions.
+        - test_array_p_position: tests the 'array_p_position' function that returns an array of names taken from a sublist of
+          the list p_position.
+        - test_check_rvt: tests the check_rvt function that determines whether potential rvt members can be considered try=ue rvt memebers.
+        - test_check_bestuur: tests the check_bestuur function that determines whether potential bestuur members can be considered true bestuur memebers.
     """
     def test_abbreviate(self):
         """Unit test function for the 'abbreviate' function.
@@ -372,8 +376,8 @@ class TestExtractPersons(unittest.TestCase):
         """
         # Test case
         sentences, surroundings = relevant_sentences(doc, ['Jane Doe', 'J. Doe'])
-        assert(isinstance(sentences, np.ndarray))
-        assert(isinstance(surroundings, np.ndarray))
+        self.assertTrue(isinstance(sentences, np.ndarray))
+        self.assertTrue(isinstance(surroundings, np.ndarray))
 
         expected_s = np.array(['bedrijfsstructuur jane doe, directeur van bedrijf.',
                             'dr. j. doe werkt bij bedrijf.'])
@@ -381,8 +385,8 @@ class TestExtractPersons(unittest.TestCase):
                                 'bedrijfsstructuur jane doe, directeur van bedrijf.',
                                 'dr. j. doe werkt bij bedrijf.',
                                 'bedrijf heeft een raad van toezicht rvt.'])
-        assert(np.array_equal(expected_s, sentences))
-        assert(np.array_equal(expected_sur, surroundings))
+        self.assertTrue(np.array_equal(expected_s, sentences))
+        self.assertTrue(np.array_equal(expected_sur, surroundings))
 
 
     def test_append_p_position(self):
@@ -403,10 +407,10 @@ class TestExtractPersons(unittest.TestCase):
         expected = [['directeur'], ['bestuur'], ['rvt', 'Jane Doe'], ['ledenraad'], ['kascommissie'],
                     ['controlecommissie'], ['ambassadeur']]
         result = append_p_position(p_position, main, name)
-        assert(result == expected)
+        self.assertEqual(result == expected)
 
 
-    def test_extract_persons():
+    def test_extract_persons(self):
         e_a = np.array(['Sarah', 'Thomas'])
         e_bp = np.array(['Anna de Wit - rvt - vice-voorzitter',
                         'Dirkje Rooden - bestuur - lid',
@@ -431,26 +435,34 @@ class TestExtractPersons(unittest.TestCase):
         e_k = np.array(['Gerard Roze', 'Hendrik Groen'])
         e_c = np.array(['Mohammed El Idrissi', 'Saïda Benali'])
         a, b_p, d, r, b, l, k, c = extract_persons(doc, all_persons)
-        assert(np.array_equal(e_a, a))
-        assert(np.array_equal(e_bp, b_p))
-        assert(np.array_equal(np.array(['Jane Doe']), d))
-        assert(np.array_equal(e_r, r))
-        assert(np.array_equal(e_b, b))
-        assert(np.array_equal(e_l, l))
-        assert(np.array_equal(e_k, k))
-        assert(np.array_equal(e_c, c))
+        self.assertTrue(np.array_equal(e_a, a))
+        self.assertTrue(np.array_equal(e_bp, b_p))
+        self.assertTrue(np.array_equal(np.array(['Jane Doe']), d))
+        self.assertTrue(np.array_equal(e_r, r))
+        self.assertTrue(np.array_equal(e_b, b))
+        self.assertTrue(np.array_equal(e_l, l))
+        self.assertTrue(np.array_equal(e_k, k))
+        self.assertTrue(np.array_equal(e_c, c))
         d = extract_persons(doc2, all_persons2)[2]
-        assert(np.array_equal(np.array(['Jane Doe']), d))
+        self.assertTrue(np.array_equal(np.array(['Jane Doe']), d))
 
 
-    def test_array_p_position():
+    def test_array_p_position(self):
+        """Unit test for the function 'array_p_position'.
+        
+        This function tests the 'array_p_position' function that returns an array of names taken from a sublist of
+        the list p_position.
+
+        Raises:
+            AssertionError: If the returned parameter does not match the expected return value.
+        """
         p_position = [['directeur'], ['bestuur'], ['rvt', 'Jane Doe', 'J. Doe'], ['ledenraad']]
         expected = np.array(['Jane Doe', 'J. Doe'])
         result = array_p_position(p_position, 'rvt')
-        assert(np.array_equal(expected, result))
+        self.assertTrue(np.array_equal(expected, result))
 
 
-    def test_director_check():
+    def test_director_check(self):
         # pot_director = name, sub_cat, ft_director, main_cat, backup_sub_cat, fts_bestuur, fts_rvt
         pot_director = np.array([['Jane Doe', 'directeur', 3, 'rvt', 3, 1, 1],
                                 ['Piet de Wit', 'voorzitter', 3, 'rvt', 1, 1, 1]], dtype=object)
@@ -464,22 +476,22 @@ class TestExtractPersons(unittest.TestCase):
         e_pot_rvt = [['Anna Zwart', 'vicevoorzitter', 3], ['Piet de Wit', 'voorzitter', 1]]
         e_pot_b = pot_bestuur
         e_p_p = [['directeur', 'Jane Doe'], ['bestuur'], ['rvt'], ['ledenraad']]
-        assert(np.array_equal(a, e_b))
-        assert(b == e_pot_rvt)
-        assert(c == e_pot_b)
-        assert(d == e_p_p)
+        self.assertTrue(np.array_equal(a, e_b))
+        self.assertEqual(b == e_pot_rvt)
+        self.assertEqual(c == e_pot_b)
+        self.assertEqual(d == e_p_p)
         pot_director = np.array([['Jane Doe', 'directeur', 3, 'rvt', 3, 1, 1],
                                 ['Piet de Wit', 'voorzitter', 3, 'bestuur', 1, 1, 1]], dtype=object)
         a, b, c, d = director_check(pot_director, b_position, pot_rvt, pot_bestuur, p_position)
-        assert(c == [['Hanna Groen', 'penningmeester', 2], ['Piet de Wit', 'voorzitter', 1]])
-        assert(np.array_equal(a, np.array(['Jane Doe - directeur - directeur',
+        self.assertEqual(c == [['Hanna Groen', 'penningmeester', 2], ['Piet de Wit', 'voorzitter', 1]])
+        self.assertTrue(np.array_equal(a, np.array(['Jane Doe - directeur - directeur',
                                         'Piet de Wit - bestuur - voorzitter'])))
         p_position = [['directeur'], ['bestuur'], ['rvt'], ['ledenraad']]
         pot_director = np.array([['Jane Doe', 'directeur', 3, 'rvt', 3, 1, 1],
                                 ['Piet de Wit', 'voorzitter', 3, 'ledenraad', 1, 1, 1]], dtype=object)
         a, b, c, d = director_check(pot_director, b_position, pot_rvt, pot_bestuur, p_position)
-        assert(d == [['directeur', 'Jane Doe'], ['bestuur'], ['rvt'], ['ledenraad', 'Piet de Wit']])
-        assert(np.array_equal(a, np.array(['Jane Doe - directeur - directeur',
+        self.assertEqual(d == [['directeur', 'Jane Doe'], ['bestuur'], ['rvt'], ['ledenraad', 'Piet de Wit']])
+        self.assertTrue(np.array_equal(a, np.array(['Jane Doe - directeur - directeur',
                                         'Piet de Wit - ledenraad - voorzitter'])))
         b_position = np.array(['Jane Doe - directeur - directeur',
                             'Piet de Wit - directeur - '])
@@ -487,24 +499,37 @@ class TestExtractPersons(unittest.TestCase):
         pot_director = np.array([['Jane Doe', 'directeur', 3, 'rvt', 3, 1, 1],
                                 ['Piet de Wit', '', 3, 'ambassadeur', 1, 1, 1]], dtype=object)
         a, b, c, d = director_check(pot_director, b_position, pot_rvt, pot_bestuur, p_position)
-        assert(np.array_equal(a, np.array(['Jane Doe - directeur - directeur'])))
-        assert(d == [['directeur', 'Jane Doe'], ['bestuur'], ['rvt'], ['ledenraad'],
+        self.assertTrue(np.array_equal(a, np.array(['Jane Doe - directeur - directeur'])))
+        self.assertEqual(d == [['directeur', 'Jane Doe'], ['bestuur'], ['rvt'], ['ledenraad'],
                     ['ambassadeur', 'Piet de Wit']])
         p_position = [['directeur'], ['bestuur'], ['rvt'], ['ledenraad'], ['ambassadeur']]
         pot_director = np.array([['Jane Doe', 'directeur', 3, 'rvt', 3, 1, 1],
                                 ['Piet de Wit', '', 3, '', 1, 1, 1]], dtype=object)
         a, b, c, d = director_check(pot_director, b_position, pot_rvt, pot_bestuur, p_position)
-        assert(d == p_position)
+        self.assertEqual(d == p_position)
 
 
-    def test_check_rvt():
-        pot_rvt = [['Piet de Wit', 'voorzitter', 4]]
+    def test_check_rvt(self):
+        """Unit testfor the function 'check_rvt'.
+        
+        Tests the function 'check_rvt' that determines whether potential rvt memebers can be considered true rvt memebers.
+        
+        There are two test cases, one in which no function conditions should be encountered, and one in which various
+        function conditions should be encountered.
+
+        Raises:
+            AssertionError: If the returned values doe not match the expected return value.
+        """
+        # Test case 1
+        pot_rvt = np.array([['Piet de Wit', 'voorzitter', 4]], dtype=object)
         b_position = np.array(['Jane Doe - directeur - directeur', 'Piet de Wit - rvt - voorzitter'])
         p_position = [['directeur', 'Jane Doe'], ['rvt']]
         check_b, check_p = check_rvt(pot_rvt, b_position, p_position)
         exp_p = [['directeur', 'Jane Doe'], ['rvt', 'Piet de Wit']]
-        assert(np.array_equal(check_b, b_position))
-        assert(check_p == exp_p)
+        self.assertTrue(np.array_equal(check_b, b_position))
+        self.assertEqual(check_p == exp_p)
+
+        # Test case 2
         pot_rvt = [['Piet de Wit', 'voorzitter', 4], ['Ab', 'vicevoorzitter', 2], ['Co', '', 3],
                 ['Bo', '', 4], ['Do', '', 5], ['Ed', '', 2], ['Jo', '', 3], ['Fi', '', 2],
                 ['Lo', '', 5], ['Mo', '', 2], ['Ap', '', 5], ['Ab', '', 1], ['Ma', '', 1]]
@@ -518,19 +543,32 @@ class TestExtractPersons(unittest.TestCase):
                         'Bo - rvt - ', 'Do - rvt - ', 'Lo - rvt - ', 'Ap - rvt - '])
         exp_p = [['directeur', 'Jane Doe'], ['rvt', 'Piet de Wit', 'Bo', 'Do', 'Lo', 'Ap']]
         check_b, check_p = check_rvt(pot_rvt, b_position, p_position)
-        assert(check_p == exp_p)
-        assert(np.array_equal(check_b, exp_b))
+        self.assertEqual(check_p == exp_p)
+        self.assertTrue(np.array_equal(check_b, exp_b))
 
 
-    def test_check_bestuur():
+    def test_check_bestuur(self):
+        """Unit testfor the function 'check_bestuur'.
+        
+        Tests the function 'check_bestuur' that determines whether potential bestuur memebers can be considered true bestuur memebers.
+        
+        There are two test cases, one in which no function conditions should be encountered, and one in which various
+        function conditions should be encountered.
+
+        Raises:
+            AssertionError: If the returned values doe not match the expected return value.
+        """
+        # Test case 1
         pot_bestuur = [['Piet de Wit', 'voorzitter', 4]]
         b_position = np.array(['Jane Doe - directeur - directeur',
                             'Piet de Wit - bestuur - voorzitter'])
         p_position = [['directeur', 'Jane Doe'], ['bestuur']]
         check_b, check_p = check_bestuur(pot_bestuur, b_position, p_position)
         exp_p = [['directeur', 'Jane Doe'], ['bestuur', 'Piet de Wit']]
-        assert(np.array_equal(check_b, b_position))
-        assert(check_p == exp_p)
+        self.assertTrue(np.array_equal(check_b, b_position))
+        self.assertEqual(check_p == exp_p)
+
+        # Test case 2
         pot_bestuur = [['Piet de Wit', 'voorzitter', 4], ['Ab', 'vicevoorzitter', 2], ['Co', '', 3],
                     ['Bo', '', 4], ['Do', '', 5], ['Ed', '', 2], ['Jo', '', 3], ['Fi', '', 2],
                     ['Lo', '', 5], ['Mo', '', 2], ['Ap', '', 5], ['Ab', '', 1], ['Ma', '', 1]]
@@ -545,5 +583,5 @@ class TestExtractPersons(unittest.TestCase):
                         'Bo - bestuur - ', 'Do - bestuur - ', 'Lo - bestuur - ', 'Ap - bestuur - '])
         exp_p = [['directeur', 'Jane Doe'], ['bestuur', 'Piet de Wit', 'Bo', 'Do', 'Lo', 'Ap']]
         check_b, check_p = check_bestuur(pot_bestuur, b_position, p_position)
-        assert(check_p == exp_p)
-        assert(np.array_equal(check_b, exp_b))
+        self.assertEqual(check_p == exp_p)
+        self.assertTrue(np.array_equal(check_b, exp_b))
