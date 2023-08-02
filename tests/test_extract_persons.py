@@ -55,6 +55,12 @@ class TestExtractPersons(unittest.TestCase):
           or surrounding sentences.
         - test_determine_sub_job: tests the 'determine_sub_job' function that determines the sub job based on a persons name,
           the previously determine main cat and a list of sentences.
+        - test_identify_potential_people: tests the 'identify_potential_people' function that analyses text to find names of
+          people that may have one of the predifined jobs.
+        - test_relevant_sentences: tests the 'relevant_sentences' function that identifies all sentences containing a specific
+          person and those directly surrounding them.
+        - test_append_p_position: tests the 'append_p_position' function that append a person's name to their main position in
+          the list of positions.
     """
     def test_abbreviate(self):
         """Unit test function for the 'abbreviate' function.
@@ -76,11 +82,11 @@ class TestExtractPersons(unittest.TestCase):
         name2 = 'Jan de Wit'
         name3 = 'Jan Piet de Wit'
         name4 = 'Jan Piet van der Wit'
-        assert(abbreviate(name, 2) == 'J Doe ')
-        assert(abbreviate(name2, 2) == 'J de Wit ')
-        assert(abbreviate(name3, 2) == 'J P de Wit ')
-        assert(abbreviate(name4, 2) == 'J P van der Wit ')
-        assert(abbreviate(name4, 3) == 'J P van der Wit ')
+        self.assertEqual(abbreviate(name, 2) == 'J Doe ')
+        self.assertEqual(abbreviate(name2, 2) == 'J de Wit ')
+        self.assertEqual(abbreviate(name3, 2) == 'J P de Wit ')
+        self.assertEqual(abbreviate(name4, 2) == 'J P van der Wit ')
+        self.assertEqual(abbreviate(name4, 3) == 'J P van der Wit ')
 
 
     def test_get_tsr(self):
@@ -98,24 +104,24 @@ class TestExtractPersons(unittest.TestCase):
 
         # Test case 1
         tsr1, rs1 = get_tsr('Jane Doe', 'Jane Doe')
-        assert(tsr1 == 100)
-        assert(rs1 == 90)
+        self.assertEqual(tsr1 == 100)
+        self.assertEqual(rs1 == 90)
         # Test cse 2
         tsr2, rs2 = get_tsr('Jane Doe', 'Jane')
-        assert(tsr2 == 100)
-        assert(rs2 == 100)
+        self.assertEqual(tsr2 == 100)
+        self.assertEqual(rs2 == 100)
         # Test case 3
         tsr3, rs3 = get_tsr('J. Doe', 'J.P. Doe')
-        assert(tsr3 == 100)
-        assert(rs3 == 90)
+        self.assertEqual(tsr3 == 100)
+        self.assertEqual(rs3 == 90)
         # Test case 4
         tsr4, rs4 = get_tsr('J. Doe', 'Jane Doe')
-        assert(tsr4 == 100)
-        assert(rs4 == 95)
+        self.assertEqual(tsr4 == 100)
+        self.assertEqual(rs4 == 95)
         # Test case 5
         tsr5, rs5 = get_tsr('Jane Doe', 'J. Doe')
-        assert(tsr5 == 100)
-        assert(rs5 == 95)
+        self.assertEqual(tsr5 == 100)
+        self.assertEqual(rs5 == 95)
 
 
     def test_strip_names_from_title(self):
@@ -134,8 +140,8 @@ class TestExtractPersons(unittest.TestCase):
         inp = ['Prof. Dr. Jane Doe', 'John Doe, PhD', 'Dr. J.']
         expected, expected_removed = ['  jane doe', 'john doe, '], ['Dr. J.']
         out, out_r = strip_names_from_title(inp)
-        assert(out == expected)
-        assert(out_r == expected_removed)
+        self.assertEqual(out == expected)
+        self.assertEqual(out_r == expected_removed)
 
 
     def test_find_duplicate_persons(self):
@@ -156,8 +162,8 @@ class TestExtractPersons(unittest.TestCase):
         outnames = find_duplicate_persons(persons)
         expected = [['Jane Elaine Doe', 'Dr. Jane Doe', 'Jane Doe', 'J.E. Doe', 'J. Doe'],
                     ['Jane White'], ['William Doe']]
-        assert(isinstance(outnames, list))
-        assert(outnames == expected)
+        self.assertTrue(isinstance(outnames, list))
+        self.assertEqual(outnames == expected)
 
 
     def test_surrounding_words(self):
@@ -180,8 +186,8 @@ class TestExtractPersons(unittest.TestCase):
                             'voorzitter'])
         search_names = ['Jane', 'Jane Doe']
         outp = surrounding_words(text, search_names)
-        assert(isinstance(outp, np.ndarray))
-        assert(np.array_equal(outp, expected))
+        self.assertTrue(isinstance(outp, np.ndarray))
+        self.assertEqual(np.array_equal(outp, expected))
 
 
     def test_count_occurrence(self):
@@ -201,21 +207,21 @@ class TestExtractPersons(unittest.TestCase):
                         'dr. j. doe werkt bij bedrijf.'])
         search_words = ['directeur', 'directrice']
         totalcount, totalcount_sentence = count_occurrence(text, search_words)
-        assert(totalcount == 2)
-        assert(totalcount_sentence == 1)
+        self.assertEqual(totalcount == 2)
+        self.assertEqual(totalcount_sentence == 1)
 
         # Test case 2
         text = np.array(['vice-voorzitter Jane'])
         search_words = ['voorzitter']
         totalcount, totalcount_sentence = count_occurrence(text, search_words)
-        assert(totalcount == 0)
-        assert(totalcount_sentence == 0)
+        self.assertEqual(totalcount == 0)
+        self.assertEqual(totalcount_sentence == 0)
 
         # Test case 3
         search_words = ['vice-voorzitter', 'vicevoorzitter', 'vice voorzitter']
         totalcount, totalcount_sentence = count_occurrence(text, search_words)
-        assert(totalcount == 1)
-        assert(totalcount_sentence == 1)
+        self.assertEqual(totalcount == 1)
+        self.assertEqual(totalcount_sentence == 1)
 
 
     def test_determine_main_job(self):
@@ -247,14 +253,14 @@ class TestExtractPersons(unittest.TestCase):
                                 ])
         # Test case 1
         check = determine_main_job(jobs, sentences, surroundings)
-        assert(check[0] == 'directeur')
-        assert(check[1] == 2)
-        assert(check[2] == 1)
+        self.assertEqual(check[0] == 'directeur')
+        self.assertEqual(check[1] == 2)
+        self.assertEqual(check[2] == 1)
 
         # Test case 2
         sentences = np.array(['rvt, directeur'])
         check = determine_main_job(jobs, sentences, surroundings)
-        assert(check[0] == 'rvt')
+        self.assertEqual(check[0] == 'rvt')
 
         # Test case 3
         surroundings = np.array(['deze tekst dient enkel om te testen.',
@@ -262,34 +268,34 @@ class TestExtractPersons(unittest.TestCase):
                                 'dr. j. doe werkt bij bedrijf.',
                                 'bedrijf heeft een, raad van toezicht, absoluut, ab, absurt.'])
         check = determine_main_job(jobs, sentences, surroundings)
-        assert(check[0] == 'directeur')
+        self.assertEqual(check[0] == 'directeur')
 
         # Test case 4
         sentences = np.array(['directeur rvt directeur'])
         surroundings = np.array(['directeur', 'rvt'])
         check = determine_main_job(jobs, sentences, surroundings)
-        assert(check[0] == 'directeur')
+        self.assertEqual(check[0] == 'directeur')
 
         # Test case 5
         sentences = np.array(['directeur rvt'])
         surroundings = np.array(['directeur rvt directeur'])
         check = determine_main_job(jobs, sentences, surroundings)
-        assert(check[0] == 'directeur')
+        self.assertEqual(check[0] == 'directeur')
 
         # Test case 6
         check = determine_main_job(jobs, sentences, sentences)
-        assert(check[0] == 'directeur')
+        self.assertEqual(check[0] == 'directeur')
 
         # Test case 7
         sentences = np.array([' '])
         surroundings = np.array(['directeur rvt'])
         check = determine_main_job(jobs, sentences, surroundings)
-        assert(check[0] == 'directeur')
+        self.assertEqual(check[0] == 'directeur')
 
         # Test case 8
         sentences = np.array(['niets'])
         check = determine_main_job(jobs, sentences, sentences)
-        assert(check[0] is None)
+        self.assertTrue(check[0] is None)
 
 
     def test_determine_sub_job(self):
@@ -310,28 +316,37 @@ class TestExtractPersons(unittest.TestCase):
         sentences = np.array(['directeur Jane Doe directeur. J. Doe voorzitter'])
         main_cat = 'directeur'
         check = determine_sub_job(members, sentences, main_cat)
-        assert(check[0] == 'directeur')
-        assert(check[1] == '')
+        self.assertEqual(check[0] == 'directeur')
+        self.assertEqual(check[1] == '')
 
         # Test case 2
         sentences = np.array(['Jane Doe is niet directeur van bedrijf. J. Doe not voorzitter'])
         check = determine_sub_job(members, sentences, main_cat)
-        assert(check[0] == '')
+        self.assertEqual(check[0] == '')
 
         # Test case 3
         check = determine_sub_job(members, np.array(['Jane Doe']), main_cat)
-        assert(check[0] == '')
+        self.assertEqual(check[0] == '')
 
         # Test case 4
         check = determine_sub_job(members, np.array(['Jane Doe voorzitter']), main_cat)
-        assert(check[0] == '')
+        self.assertEqual(check[0] == '')
 
         # Test case 5
         check = determine_sub_job(members, np.array(['Jane Doe voorzitter']), 'voorzitter')
-        assert(check[0] == 'voorzitter')
+        self.assertEqual(check[0] == 'voorzitter')
 
 
     def test_identify_potential_people(self):
+        """Unit test for the function 'identify_potential_people'
+        
+        This function tests the 'identify_potential_people' function hat analyses text to find names of
+        people that may have one of the predifined jobs.
+
+        Raises:
+            AssertionError: if the returned parameter is not a list, or if it does not match the expected value
+
+        """
         people = identify_potential_people(doc, all_persons)
         expected = [['Anna de Wit', 'A.B. de Wit'], ['Bernard Zwartjes'],
                     ['Cornelis Geel'], ['Dirkje Rood'], ['E. van Grijs', 'Eduard van Grijs'],
@@ -339,14 +354,27 @@ class TestExtractPersons(unittest.TestCase):
                     ['H. Doe', 'Hendrik Doe'], ['Hendrik Groen', 'Mr. H. Groen'],
                     ['J. Doe', 'Jane Doe'], ['Isaak Paars'], ['Jan van Oranje'], ['Karel'],
                     ['Lodewijk'], ['Maria']]
-        assert(isinstance(people, list))
-        assert(people.sort() == expected.sort())
+        self.assertTrue(isinstance(people, list))
+        self.assertEqual(people.sort() == expected.sort())
 
 
-    def test_relevant_sentences():
+    def test_relevant_sentences(self):
+        """Unit test for the 'relevant_sentences' function.
+        
+        This function tests the 'relevant_sentences' function that identifies all sentences containing a specific
+        person and those directly surrounding them.
+
+        There is one test case that asserts the output instance and checks the expected output
+
+        Raises:
+            AssertionError: If the returned parameters are not a numpy array or
+            if the return values do not match the expected return values.
+        """
+        # Test case
         sentences, surroundings = relevant_sentences(doc, ['Jane Doe', 'J. Doe'])
         assert(isinstance(sentences, np.ndarray))
         assert(isinstance(surroundings, np.ndarray))
+
         expected_s = np.array(['bedrijfsstructuur jane doe, directeur van bedrijf.',
                             'dr. j. doe werkt bij bedrijf.'])
         expected_sur = np.array(['deze tekst dient enkel om te testen.',
@@ -357,7 +385,17 @@ class TestExtractPersons(unittest.TestCase):
         assert(np.array_equal(expected_sur, surroundings))
 
 
-    def test_append_p_position():
+    def test_append_p_position(self):
+        """Unit test for the 'append_p_position' function.
+        
+        This function tests the 'append_p_position' function that append a person's name to their main position in
+          the list of positions.
+        
+        There is one test case
+
+        Raises:
+            AssertionError: If the returned parameter does not match the expected return value.
+        """
         p_position = [['directeur'], ['bestuur'], ['rvt'], ['ledenraad'], ['kascommissie'],
                     ['controlecommissie'], ['ambassadeur']]
         main = 'rvt'

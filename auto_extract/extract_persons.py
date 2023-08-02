@@ -533,15 +533,34 @@ def determine_sub_job(members, sentences, main_cat):
 
 
 def identify_potential_people(doc, all_persons):
-    '''identify potential ambassadors and board members based on keywords in sentences'''
+    '''identify potential ambassadors and board members based on keywords in sentences
+    
+    This function analyzes the given 'doc' containing (stanza) processed sentences and identifies
+    potential people who may hold ambassadors or board member positions,
+    based on the presence of keywords associated with job categories in the sentences.
+
+    Args:
+        doc (stanza.Document): A processed stanza.Document object containing sentences.
+        all_persons (list): A list of all extracted person names.
+
+    Returns:
+        list: A list of lists, each containing different writing forms of names of people who
+              potentially hold significant positions. The outer list represents groups of
+              potentially significant people, and the inner lists contain various ways of
+              writing the names of the same individual.
+    '''
     pot_per = np.array([])  # people with potential significant position
     people = []  # list of all writing forms of names of people in pot_per
+
+    # Identify people with potential predefined jobs
     for sentence in doc.sentences:
         stripped_sentence = sentence.text.lower().replace(',', ' ').replace('.', ' ')
         if any(re.search(r"\b" + item + r"\b", stripped_sentence)
                for item in (JobKeywords.main_job_all + JobKeywords.sub_job_all)):
             pot_per = np.append(pot_per,
                                 [f'{ent.text}' for ent in sentence.ents if ent.type == "PER"])
+    
+    # postprocessing of identified pot_per
     for pp in pot_per:
         # Remove search words identified as persons
         if pp.lower() in (JobKeywords.main_job_all + JobKeywords.sub_job_all):
@@ -549,23 +568,44 @@ def identify_potential_people(doc, all_persons):
         # Remove photographers identified as pot_per
         if re.search(r"©[ ]?" + pp + r"\b", doc.text):
             pot_per = pot_per[pot_per != pp]
+        # check if length of name is not one
         if len(pp) == 1:
             pot_per = pot_per[pot_per != pp]
+    
     # Find duplicates (i.e. J Brown and James Brown) and concatenate all ways of writing
     # the name of one persons that is potentially of interest
     peoples = find_duplicate_persons(list(np.unique(all_persons)))
     for p in peoples:
         if any(item in pot_per for item in p):
             people.append(p)
+    
     return people
 
 
 def relevant_sentences(doc, members):
-    '''identify all sentences containing a specific person and those directly surrounding them'''
+    """Identify all sentences containing a specific person and those directly surrounding them.
+
+    This function takes a stanza Document object 'doc' and a list of 'members', which are different write of the same name
+    of a specific person to search for. The function extracts all 'sentences' that contain any of the 'members' and those
+    directly surrounding ('surroundings') them in the document.
+
+    Args:
+        doc (stanza.Document): A stanza Document object containing the parsed text.
+        members (list): A list of names (str) representing a specific person to search for.
+
+    Returns:
+        tuple: A tuple containing two numpy arrays:
+            - sentences: An array containing all sentences that contain any of the 'members'.
+            - surroundings: An array containing sentences directly surrounding the 'sentences' that
+              containing the 'members'.
+    """
+    # Definitions
     prevsentence = ''
     sentences = np.array([])
     surroundings = np.array([])
     need_next_sentence = False
+
+    # Determine sentences and surroundings
     for sentence in doc.sentences:
         if any(member in sentence.text for member in members):
             sentences = np.append(sentences, sentence.text.lower())
@@ -583,6 +623,18 @@ def relevant_sentences(doc, members):
 
 
 def append_p_position(p_position, main, name):
+    """Append a person's name to their main position in the list of positions.
+
+    Args:
+        p_position (list): A list of sublists representing various position categories, where each sublist
+                           starts with the main position's name.
+        main (str): The main position name (e.g., 'directeur', 'bestuur', etc.) to which the 'name' should
+                    be appended.
+        name (str): The name to append to the main position in the 'p_position'.
+
+    Returns:
+        list: The updated list 'p_position' with the persons 'name' appended to the appropriate main position.
+    """
     for pos in p_position:
         if pos[0] == main:
             pos.extend([name])
