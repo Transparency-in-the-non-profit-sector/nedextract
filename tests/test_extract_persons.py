@@ -31,7 +31,7 @@ infile = os.path.join(indir, 'test_report.pdf')
 text = preprocess_pdf(infile, ' ')
 doc = stanza.Pipeline(lang='nl', processors='tokenize,ner')(text)
 
-# DEfinitions for test case 2
+# Definitions for test case 2
 all_persons = np.unique([f'{ent.text}' for ent in doc.ents if ent.type == "PER"])
 infile2 = os.path.join(indir, 'test_report2.pdf')
 text2 = preprocess_pdf(infile2, ' ')
@@ -45,10 +45,14 @@ class TestExtractPersons(unittest.TestCase):
         - test_abbreviate: tests the 'abbreviate' function to abbreviate names
         - test_get_tsr: tests the 'get_tsr' function that determines the token set ratio for two names and the required score
         - test_strip_names_from_title: tests the 'strip_names_from_title' function that removes titles from names.
-        - test_find_duplicate_persons: tests the 'find_duplicate_persons' function that tests if names in a list are very similar.
-        - test_surrounding_words: tests the 'surrounding_words' function that dermines the words surrounding a given name in a text.
-        - test_count_occurrence: tests the 'count_occurrence' function that counts for a list of serach words the occurences in a text.
-
+        - test_find_duplicate_persons: tests the 'find_duplicate_persons' function that tests if names in a list are very
+          similar.
+        - test_surrounding_words: tests the 'surrounding_words' function that dermines the words surrounding a given name in a
+          text.
+        - test_count_occurrence: tests the 'count_occurrence' function that counts for a list of serach words the occurences in
+          a text.
+        - test_determine_main_job: tests the 'determine_main_job' function that determines the main job from a set of sentences
+          or surrounding sentences.
     """
     def test_abbreviate(self):
         """Unit test function for the 'abbreviate' function.
@@ -197,12 +201,14 @@ class TestExtractPersons(unittest.TestCase):
         totalcount, totalcount_sentence = count_occurrence(text, search_words)
         assert(totalcount == 2)
         assert(totalcount_sentence == 1)
+
         # Test case 2
         text = np.array(['vice-voorzitter Jane'])
         search_words = ['voorzitter']
         totalcount, totalcount_sentence = count_occurrence(text, search_words)
         assert(totalcount == 0)
         assert(totalcount_sentence == 0)
+
         # Test case 3
         search_words = ['vice-voorzitter', 'vicevoorzitter', 'vice voorzitter']
         totalcount, totalcount_sentence = count_occurrence(text, search_words)
@@ -211,6 +217,25 @@ class TestExtractPersons(unittest.TestCase):
 
 
     def test_determine_main_job():
+        """Unit test for the 'determine_main_job' function.
+
+        The function tests the determine_main_job function that determines the main job from a set of sentences
+        or surrounding sentences.
+
+        After an initial set of definitons for the parameters sentences, surroundings, there are 8 test cases, for each of
+        which the input sentences and/or input surrounding sentences are updated
+
+        Raises:
+            AssertionError: If the return values do not match the expected return values for any of the test cases.
+        """
+        # Definitions of jobs
+        directeur = ['directeur', 'directrice', 'directie', 'bestuurder']
+        rvt = ['rvt', 'raad van toezicht', 'raad v. toezicht', 'auditcommissie', 'audit commissie']
+        bestuur = ['bestuur', 'db', 'ab', 'rvb', 'bestuurslid', 'bestuursleden', 'hoofdbestuur',
+                'bestuursvoorzitter']
+        jobs = [directeur, rvt, bestuur]
+
+        # Starting definitions for sentences and surrounding sentences
         sentences = np.array(['bedrijfsstructuur directeur jane doe, directeur van bedrijf.',
                             'dr. j. doe werkt bij bedrijf.'])
         surroundings = np.array(['deze tekst dient enkel om te testen rvt.',
@@ -218,38 +243,48 @@ class TestExtractPersons(unittest.TestCase):
                                 'dr. j. doe werkt bij bedrijf.',
                                 'bedrijf heeft een rvt, raad van toezicht rvt, absoluut, ab, absurt.'
                                 ])
-        directeur = ['directeur', 'directrice', 'directie', 'bestuurder']
-        rvt = ['rvt', 'raad van toezicht', 'raad v. toezicht', 'auditcommissie', 'audit commissie']
-        bestuur = ['bestuur', 'db', 'ab', 'rvb', 'bestuurslid', 'bestuursleden', 'hoofdbestuur',
-                'bestuursvoorzitter']
-        jobs = [directeur, rvt, bestuur]
+        # Test case 1
         check = determine_main_job(jobs, sentences, surroundings)
         assert(check[0] == 'directeur')
         assert(check[1] == 2)
         assert(check[2] == 1)
+
+        # Test case 2
         sentences = np.array(['rvt, directeur'])
         check = determine_main_job(jobs, sentences, surroundings)
         assert(check[0] == 'rvt')
+
+        # Test case 3
         surroundings = np.array(['deze tekst dient enkel om te testen.',
                                 'bedrijfsstructuur directeur jane doe, van bedrijf.',
                                 'dr. j. doe werkt bij bedrijf.',
                                 'bedrijf heeft een, raad van toezicht, absoluut, ab, absurt.'])
         check = determine_main_job(jobs, sentences, surroundings)
         assert(check[0] == 'directeur')
+
+        # Test case 4
         sentences = np.array(['directeur rvt directeur'])
         surroundings = np.array(['directeur', 'rvt'])
         check = determine_main_job(jobs, sentences, surroundings)
         assert(check[0] == 'directeur')
+
+        # Test case 5
         sentences = np.array(['directeur rvt'])
         surroundings = np.array(['directeur rvt directeur'])
         check = determine_main_job(jobs, sentences, surroundings)
         assert(check[0] == 'directeur')
+
+        # Test case 6
         check = determine_main_job(jobs, sentences, sentences)
         assert(check[0] == 'directeur')
+
+        # Test case 7
         sentences = np.array([' '])
         surroundings = np.array(['directeur rvt'])
         check = determine_main_job(jobs, sentences, surroundings)
         assert(check[0] == 'directeur')
+
+        # Test case 8
         sentences = np.array(['niets'])
         check = determine_main_job(jobs, sentences, sentences)
         assert(check[0] is None)

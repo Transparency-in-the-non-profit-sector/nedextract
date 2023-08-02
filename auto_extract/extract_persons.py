@@ -168,6 +168,7 @@ def strip_names_from_title(persons: list):
     """
     p = []
     p_remove = []
+
     for per in persons:
         name = per.lower()
         for title in Titles.titles:
@@ -331,6 +332,7 @@ def surrounding_words(text, search_names):
     surrounding_words = np.array([])
     text = np.array2string(text, separator=' ')
     searchnames = sorted(search_names, key=len, reverse=True)
+
     for search_name in searchnames:
         text = text.lower().replace(search_name.lower(), 'search4term')
     text = re.sub('[^0-9a-zA-Z ]+', ' ', text)
@@ -339,6 +341,7 @@ def surrounding_words(text, search_names):
     text = text.replace('adjunct', '')
     text = text.replace('interim', '')
     text_split = text.split()
+
     for i, word in enumerate(text_split):
         if word == 'search4term':
             if i != 0:
@@ -352,7 +355,8 @@ def count_occurrence(text, search_words):
     """Return the summed total of occurrences of search words in text.
     
     This function counts the total number of occurrences of each word in the 'search_words'
-    list within the provided 'text'. The function takes care of word boundaries to avoid
+    list within the provided 'text', and the number of sentences in which any of the search words is found.
+    The function takes care of word boundaries to avoid
     partial matches.
 
     Args:
@@ -392,39 +396,87 @@ def count_occurrence(text, search_words):
 
 
 def determine_main_job(main_jobs, sentences, surroundings):
-    """Determine main job category based on:
-    The most occuring category in the direct text based on sentence frequency (fs, i.e. number of
-    sentences in which category+name is found)
-    If none can be identified, or there is a tie: try based on sentence frequency from surrounding
-    sentences (fss).
-    If none can be identified: try based on overall frequency in main text
-    If non can be identified: try based on overall frequency in surrounding text
-    If still none can be identified, eliminate name from board"""
-    fs = np.empty(len(main_jobs))  # sentence frequency direct sentences
-    fss = np.empty(len(main_jobs))  # sentence frequency incl. surrounding sentences
-    ft = np.empty(len(main_jobs))  # total frequency direct sentences
-    fts = np.empty(len(main_jobs))  # total frequency incl. surrounding sentences
+    """Determine main job category based on sentence and overall frequency.
+
+    This function determines the primary job category by analyzing the occurrence frequency of
+    each job category in both the direct sentences and the surrounding sentences. The process
+    follows these steps:
+
+    1. Calculate the sentence frequency (fs) and total frequency (ft) for each job category
+       based on the direct sentences.
+    2. Calculate the sentence frequency (fss) and total frequency (fts) for each job category
+       based on the surrounding sentences.
+    3. Determine the main job using the following rules in order of:
+       1. The most occuring category in the direct text based on sentence frequency (fs, i.e. number of
+         sentences in which category+name is found)
+       2. If none can be identified, or there is a tie: try based on sentence frequency from surrounding
+         sentences (fss).
+       3. If none can be identified: try based on overall frequency in main text
+       4. If none can be identified: try based on overall frequency in surrounding text
+       5. If none can be identified, select first element (main jobs) from the list of condition 1, since the main jobs list
+          is ordered in 'most likely with few number of occureences'
+       6. If none can be identified, select first element (main jobs) from the list of condition 2, since the main jobs list
+          is ordered in 'most likely with few number of occureences'
+       7. If still none can be identified, eliminate name from board
+    4. Determine the term frequency of selected main job directeur based on direct sentences
+    5. Determine the term frequency of selected main job bestuur and rvt based on surrounding sentences
+
+    Args:
+        main_jobs (list): A list containing sub-lists of words for each main job category.
+        sentences (list): A list of sentences in which to search for job categories.
+        surroundings (list): A list of sentences surrounding the main text.
+    
+    Returns:
+        list: A list containing four elements in the following order:
+              - The determined main job category (str) or None if no category is found.
+              - The total frequency of the category 'directeur' in the direct sentences (int).
+              - The total frequency of the category 'bestuur' in the surrounding sentences (int).
+              - The total frequency of the category 'rvt' in the surrounding sentences (int).
+    """
+
+    # Define sentence (fs, fss) and total frequencies (ft, fts) for direct sentences and surrounding sentences
+    fs = np.empty(len(main_jobs))
+    fss = np.empty(len(main_jobs))
+    ft = np.empty(len(main_jobs))
+    fts = np.empty(len(main_jobs))
+
     main_job = np.array([mj[0] for mj in main_jobs])
+
+    # Determine ft,fs, fts, and ftss for each job
     for m, m_j in enumerate(main_jobs):
         ft[m], fs[m] = count_occurrence(sentences, m_j)
         fts[m], fss[m] = count_occurrence(surroundings, m_j)
+    
+    # Select based on most occuring category in the direct text using sentence frequency, no tie
     if (max(fs) > 0 and len(np.where(fs == max(fs))[0]) == 1):
         main_cat = main_job[np.where(fs == max(fs))[0]][0]
+    # Select based on sentence frequency from surrounding sentences, no tie
     elif (max(fss) > 0 and len(np.where(fss == max(fss))[0]) == 1):
         main_cat = main_job[np.where(fss == max(fss))[0]][0]
+    # Select based on overall frequency in main text, no tie
     elif (max(ft) > 0 and len(np.where(ft == max(ft))[0]) == 1):
         main_cat = main_job[np.where(ft == max(ft))[0]][0]
+    # Select based on overall frequency in surrounding text, no tie
     elif (max(fts) > 0 and len(np.where(fts == max(fts))[0]) == 1):
         main_cat = main_job[np.where(fts == max(fts))[0]][0]
+    # Select based on most occuring category in the direct text based on sentence frequency, tie,
+    # select first element of tied list
     elif max(fs) > 0:
         main_cat = main_job[np.where(fs == max(fs))[0]][0]
+    # Select based on most occuring category in the surrounding text based on sentence frequency, tie,
+    # select first element of tied list
     elif max(fss) > 0:
         main_cat = main_job[np.where(fss == max(fss))[0]][0]
+    # do not select a main category
     else:
         main_cat = None
+    
+    # define term frequency of selected main job directeur based on direct sentences
     ft_director = ft[np.where(main_job == 'directeur')]
+    # define term frequency of selected main job bestuur/rvt based on surrounding sentences
     fts_bestuur = fts[np.where(main_job == 'bestuur')]
     fts_rvt = fts[np.where(main_job == 'rvt')]
+
     return [main_cat, ft_director, fts_bestuur, fts_rvt]
 
 
