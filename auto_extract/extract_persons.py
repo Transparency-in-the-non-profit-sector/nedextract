@@ -120,6 +120,7 @@ def get_tsr(p_i: str, p_j: str):
                required score (req_score) as an integer.
     """
     token_set_ratio = fuzz.token_set_ratio(p_i, p_j)
+
     # if the second name is only one word
     if len(p_j.split()) == 1:
         req_score = 100
@@ -264,7 +265,7 @@ def find_similar_names(persons):
 
 
 def find_duplicate_persons(persons):
-    """ Function to find duplicate names.
+    """Function to find duplicate names.
 
     From a list of names, find which names represent different writings of the same name,
     e.g. James Brown and J. Brown. Returns a list consisting of sublists, in which each sublist
@@ -348,16 +349,36 @@ def surrounding_words(text, search_names):
 
 
 def count_occurrence(text, search_words):
-    """return the summed total of occurrences of search words in text."""
+    """Return the summed total of occurrences of search words in text.
+    
+    This function counts the total number of occurrences of each word in the 'search_words'
+    list within the provided 'text'. The function takes care of word boundaries to avoid
+    partial matches.
+
+    Args:
+        text (list of str): A list of sentences or paragraphs as strings.
+        search_words (list of str): A list of words to be searched for in the 'text'.
+
+    Returns:
+        tuple: A tuple containing two values: the total count of occurrences of search words
+        in the entire 'text' and the number of sentences in 'text' that contain at least one
+        of the search words.
+    """
+    # Preprocess text
     fulltext = np.array2string(text, separator=' ')
     fulltext = re.sub(r"[\[\]']", '', fulltext)
     fulltext = fulltext.replace('vice voorzitter', 'vicevoorzitter')
     fulltext = fulltext.replace('vice-voorzitter', 'vicevoorzitter')
+
+    # Define varibales to be returned
     totalcount = 0
     totalcount_sentence = 0
+
+    # Determine totalcount
     for item in search_words:
         escape_item = re.escape(item)
         totalcount += sum(1 for _ in re.finditer(r'\b' + escape_item + r'\b', fulltext))
+    # Determine totalcount_sentence
     for sentence in text:
         sentence = sentence.replace('vice voorzitter', 'vicevoorzitter')
         sentence = sentence.replace('vice-voorzitter', 'vicevoorzitter')
