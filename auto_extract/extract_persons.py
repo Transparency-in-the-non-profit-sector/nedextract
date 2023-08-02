@@ -382,6 +382,7 @@ def count_occurrence(text, search_words):
     for item in search_words:
         escape_item = re.escape(item)
         totalcount += sum(1 for _ in re.finditer(r'\b' + escape_item + r'\b', fulltext))
+    
     # Determine totalcount_sentence
     for sentence in text:
         sentence = sentence.replace('vice voorzitter', 'vicevoorzitter')
@@ -459,12 +460,12 @@ def determine_main_job(main_jobs, sentences, surroundings):
     # Select based on overall frequency in surrounding text, no tie
     elif (max(fts) > 0 and len(np.where(fts == max(fts))[0]) == 1):
         main_cat = main_job[np.where(fts == max(fts))[0]][0]
-    # Select based on most occuring category in the direct text based on sentence frequency, tie,
-    # select first element of tied list
+    # Selection based on most occuring category in the direct text based on sentence frequency gives a tie, therefor
+    # select first element of tied fs list
     elif max(fs) > 0:
         main_cat = main_job[np.where(fs == max(fs))[0]][0]
-    # Select based on most occuring category in the surrounding text based on sentence frequency, tie,
-    # select first element of tied list
+    # Selection based on most occuring category in the surrounding text based on frequency gives a tie, therefore select first
+    # element of tied fss list
     elif max(fss) > 0:
         main_cat = main_job[np.where(fss == max(fss))[0]][0]
     # do not select a main category
@@ -481,13 +482,44 @@ def determine_main_job(main_jobs, sentences, surroundings):
 
 
 def determine_sub_job(members, sentences, main_cat):
+    """Determine the sub job category based on the words mentioned in the provided 'sentences' and main category ('main_cat').
+
+    This function determines the sub job category by analyzing the occurrence frequency of each
+    sub job category in the surrounding words of the given 'members' (different writings of a persons' name).
+    The process follows these steps:
+
+    1. Get the surrounding words of the given members from the sentences.
+    2. Calculate the occurrence frequency of each sub job category in the surrounding words.
+    3. If there are sub job categories with a frequency greater than 0, select the one with the
+       highest frequency.
+    4. If there is a tie among multiple sub job categories with the highest frequency, choose
+       the first one in the list (JobKeywords.sub_jobs).
+    5. Determine the primary sub_cat and backup_sub_cat based on the main_cat, if any was found.
+    6. The sub cat for main cat director is only defined if the sub cat is also director. In that case,
+       there is no backup sub cat
+
+    Args:
+        members (list): A list of names to find the surrounding words for.
+        sentences (list): A list of sentences containing the text to search for sub job categories.
+        main_cat (str): The previously determined main job category.
+
+    Returns:
+        list: A list containing two elements in the following order:
+              - The determined sub job category (str) or an empty string if no category is found.
+              - The backup sub job category (str) or an empty string if no category is found.
+    """
+    # Define c_sub_job
     c_sub_job = np.array([])
+
+    # Determine the surrounding words and use these to determine the count of each sub job 
     surrounding_w = surrounding_words(sentences, members)
     if surrounding_w.size > 0:
         for sj in JobKeywords.sub_jobs:
             c_sub_job = np.append(c_sub_job, count_occurrence(surrounding_w, sj)[0])
     else:
         c_sub_job = np.append(c_sub_job, 0)
+    
+    # Determine sub_cat and backup_sub_cat
     if max(c_sub_job) > 0 and len(np.where(c_sub_job == max(c_sub_job))[0]) == 1:
         sub_cat = backup_sub_cat = JobKeywords.sub_job[np.where(c_sub_job == max(c_sub_job))[0]][0]
         if main_cat == 'directeur' and sub_cat != 'directeur':
@@ -496,6 +528,7 @@ def determine_sub_job(members, sentences, main_cat):
             backup_sub_cat = ''
     else:
         sub_cat = backup_sub_cat = ''
+    
     return [sub_cat, backup_sub_cat]
 
 
