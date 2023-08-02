@@ -642,26 +642,57 @@ def append_p_position(p_position, main, name):
 
 
 def extract_persons(doc, all_persons):
-    """ Determine from a text which persons (identified with stanza) are ambassadors or
-    board members, using a rule based method. Identify potential ambassadors and board members
-    based on key words occuring in sentences in which a name is mentioned. Next, for board members,
-    a main and sub position are identified (if possible). The rules for main position are based on
-    the frequency of key words occuring in sentences in which names are mentioned, or the sentences
-    surrounding those in which names are mentioned.
-    Sub positions are determined based on the frequency of key words directly next to the name.
-    #
-    For the position of director, an additional filter is applied: if more than 2 persons are
-    identified as director, persons are not considered a director if:
-    - they are mentioned in director context < 2 (ft), while the max mentioning is > 2
-    - the subposition (obtained from words directly surrounding name) is not director.
+    """Extract ambassadors and board members from a text using a rule-based method.
+
+    This function determines potential ambassadors and board members in a text based on the
+    occurrence of specific keywords in (surrounding) sentences where names are mentioned. For board members,
+    it identifies the main and sub positions. The main job category is determined based on
+    the frequency of keywords in relevant sentences and the surrounding context. Sub job categories
+    are determined based on keywords directly adjacent to the person's name. For the position of director,
+    additional checks are applied.
+    
+    The following steps are taken:
+    1. Identify names of people with potenitally siginiticant functions
+    2. For each name:
+     - collect relevant sentences and surrounding sentences
+     - determine main job category
+     - detemine sub job catergory
+     - select 'main' name of a person from a list of found synonyms
+     - additional check for persons identified as ambassador
+     - set b_position and add people with main cat diredcteur, bestuur or rvt to a list of corresponding potential memebrs. 
+    3. For the position of director, an additional filter is applied: if more than 2 persons are identified as director, 
+       persons are not considered a director if:
+            - they are mentioned in director context < 2 (ft), while the max mentioning is > 2
+            - the subposition (obtained from words directly surrounding name) is not director.
+    4. Process the arrays of potential rvt and bestuur members to determine if they are likely true rvt and bestuur members
+       respectively
+
+
+    Args:
+        doc (object): A document object containing the text to analyze.
+        all_persons (list): A list of unique names identified in the text using a named entity recognition tool.
+
+    Returns:
+        tuple: A tuple containing the following arrays:
+               - Array of potential ambassadors (ambassadeur).
+               - Array of strings of people with significant positions and their main and sub positions, of the form (['name - main pos - sub_ pot'])
+               - Array of potential directors and their sub positions (directeur).
+               - Array of potential 'Raad van Toezicht' (rvt) members and their sub positions.
+               - Array of potential board members and their sub positions (bestuur).
+               - Array of potential 'Ledenraad' members and their sub positions.
+               - Array of potential 'Kascommissie' members and their sub positions.
+               - Array of potential 'Controlecommissie' members and their sub positions.
     """
-    b_position = np.array([])   # people with significant positions + main and sub position
-    # potential directors: name, sub_cat, ft_director, main_cat, backup_sub_cat,fts_bestuur,fts_rvt
+    ## Define variables
+    b_position = np.array([])   # to be filled with strings of the form 'name - main pos - sub_ pot'
+    # list of potential directors: name, sub_cat, ft_director, main_cat, backup_sub_cat,fts_bestuur,fts_rvt
     pot_director = []
     pot_rvt = []  # list of potential rvt members
     pot_bestuur = []  # list of potential board member
+    # list with sublist of people per position [[position, name, name, ...], [...]]
     p_position = [[p[0]] for p in JobKeywords.main_jobs]
 
+    # identify people to be analysed
     people = identify_potential_people(doc, all_persons)
 
     # Determine most likely position of board members
@@ -674,16 +705,19 @@ def extract_persons(doc, all_persons):
         m_ft_dbr = determine_main_job(JobKeywords.main_jobs, sentences, surroundings)
         # Determine sub job category based on positions mentioned directely before or after name
         sub_cat = determine_sub_job(members, sentences, m_ft_dbr[0])
-        # Add final results
+        # Select first synonym of name
         member = members[0]
 
+        # Check for ambassadeur: ambassadeur unlikely if sub_cat is determined
         if m_ft_dbr[0] == 'ambassadeur':
-            # ambassadeur unlikely if sub_cat is determined
             if sub_cat[0] != '':
                 m_ft_dbr[0] = determine_main_job(JobKeywords.main_jobs_no_amb, sentences,
                                                  surroundings)[0]
             else:
                 p_position = append_p_position(p_position, m_ft_dbr[0], member)
+
+        # Determine b_position array
+        # Add people identified as directeur, bestuur or rvt member to respective 'potential' lists 
         if m_ft_dbr[0] != 'ambassadeur':
             if m_ft_dbr[0] is None:
                 continue
@@ -704,7 +738,7 @@ def extract_persons(doc, all_persons):
             elif m_ft_dbr[0] in JobKeywords.main_job[:-1]:
                 p_position = append_p_position(p_position, m_ft_dbr[0], member)
 
-    # **** Additional checks
+    # Additional checks for potential directeur position
     pot_director = np.array(pot_director, dtype=object)
     if len(pot_director) > 1:
         (b_position, pot_rvt, pot_bestuur, p_position) = director_check(pot_director,
@@ -714,11 +748,11 @@ def extract_persons(doc, all_persons):
                                                                         p_position)
     elif len(pot_director) == 1:
         p_position = append_p_position(p_position, 'directeur', pot_director[0][0])
-    # If there are more than 8 people in rvt or bestuur, evaluate ther fts and sub_pos and consider
-    # whether some of them need to be removed.
+    
+    # Determine if people initially identified as rvt memeber are likely true rvt members
     pot_rvt = np.array(pot_rvt, dtype=object)
     b_position, p_position = check_rvt(pot_rvt, b_position, p_position)
-
+    # Determine if people initially identified as bestuur memeber are likely true bestuur members
     pot_bestuur = np.array(pot_bestuur, dtype=object)
     b_position, p_position = check_bestuur(pot_bestuur, b_position, p_position)
 

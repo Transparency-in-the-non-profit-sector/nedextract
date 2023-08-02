@@ -63,6 +63,8 @@ class TestExtractPersons(unittest.TestCase):
           the list of positions.
         - test_array_p_position: tests the 'array_p_position' function that returns an array of names taken from a sublist of
           the list p_position.
+        - test_extract_persons: tests the 'extract_persons' function that extracts ambassadors and board members from a text using a rule-based method.
+          -
         - test_check_rvt: tests the check_rvt function that determines whether potential rvt members can be considered try=ue rvt memebers.
         - test_check_bestuur: tests the check_bestuur function that determines whether potential bestuur members can be considered true bestuur memebers.
     """
@@ -411,6 +413,16 @@ class TestExtractPersons(unittest.TestCase):
 
 
     def test_extract_persons(self):
+        """Unit test for the function 'extract_persons'.
+        
+        This function tests the 'extract_persons' function that extracts ambassadors and board members from a text
+        using a rule-based method.
+
+        There are 2 tests. The first test uses the first test pdf document, and each of the eight checks asserts if 
+        one of the 8 returned function categories, contain the expected names.
+        The second test uses a test docuemnt 2 to check if the additonal director conditions work as expected
+        """
+        # Test case 1
         e_a = np.array(['Sarah', 'Thomas'])
         e_bp = np.array(['Anna de Wit - rvt - vice-voorzitter',
                         'Dirkje Rooden - bestuur - lid',
@@ -443,6 +455,8 @@ class TestExtractPersons(unittest.TestCase):
         self.assertTrue(np.array_equal(e_l, l))
         self.assertTrue(np.array_equal(e_k, k))
         self.assertTrue(np.array_equal(e_c, c))
+        
+        # Test case 2
         d = extract_persons(doc2, all_persons2)[2]
         self.assertTrue(np.array_equal(np.array(['Jane Doe']), d))
 
