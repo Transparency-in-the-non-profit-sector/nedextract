@@ -1,4 +1,4 @@
-"""Class and functions to extract information about people mentioned in a text.
+"""Functions to extract information about people mentioned in a Dutch text.
 
 In general, the functions try to obtain for each name, what the function of that person is according to the text.
 Various functions are defined that try to reduce the number of duplicate names and determine the correct function
@@ -12,76 +12,11 @@ import itertools
 import re
 import numpy as np
 from fuzzywuzzy import fuzz
-
-
-class JobKeywords:
-    """Class that stores lists of words and categories for main and sub jobs/company positions.
-
-    This class provides lists of keywords and categories associated with main and sub jobs.
-    The keywords are used for matching job titles and determining job categories in various contexts.
-    """
-
-    # words and categories for main jobs
-    directeur = ['directeur', 'directrice', 'directie', 'bestuurder', 'directeuren',
-                 'directeur-bestuurder']
-    bestuur = ['bestuur', 'db', 'ab', 'rvb', 'bestuurslid', 'bestuursleden', 'hoofdbestuur',
-               'bestuursvoorzitter']
-    rvt = ['rvt', 'raad van toezicht', 'raad v. toezicht', 'auditcommissie', 'audit commissie']
-    ledenraad = ['ledenraad', 'ledenraadsvoorzitter', 'ledenraadpresidium']
-    kascommissie = ['kascommissie']
-    controlecommissie = ['controlecommissie']
-    ambassadeur = ['ambassadeur', 'ambassadeurs']
-    main_job_all = (directeur + rvt + bestuur + ledenraad + kascommissie + controlecommissie
-                    + ambassadeur)
-    main_jobs = [directeur, bestuur, rvt, ledenraad, kascommissie, controlecommissie, ambassadeur]
-    main_job = [mj[0] for mj in main_jobs]
-    main_jobs_no_amb = [directeur, bestuur, rvt, ledenraad, kascommissie, controlecommissie]
-    main_jobs_backup = [bestuur, rvt, ledenraad, kascommissie, controlecommissie, ambassadeur]
-    main_jobs_backup_noamb = [bestuur, rvt, ledenraad, kascommissie, controlecommissie]
-
-    # words and categories for sub jobs
-    vicevoorzitter = ['vice-voorzitter', 'vicevoorzitter', 'vice voorzitter']
-    voorzitter = ['voorzitter']
-    penningmeester = ['penningmeester']
-    secretaris = ['secretaris', 'secretariaat']
-    commissaris = ['commissaris', 'commissariaat']
-    lid = ['lid', 'leden', 'bestuurslid', 'bestuursleden']
-    adviseur = ['adviseur', 'adviseurs']
-    sub_job_all = (directeur + vicevoorzitter + voorzitter + penningmeester + secretaris +
-                   commissaris + lid + adviseur)
-    sub_jobs = [directeur, vicevoorzitter, voorzitter, penningmeester, secretaris, commissaris,
-                lid, adviseur]
-    sub_job = np.array([sj[0] for sj in sub_jobs])
-
-class Tussenvoegsels:
-    """This class stores a list of prefixes commonly found in the Netherlands.
-
-    List of tussenvoegsels is taken from:
-    https://publicaties.rvig.nl/dsresource?objectid=c5f84baf-ba01-41ef-a6a0-97cebec1c2d3&type=pdf
-    One-letter tussenvoegsels have been omitted. 
-    """
-
-    # Common infixes found in the Netherlands
-    tussenvoegsels = ["'s", "'m", "'t", "aan", "af", "al", "am", "auf", "ben", "bij", "bin",
-                      "boven", "da", "dal", "dal'", "dalla", "das", "de", "deca", "degli", "dei",
-                      "del", "della", "dem", "den", "der", "des", "di", "die", "do", "don", "dos",
-                      "du", "el", "gen", "het", "im", "in", "la", "las", "le", "les", "lo", "los",
-                      "of", "onder", "op", "over", "te", "ten", "ter", "tho", "thoe", "thor", "to",
-                      "toe", "tot", "uijt", "uit", "unter", "van", "ver", "vom", "von", "voor",
-                      "vor", "zu", "zum", "zur"]
-
-class Titles:
-    """Class that stores a list of common (abbreviated) titles.
-    
-    The lists contains titles and abbreviated titles ofter used in combination with their name.
-    """
-
-    titles = ['prof.', 'dr.', 'mr.', 'ir.', 'drs.', 'bacc.', 'kand.', 'dr.h.c.', 'ing.', 'bc.',
-              'phd', 'phd.', 'dhr.', 'mevr.', 'mw.', 'ds.', 'mgr.', 'mevrouw', 'meneer', 'jhr.']
+from keywords import JobKeywords, Tussenvoegsels, Titles
 
 
 def abbreviate(name: str, n_ab: int):
-    """Function to abbreviate names
+    """Function to abbreviate names.
     
     This function abbreviates the first 'n_ab' terms in a 'name', except if they are tussenvoegsels, and as long
     as it is not the last term in a name. 
@@ -148,7 +83,7 @@ def get_tsr(p_i: str, p_j: str):
 
 
 def strip_names_from_title(persons: list):
-    """Strip titles from person names. 
+    """Strip titles from person names.
     
     This function check if a names contains a title, and remvoes it.
     It takes the following steps:
@@ -182,7 +117,7 @@ def strip_names_from_title(persons: list):
 
 
 def sort_select_name(names: list):
-    """Sort names in a list
+    """Sort names in a list.
     
     This function sort the names in a list: it set the longest name that does not contain points,
     but does contain spaces, as first element.
@@ -523,7 +458,7 @@ def determine_sub_job(members, sentences, main_cat):
     if max(c_sub_job) > 0 and len(np.where(c_sub_job == max(c_sub_job))[0]) == 1:
         sub_cat = backup_sub_cat = JobKeywords.sub_job[np.where(c_sub_job == max(c_sub_job))[0]][0]
         if main_cat == 'directeur' and sub_cat == 'directeur':
-           backup_sub_cat = ''
+            backup_sub_cat = ''
     else:
         sub_cat = backup_sub_cat = ''
     
@@ -531,7 +466,7 @@ def determine_sub_job(members, sentences, main_cat):
 
 
 def identify_potential_people(doc, all_persons):
-    """identify potential ambassadors and board members based on keywords in sentences
+    """identify potential ambassadors and board members based on keywords in sentences.
     
     This function analyzes the given 'doc' containing (stanza) processed sentences and identifies
     potential people who may hold ambassadors or board member positions,
