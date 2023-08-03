@@ -64,7 +64,8 @@ class TestExtractPersons(unittest.TestCase):
         - test_array_p_position: tests the 'array_p_position' function that returns an array of names taken from a sublist of
           the list p_position.
         - test_extract_persons: tests the 'extract_persons' function that extracts ambassadors and board members from a text using a rule-based method.
-          -
+        - test_director_check: tests the director_check function that performs checks for potential directors and update their 
+          positions if necessary
         - test_check_rvt: tests the check_rvt function that determines whether potential rvt members can be considered try=ue rvt memebers.
         - test_check_bestuur: tests the check_bestuur function that determines whether potential bestuur members can be considered true bestuur memebers.
     """
@@ -88,11 +89,11 @@ class TestExtractPersons(unittest.TestCase):
         name2 = 'Jan de Wit'
         name3 = 'Jan Piet de Wit'
         name4 = 'Jan Piet van der Wit'
-        self.assertEqual(abbreviate(name, 2) == 'J Doe ')
-        self.assertEqual(abbreviate(name2, 2) == 'J de Wit ')
-        self.assertEqual(abbreviate(name3, 2) == 'J P de Wit ')
-        self.assertEqual(abbreviate(name4, 2) == 'J P van der Wit ')
-        self.assertEqual(abbreviate(name4, 3) == 'J P van der Wit ')
+        self.assertEqual(abbreviate(name, 2), 'J Doe ')
+        self.assertEqual(abbreviate(name2, 2), 'J de Wit ')
+        self.assertEqual(abbreviate(name3, 2), 'J P de Wit ')
+        self.assertEqual(abbreviate(name4, 2), 'J P van der Wit ')
+        self.assertEqual(abbreviate(name4, 3), 'J P van der Wit ')
 
 
     def test_get_tsr(self):
@@ -110,24 +111,24 @@ class TestExtractPersons(unittest.TestCase):
 
         # Test case 1
         tsr1, rs1 = get_tsr('Jane Doe', 'Jane Doe')
-        self.assertEqual(tsr1 == 100)
-        self.assertEqual(rs1 == 90)
+        self.assertEqual(tsr1, 100)
+        self.assertEqual(rs1, 90)
         # Test cse 2
         tsr2, rs2 = get_tsr('Jane Doe', 'Jane')
-        self.assertEqual(tsr2 == 100)
-        self.assertEqual(rs2 == 100)
+        self.assertEqual(tsr2, 100)
+        self.assertEqual(rs2, 100)
         # Test case 3
         tsr3, rs3 = get_tsr('J. Doe', 'J.P. Doe')
-        self.assertEqual(tsr3 == 100)
-        self.assertEqual(rs3 == 90)
+        self.assertEqual(tsr3, 100)
+        self.assertEqual(rs3, 90)
         # Test case 4
         tsr4, rs4 = get_tsr('J. Doe', 'Jane Doe')
-        self.assertEqual(tsr4 == 100)
-        self.assertEqual(rs4 == 95)
+        self.assertEqual(tsr4, 100)
+        self.assertEqual(rs4, 95)
         # Test case 5
         tsr5, rs5 = get_tsr('Jane Doe', 'J. Doe')
-        self.assertEqual(tsr5 == 100)
-        self.assertEqual(rs5 == 95)
+        self.assertEqual(tsr5, 100)
+        self.assertEqual(rs5, 95)
 
 
     def test_strip_names_from_title(self):
@@ -146,8 +147,8 @@ class TestExtractPersons(unittest.TestCase):
         inp = ['Prof. Dr. Jane Doe', 'John Doe, PhD', 'Dr. J.']
         expected, expected_removed = ['  jane doe', 'john doe, '], ['Dr. J.']
         out, out_r = strip_names_from_title(inp)
-        self.assertEqual(out == expected)
-        self.assertEqual(out_r == expected_removed)
+        self.assertEqual(out, expected)
+        self.assertEqual(out_r, expected_removed)
 
 
     def test_find_duplicate_persons(self):
@@ -169,7 +170,7 @@ class TestExtractPersons(unittest.TestCase):
         expected = [['Jane Elaine Doe', 'Dr. Jane Doe', 'Jane Doe', 'J.E. Doe', 'J. Doe'],
                     ['Jane White'], ['William Doe']]
         self.assertTrue(isinstance(outnames, list))
-        self.assertEqual(outnames == expected)
+        self.assertEqual(outnames, expected)
 
 
     def test_surrounding_words(self):
@@ -193,7 +194,7 @@ class TestExtractPersons(unittest.TestCase):
         search_names = ['Jane', 'Jane Doe']
         outp = surrounding_words(text, search_names)
         self.assertTrue(isinstance(outp, np.ndarray))
-        self.assertEqual(np.array_equal(outp, expected))
+        self.assertTrue(np.array_equal(outp, expected))
 
 
     def test_count_occurrence(self):
@@ -213,21 +214,21 @@ class TestExtractPersons(unittest.TestCase):
                         'dr. j. doe werkt bij bedrijf.'])
         search_words = ['directeur', 'directrice']
         totalcount, totalcount_sentence = count_occurrence(text, search_words)
-        self.assertEqual(totalcount == 2)
-        self.assertEqual(totalcount_sentence == 1)
+        self.assertEqual(totalcount, 2)
+        self.assertEqual(totalcount_sentence, 1)
 
         # Test case 2
         text = np.array(['vice-voorzitter Jane'])
         search_words = ['voorzitter']
         totalcount, totalcount_sentence = count_occurrence(text, search_words)
-        self.assertEqual(totalcount == 0)
-        self.assertEqual(totalcount_sentence == 0)
+        self.assertEqual(totalcount, 0)
+        self.assertEqual(totalcount_sentence, 0)
 
         # Test case 3
         search_words = ['vice-voorzitter', 'vicevoorzitter', 'vice voorzitter']
         totalcount, totalcount_sentence = count_occurrence(text, search_words)
-        self.assertEqual(totalcount == 1)
-        self.assertEqual(totalcount_sentence == 1)
+        self.assertEqual(totalcount, 1)
+        self.assertEqual(totalcount_sentence, 1)
 
 
     def test_determine_main_job(self):
@@ -259,14 +260,14 @@ class TestExtractPersons(unittest.TestCase):
                                 ])
         # Test case 1
         check = determine_main_job(jobs, sentences, surroundings)
-        self.assertEqual(check[0] == 'directeur')
-        self.assertEqual(check[1] == 2)
-        self.assertEqual(check[2] == 1)
+        self.assertEqual(check[0], 'directeur')
+        self.assertEqual(check[1], 2)
+        self.assertEqual(check[2], 1)
 
         # Test case 2
         sentences = np.array(['rvt, directeur'])
         check = determine_main_job(jobs, sentences, surroundings)
-        self.assertEqual(check[0] == 'rvt')
+        self.assertEqual(check[0], 'rvt')
 
         # Test case 3
         surroundings = np.array(['deze tekst dient enkel om te testen.',
@@ -274,29 +275,29 @@ class TestExtractPersons(unittest.TestCase):
                                 'dr. j. doe werkt bij bedrijf.',
                                 'bedrijf heeft een, raad van toezicht, absoluut, ab, absurt.'])
         check = determine_main_job(jobs, sentences, surroundings)
-        self.assertEqual(check[0] == 'directeur')
+        self.assertEqual(check[0], 'directeur')
 
         # Test case 4
         sentences = np.array(['directeur rvt directeur'])
         surroundings = np.array(['directeur', 'rvt'])
         check = determine_main_job(jobs, sentences, surroundings)
-        self.assertEqual(check[0] == 'directeur')
+        self.assertEqual(check[0], 'directeur')
 
         # Test case 5
         sentences = np.array(['directeur rvt'])
         surroundings = np.array(['directeur rvt directeur'])
         check = determine_main_job(jobs, sentences, surroundings)
-        self.assertEqual(check[0] == 'directeur')
+        self.assertEqual(check[0], 'directeur')
 
         # Test case 6
         check = determine_main_job(jobs, sentences, sentences)
-        self.assertEqual(check[0] == 'directeur')
+        self.assertEqual(check[0], 'directeur')
 
         # Test case 7
         sentences = np.array([' '])
         surroundings = np.array(['directeur rvt'])
         check = determine_main_job(jobs, sentences, surroundings)
-        self.assertEqual(check[0] == 'directeur')
+        self.assertEqual(check[0], 'directeur')
 
         # Test case 8
         sentences = np.array(['niets'])
@@ -322,25 +323,25 @@ class TestExtractPersons(unittest.TestCase):
         sentences = np.array(['directeur Jane Doe directeur. J. Doe voorzitter'])
         main_cat = 'directeur'
         check = determine_sub_job(members, sentences, main_cat)
-        self.assertEqual(check[0] == 'directeur')
-        self.assertEqual(check[1] == '')
+        self.assertEqual(check[0], 'directeur')
+        self.assertEqual(check[1], '')
 
         # Test case 2
         sentences = np.array(['Jane Doe is niet directeur van bedrijf. J. Doe not voorzitter'])
         check = determine_sub_job(members, sentences, main_cat)
-        self.assertEqual(check[0] == '')
+        self.assertEqual(check[0], '')
 
         # Test case 3
         check = determine_sub_job(members, np.array(['Jane Doe']), main_cat)
-        self.assertEqual(check[0] == '')
+        self.assertEqual(check[0], '')
 
         # Test case 4
         check = determine_sub_job(members, np.array(['Jane Doe voorzitter']), main_cat)
-        self.assertEqual(check[0] == '')
+        self.assertEqual(check[0], 'voorzitter')
 
         # Test case 5
-        check = determine_sub_job(members, np.array(['Jane Doe voorzitter']), 'voorzitter')
-        self.assertEqual(check[0] == 'voorzitter')
+        check = determine_sub_job(members, np.array(['Jane Doe voorzitter']), 'rvt')
+        self.assertEqual(check[0], 'voorzitter')
 
 
     def test_identify_potential_people(self):
@@ -361,7 +362,7 @@ class TestExtractPersons(unittest.TestCase):
                     ['J. Doe', 'Jane Doe'], ['Isaak Paars'], ['Jan van Oranje'], ['Karel'],
                     ['Lodewijk'], ['Maria']]
         self.assertTrue(isinstance(people, list))
-        self.assertEqual(people.sort() == expected.sort())
+        self.assertEqual(people.sort(), expected.sort())
 
 
     def test_relevant_sentences(self):
@@ -409,7 +410,7 @@ class TestExtractPersons(unittest.TestCase):
         expected = [['directeur'], ['bestuur'], ['rvt', 'Jane Doe'], ['ledenraad'], ['kascommissie'],
                     ['controlecommissie'], ['ambassadeur']]
         result = append_p_position(p_position, main, name)
-        self.assertEqual(result == expected)
+        self.assertEqual(result, expected)
 
 
     def test_extract_persons(self):
@@ -455,7 +456,7 @@ class TestExtractPersons(unittest.TestCase):
         self.assertTrue(np.array_equal(e_l, l))
         self.assertTrue(np.array_equal(e_k, k))
         self.assertTrue(np.array_equal(e_c, c))
-        
+
         # Test case 2
         d = extract_persons(doc2, all_persons2)[2]
         self.assertTrue(np.array_equal(np.array(['Jane Doe']), d))
@@ -477,51 +478,94 @@ class TestExtractPersons(unittest.TestCase):
 
 
     def test_director_check(self):
-        # pot_director = name, sub_cat, ft_director, main_cat, backup_sub_cat, fts_bestuur, fts_rvt
-        pot_director = np.array([['Jane Doe', 'directeur', 3, 'rvt', 3, 1, 1],
-                                ['Piet de Wit', 'voorzitter', 3, 'rvt', 1, 1, 1]], dtype=object)
-        b_position = np.array(['Jane Doe - directeur - directeur',
-                            'Piet de Wit - directeur - voorzitter'])
+        """Unit test for the function 'director_check'.
+        
+        This function tests the director_check function that performs checks for potential directors and update their 
+        positions if necessary.
+
+        There are 8 test cases:
+        1-6. 6 pot_director
+            - ft=2, max ft pot_director = 6, backup main is rvt, subf is voorzitter.
+            - ft=3, backup main = ambassador, sub = penningmeester
+            - ft=3, backup main = bestuur, sub = directeur
+            - ft=6, backup main = rvt, sub=''
+            - ft=5, backup main = ledenraad, sub=lid
+            - ft=6, backup main = rvt, subf = directeur
+        7-8. 2 pot_director
+            - ft=1, backup main = rvt, subf = directeur
+            - ft=3, backup main = bestuur, subf = voorzitter
+
+            
+
+        pot_director has the form:
+        pot_director = name, sub_cat, ft_director, backup_main_cat, backup_sub_cat, fts_bestuur, fts_rvt
+
+        """
+        # Test cases 1-4
+        pot_director = np.array([['Jane Doe', 'voorzitter', 2 , 'rvt', 'voorzitter', 1, 1],
+                                 ['Pietje de Wit', 'voorzitter', 3, 'ambassadeur', 'voorzitter', 1, 1],
+                                 ['Louwie kats', 'directeur', 3, 'bestuur', '', 5, 8],
+                                 ['Bert de hond', 'lid', 6, 'rvt', 'lid', 3, 5],
+                                 ['Willem Visser', 'lid', 5, 'ledenraad', 'lid', 1, 2,],
+                                 ['Dirkje El Morabit', 'directeur', 6, 'rvt', '', 2, 1]
+                                 ], dtype=object)
+        
+        b_position = np.array(['Anna Zwart - rvt - vicevoorzitter',
+                                'Hanna Groen - bestuur - penningmeester',
+                                'Jane Doe - directeur - voorzitter',
+                                'Pietje de Wit - directeur - voorzitter',
+                                'Louwie kats - directeur - directeur',
+                                'Bert de hond - directeur - lid',
+                                'Willem Visser - directeur - lid',
+                                'Dirkje El Morabit - directeur - directeur'
+                               ])
         pot_rvt = [['Anna Zwart', 'vicevoorzitter', 3]]
         pot_bestuur = [['Hanna Groen', 'penningmeester', 2]]
-        p_position = [['directeur'], ['bestuur'], ['rvt'], ['ledenraad']]
+        p_position = [['directeur'], ['bestuur', 'Hanna Groen'], ['rvt', 'Anna Zwart'], ['ledenraad'], ['ambassadeur']]
         a, b, c, d = director_check(pot_director, b_position, pot_rvt, pot_bestuur, p_position)
-        e_b = np.array(['Jane Doe - directeur - directeur', 'Piet de Wit - rvt - voorzitter'])
-        e_pot_rvt = [['Anna Zwart', 'vicevoorzitter', 3], ['Piet de Wit', 'voorzitter', 1]]
-        e_pot_b = pot_bestuur
-        e_p_p = [['directeur', 'Jane Doe'], ['bestuur'], ['rvt'], ['ledenraad']]
-        self.assertTrue(np.array_equal(a, e_b))
-        self.assertEqual(b == e_pot_rvt)
-        self.assertEqual(c == e_pot_b)
-        self.assertEqual(d == e_p_p)
-        pot_director = np.array([['Jane Doe', 'directeur', 3, 'rvt', 3, 1, 1],
-                                ['Piet de Wit', 'voorzitter', 3, 'bestuur', 1, 1, 1]], dtype=object)
-        a, b, c, d = director_check(pot_director, b_position, pot_rvt, pot_bestuur, p_position)
-        self.assertEqual(c == [['Hanna Groen', 'penningmeester', 2], ['Piet de Wit', 'voorzitter', 1]])
-        self.assertTrue(np.array_equal(a, np.array(['Jane Doe - directeur - directeur',
-                                        'Piet de Wit - bestuur - voorzitter'])))
-        p_position = [['directeur'], ['bestuur'], ['rvt'], ['ledenraad']]
-        pot_director = np.array([['Jane Doe', 'directeur', 3, 'rvt', 3, 1, 1],
-                                ['Piet de Wit', 'voorzitter', 3, 'ledenraad', 1, 1, 1]], dtype=object)
-        a, b, c, d = director_check(pot_director, b_position, pot_rvt, pot_bestuur, p_position)
-        self.assertEqual(d == [['directeur', 'Jane Doe'], ['bestuur'], ['rvt'], ['ledenraad', 'Piet de Wit']])
-        self.assertTrue(np.array_equal(a, np.array(['Jane Doe - directeur - directeur',
-                                        'Piet de Wit - ledenraad - voorzitter'])))
-        b_position = np.array(['Jane Doe - directeur - directeur',
-                            'Piet de Wit - directeur - '])
-        p_position = [['directeur'], ['bestuur'], ['rvt'], ['ledenraad'], ['ambassadeur']]
-        pot_director = np.array([['Jane Doe', 'directeur', 3, 'rvt', 3, 1, 1],
-                                ['Piet de Wit', '', 3, 'ambassadeur', 1, 1, 1]], dtype=object)
-        a, b, c, d = director_check(pot_director, b_position, pot_rvt, pot_bestuur, p_position)
-        self.assertTrue(np.array_equal(a, np.array(['Jane Doe - directeur - directeur'])))
-        self.assertEqual(d == [['directeur', 'Jane Doe'], ['bestuur'], ['rvt'], ['ledenraad'],
-                    ['ambassadeur', 'Piet de Wit']])
-        p_position = [['directeur'], ['bestuur'], ['rvt'], ['ledenraad'], ['ambassadeur']]
-        pot_director = np.array([['Jane Doe', 'directeur', 3, 'rvt', 3, 1, 1],
-                                ['Piet de Wit', '', 3, '', 1, 1, 1]], dtype=object)
-        a, b, c, d = director_check(pot_director, b_position, pot_rvt, pot_bestuur, p_position)
-        self.assertEqual(d == p_position)
 
+        e_b = np.array(['Anna Zwart - rvt - vicevoorzitter',
+                        'Hanna Groen - bestuur - penningmeester',
+                        'Dirkje El Morabit - directeur - directeur',
+                        'Jane Doe - rvt - voorzitter',
+                        'Louwie kats - bestuur - ',
+                        'Bert de hond - rvt - lid',
+                        'Willem Visser - ledenraad - lid'
+                        ])
+        e_pot_rvt = [['Anna Zwart', 'vicevoorzitter', 3], ['Jane Doe', 'voorzitter', 1], ['Bert de hond', 'lid', 5]]
+        e_pot_b = [['Hanna Groen', 'penningmeester', 2], ['Louwie kats', '', 5]]
+        e_p_p = [['directeur', 'Dirkje El Morabit'], ['bestuur', 'Hanna Groen'],
+                 ['rvt', 'Anna Zwart'], ['ledenraad', 'Willem Visser'], ['ambassadeur', 'Pietje de Wit']]
+
+        self.assertTrue(np.array_equal(a, e_b))
+        self.assertEqual(b, e_pot_rvt)
+        self.assertEqual(c, e_pot_b)
+        self.assertEqual(d, e_p_p)
+
+        # Test case 5-8
+        pot_director = np.array([['Jane Doe', 'directeur', 1, 'rvt', '', 1, 1],
+                                 ['Piet de Wit', 'voorzitter', 3, 'bestuur', 'voorzitter', 1, 1]], dtype=object)
+        b_position = np.array(['Anna Zwart - rvt - vicevoorzitter',
+                                'Hanna Groen - bestuur - penningmeester',
+                                'Jane Doe - directeur - directeur',
+                                'Piet de Wit - directeur - voorzitter'])
+        pot_rvt = [['Anna Zwart', 'vicevoorzitter', 3]]
+        pot_bestuur = [['Hanna Groen', 'penningmeester', 2]]
+        p_position = [['directeur'], ['bestuur', 'Hanna Groen'], ['rvt', 'Anna Zwart'], ['ledenraad'], ['ambassadeur']]
+        a, b, c, d = director_check(pot_director, b_position, pot_rvt, pot_bestuur, p_position)
+
+        e_b = np.array(['Anna Zwart - rvt - vicevoorzitter',
+                        'Hanna Groen - bestuur - penningmeester',
+                        'Jane Doe - rvt - ',
+                        'Piet de Wit - bestuur - voorzitter'])
+        e_pot_rvt = [['Anna Zwart', 'vicevoorzitter', 3], ['Jane Doe', '', 1]]
+        e_pot_b = [['Hanna Groen', 'penningmeester', 2], ['Piet de Wit', 'voorzitter', 1]]
+        e_p_p = [['directeur'], ['bestuur', 'Hanna Groen'], ['rvt', 'Anna Zwart'], ['ledenraad'], ['ambassadeur']]
+
+        self.assertTrue(np.array_equal(a, e_b))
+        self.assertEqual(b, e_pot_rvt)
+        self.assertEqual(c, e_pot_b)
+        self.assertEqual(d, e_p_p)
 
     def test_check_rvt(self):
         """Unit testfor the function 'check_rvt'.
@@ -541,7 +585,7 @@ class TestExtractPersons(unittest.TestCase):
         check_b, check_p = check_rvt(pot_rvt, b_position, p_position)
         exp_p = [['directeur', 'Jane Doe'], ['rvt', 'Piet de Wit']]
         self.assertTrue(np.array_equal(check_b, b_position))
-        self.assertEqual(check_p == exp_p)
+        self.assertEqual(check_p, exp_p)
 
         # Test case 2
         pot_rvt = [['Piet de Wit', 'voorzitter', 4], ['Ab', 'vicevoorzitter', 2], ['Co', '', 3],
@@ -557,7 +601,7 @@ class TestExtractPersons(unittest.TestCase):
                         'Bo - rvt - ', 'Do - rvt - ', 'Lo - rvt - ', 'Ap - rvt - '])
         exp_p = [['directeur', 'Jane Doe'], ['rvt', 'Piet de Wit', 'Bo', 'Do', 'Lo', 'Ap']]
         check_b, check_p = check_rvt(pot_rvt, b_position, p_position)
-        self.assertEqual(check_p == exp_p)
+        self.assertEqual(check_p, exp_p)
         self.assertTrue(np.array_equal(check_b, exp_b))
 
 
@@ -580,7 +624,7 @@ class TestExtractPersons(unittest.TestCase):
         check_b, check_p = check_bestuur(pot_bestuur, b_position, p_position)
         exp_p = [['directeur', 'Jane Doe'], ['bestuur', 'Piet de Wit']]
         self.assertTrue(np.array_equal(check_b, b_position))
-        self.assertEqual(check_p == exp_p)
+        self.assertEqual(check_p, exp_p)
 
         # Test case 2
         pot_bestuur = [['Piet de Wit', 'voorzitter', 4], ['Ab', 'vicevoorzitter', 2], ['Co', '', 3],
@@ -597,5 +641,5 @@ class TestExtractPersons(unittest.TestCase):
                         'Bo - bestuur - ', 'Do - bestuur - ', 'Lo - bestuur - ', 'Ap - bestuur - '])
         exp_p = [['directeur', 'Jane Doe'], ['bestuur', 'Piet de Wit', 'Bo', 'Do', 'Lo', 'Ap']]
         check_b, check_p = check_bestuur(pot_bestuur, b_position, p_position)
-        self.assertEqual(check_p == exp_p)
+        self.assertEqual(check_p, exp_p)
         self.assertTrue(np.array_equal(check_b, exp_b))
