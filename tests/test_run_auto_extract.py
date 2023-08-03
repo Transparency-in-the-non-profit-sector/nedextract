@@ -21,12 +21,12 @@ class TestRunAutoExtract(unittest.TestCase):
         # Test case 1
         testarg = ['-f', infile]
         returnargs = main(testarg)
-        self.assertEqual(returnargs.file == infile)
+        self.assertEqual(returnargs.file, infile)
 
         # Test case 2
         testarg = ['-d', indir]
         returnargs = main(testarg)
-        self.assertEqual returnargs.directory == indir
+        self.assertEqual(returnargs.directory, indir)
 
 
 if __name__ == '__main__':
