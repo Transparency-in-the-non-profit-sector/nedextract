@@ -12,7 +12,9 @@ import itertools
 import re
 import numpy as np
 from fuzzywuzzy import fuzz
-from keywords import JobKeywords, Tussenvoegsels, Titles
+from keywords import JobKeywords
+from keywords import Titles
+from keywords import Tussenvoegsels
 
 
 def abbreviate(name: str, n_ab: int):
