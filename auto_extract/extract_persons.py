@@ -8,240 +8,21 @@ Copyright 2022 Netherlands eScience Center and Vrije Universiteit Amsterdam
 Licensed under the Apache License, version 2.0. See LICENSE for details.
 
 Functions:
-- determine_main_job
-- determine_sub_job
-- surrounding_words
-- count_occurrence
-- relevant_sentences
-- append_p_position
-- array_p_position
 
 - identify_potential_people
 - extract_persons
 - director_check
 - check_rvt
 - check_bestuur
+- array_p_position
+- append_p_position
 """
 
 import re
 import numpy as np
+from determinejobs import DetermineJobs
 from keywords import JobKeywords
 from NameAnalysis import NameAnalysis
-
-
-def surrounding_words(text, search_names):
-    """Determine words surrounding an name in a text.
-
-    For a given 'text' and search words ('search_name'), this function returns an array of words that are
-    found before and after the 'search_name'.
-    
-    Args:
-        text (str): text to search through
-        search_name (str): name to look for in the text
-    
-    Returns:
-        surrounding_words (np.array): array of words that are
-        found before and after the 'search_name'.
-    """
-    surrounding_words = np.array([])
-    text = np.array2string(text, separator=' ')
-    searchnames = sorted(search_names, key=len, reverse=True)
-
-    for search_name in searchnames:
-        text = text.lower().replace(search_name.lower(), 'search4term')
-    text = re.sub('[^0-9a-zA-Z ]+', ' ', text)
-    text = text.replace('vice voorzitter', 'vicevoorzitter')
-    text = text.replace('algemeen', '')
-    text = text.replace('adjunct', '')
-    text = text.replace('interim', '')
-    text_split = text.split()
-
-    for i, word in enumerate(text_split):
-        if word == 'search4term':
-            if i != 0:
-                surrounding_words = np.append(surrounding_words, text_split[i-1])
-            if i != len(text_split) - 1:
-                surrounding_words = np.append(surrounding_words, text_split[i+1])
-    return surrounding_words
-
-
-def count_occurrence(text, search_words):
-    """Return the summed total of occurrences of search words in text.
-    
-    This function counts the total number of occurrences of each word in the 'search_words'
-    list within the provided 'text', and the number of sentences in which any of the search words is found.
-    The function takes care of word boundaries to avoid
-    partial matches.
-
-    Args:
-        text (list of str): A list of sentences or paragraphs as strings.
-        search_words (list of str): A list of words to be searched for in the 'text'.
-
-    Returns:
-        tuple: A tuple containing two values: the total count of occurrences of search words
-        in the entire 'text' and the number of sentences in 'text' that contain at least one
-        of the search words.
-    """
-    # Preprocess text
-    fulltext = np.array2string(text, separator=' ')
-    fulltext = re.sub(r"[\[\]']", '', fulltext)
-    fulltext = fulltext.replace('vice voorzitter', 'vicevoorzitter')
-    fulltext = fulltext.replace('vice-voorzitter', 'vicevoorzitter')
-
-    # Define varibales to be returned
-    totalcount = 0
-    totalcount_sentence = 0
-
-    # Determine totalcount
-    for item in search_words:
-        escape_item = re.escape(item)
-        totalcount += sum(1 for _ in re.finditer(r'\b' + escape_item + r'\b', fulltext))
-    
-    # Determine totalcount_sentence
-    for sentence in text:
-        sentence = sentence.replace('vice voorzitter', 'vicevoorzitter')
-        sentence = sentence.replace('vice-voorzitter', 'vicevoorzitter')
-        count = 0
-        for item in search_words:
-            escape_item = re.escape(item)
-            count = count + sum(1 for _ in re.finditer(r'\b' + escape_item + r'\b', sentence))
-        if count > 0:
-            totalcount_sentence += 1
-    return totalcount, totalcount_sentence
-
-
-def determine_main_job(main_jobs, sentences, surroundings):
-    """Determine main job category based on sentence and overall frequency.
-
-    This function determines the primary job category by analyzing the occurrence frequency of
-    each job category in both the direct sentences and the surrounding sentences. The process
-    follows these steps:
-
-    1. Calculate the sentence frequency (fs) and total frequency (ft) for each job category
-       based on the direct sentences.
-    2. Calculate the sentence frequency (fss) and total frequency (fts) for each job category
-       based on the surrounding sentences.
-    3. Determine the main job using the following rules in order of:
-       1. The most occuring category in the direct text based on sentence frequency (fs, i.e. number of
-         sentences in which category+name is found)
-       2. If none can be identified, or there is a tie: try based on sentence frequency from surrounding
-         sentences (fss).
-       3. If none can be identified: try based on overall frequency in main text
-       4. If none can be identified: try based on overall frequency in surrounding text
-       5. If none can be identified, select first element (main jobs) from the list of condition 1, since the main jobs list
-          is ordered in 'most likely with few number of occureences'
-       6. If none can be identified, select first element (main jobs) from the list of condition 2, since the main jobs list
-          is ordered in 'most likely with few number of occureences'
-       7. If still none can be identified, set main jobs to None
-    4. Determine the term frequency of selected main job directeur based on direct sentences
-    5. Determine the term frequency of selected main job bestuur and rvt based on surrounding sentences
-
-    Args:
-        main_jobs (list): A list containing sub-lists of words for each main job category.
-        sentences (list): A list of sentences in which to search for job categories.
-        surroundings (list): A list of sentences surrounding the main text.
-    
-    Returns:
-        list: A list containing four elements in the following order:
-              - The determined main job category (str) or None if no category is found.
-              - The total frequency of the category 'directeur' in the direct sentences (int).
-              - The total frequency of the category 'bestuur' in the surrounding sentences (int).
-              - The total frequency of the category 'rvt' in the surrounding sentences (int).
-    """
-
-    # Define sentence (fs, fss) and total frequencies (ft, fts) for direct sentences and surrounding sentences
-    fs = np.empty(len(main_jobs))
-    fss = np.empty(len(main_jobs))
-    ft = np.empty(len(main_jobs))
-    fts = np.empty(len(main_jobs))
-
-    main_job = np.array([mj[0] for mj in main_jobs])
-
-    # Determine ft,fs, fts, and ftss for each job
-    for m, m_j in enumerate(main_jobs):
-        ft[m], fs[m] = count_occurrence(sentences, m_j)
-        fts[m], fss[m] = count_occurrence(surroundings, m_j)
-    
-    # Select based on most occuring category in the direct text using sentence frequency, no tie
-    if (max(fs) > 0 and len(np.where(fs == max(fs))[0]) == 1):
-        main_cat = main_job[np.where(fs == max(fs))[0]][0]
-    # Select based on sentence frequency from surrounding sentences, no tie
-    elif (max(fss) > 0 and len(np.where(fss == max(fss))[0]) == 1):
-        main_cat = main_job[np.where(fss == max(fss))[0]][0]
-    # Select based on overall frequency in main text, no tie
-    elif (max(ft) > 0 and len(np.where(ft == max(ft))[0]) == 1):
-        main_cat = main_job[np.where(ft == max(ft))[0]][0]
-    # Select based on overall frequency in surrounding text, no tie
-    elif (max(fts) > 0 and len(np.where(fts == max(fts))[0]) == 1):
-        main_cat = main_job[np.where(fts == max(fts))[0]][0]
-    # Selection based on most occuring category in the direct text based on sentence frequency gives a tie, therefor
-    # select first element of tied fs list
-    elif max(fs) > 0:
-        main_cat = main_job[np.where(fs == max(fs))[0]][0]
-    # Selection based on most occuring category in the surrounding text based on frequency gives a tie, therefore select first
-    # element of tied fss list
-    elif max(fss) > 0:
-        main_cat = main_job[np.where(fss == max(fss))[0]][0]
-    # do not select a main category
-    else:
-        main_cat = None
-    
-    # define term frequency of selected main job directeur based on direct sentences
-    ft_director = ft[np.where(main_job == 'directeur')]
-    # define term frequency of selected main job bestuur/rvt based on surrounding sentences
-    fts_bestuur = fts[np.where(main_job == 'bestuur')]
-    fts_rvt = fts[np.where(main_job == 'rvt')]
-
-    return [main_cat, ft_director, fts_bestuur, fts_rvt]
-
-
-def determine_sub_job(members, sentences, main_cat):
-    """Determine the sub job category based on the words mentioned in the provided 'sentences' and main category ('main_cat').
-
-    This function determines the sub job category by analyzing the occurrence frequency of each
-    sub job category in the surrounding words of the given 'members' (different writings of a persons' name).
-    The process follows these steps:
-
-    1. Get the surrounding words of the given members from the sentences.
-    2. Calculate the occurrence frequency of each sub job category in the surrounding words.
-    3. If there are sub job categories with a frequency greater than 0, select the one with the
-       highest frequency.
-    4. If there is a tie among multiple sub job categories with the highest frequency, choose
-       the first one in the list (JobKeywords.sub_jobs).
-    5. Determine the primary sub_cat and backup_sub_cat based on the main_cat, if any was found.
-    6. The sub cat for main cat director is only defined if the sub cat is not director. If it is,
-       there is no backup sub cat
-
-    Args:
-        members (list): A list of names to find the surrounding words for.
-        sentences (list): A list of sentences containing the text to search for sub job categories.
-        main_cat (str): The previously determined main job category.
-
-    Returns:
-        list: A list containing two elements in the following order:
-              - The determined sub job category (str) or an empty string if no category is found.
-              - The backup sub job category (str) or an empty string if no category is found.
-    """
-    # Define c_sub_job
-    c_sub_job = np.array([])
-
-    # Determine the surrounding words and use these to determine the count of each sub job 
-    surrounding_w = surrounding_words(sentences, members)
-    if surrounding_w.size > 0:
-        for sj in JobKeywords.sub_jobs:
-            c_sub_job = np.append(c_sub_job, count_occurrence(surrounding_w, sj)[0])
-    else:
-        c_sub_job = np.append(c_sub_job, 0)
-    
-    # Determine sub_cat and backup_sub_cat
-    if max(c_sub_job) > 0 and len(np.where(c_sub_job == max(c_sub_job))[0]) == 1:
-        sub_cat = backup_sub_cat = JobKeywords.sub_job[np.where(c_sub_job == max(c_sub_job))[0]][0]
-        if main_cat == 'directeur' and sub_cat == 'directeur':
-            backup_sub_cat = ''
-    else:
-        sub_cat = backup_sub_cat = ''
-    
-    return [sub_cat, backup_sub_cat]
 
 
 def identify_potential_people(doc, all_persons):
@@ -293,66 +74,6 @@ def identify_potential_people(doc, all_persons):
             people.append(p)
     
     return people
-
-
-def relevant_sentences(doc, members):
-    """Identify all sentences containing a specific person and those directly surrounding them.
-
-    This function takes a stanza Document object 'doc' and a list of 'members', which are different write of the same name
-    of a specific person to search for. The function extracts all 'sentences' that contain any of the 'members' and those
-    directly surrounding ('surroundings') them in the document.
-
-    Args:
-        doc (stanza.Document): A stanza Document object containing the parsed text.
-        members (list): A list of names (str) representing a specific person to search for.
-
-    Returns:
-        tuple: A tuple containing two numpy arrays:
-            - sentences: An array containing all sentences that contain any of the 'members'.
-            - surroundings: An array containing sentences directly surrounding the 'sentences' that
-              containing the 'members'.
-    """
-    # Definitions
-    prevsentence = ''
-    sentences = np.array([])
-    surroundings = np.array([])
-    need_next_sentence = False
-
-    # Determine sentences and surroundings
-    for sentence in doc.sentences:
-        if any(member in sentence.text for member in members):
-            sentences = np.append(sentences, sentence.text.lower())
-            if prevsentence not in list(surroundings):
-                surroundings = np.append(surroundings, prevsentence)
-            if sentence not in list(surroundings):
-                surroundings = np.append(surroundings, sentence.text.lower())
-            need_next_sentence = True
-        elif need_next_sentence:
-            if sentence.text.lower() not in surroundings:
-                surroundings = np.append(surroundings, sentence.text.lower())
-            need_next_sentence = False
-        prevsentence = sentence.text.lower()
-    return sentences, surroundings
-
-
-def append_p_position(p_position, main, name):
-    """Append a person's name to their main position in the list of positions.
-
-    Args:
-        p_position (list): A list of sublists representing various position categories, where each sublist
-                           starts with the main position's name.
-        main (str): The main position name (e.g., 'directeur', 'bestuur', etc.) to which the 'name' should
-                    be appended.
-        name (str): The name to append to the main position in the 'p_position'.
-
-    Returns:
-        list: The updated list 'p_position' with the persons 'name' appended to the appropriate main position.
-    """
-    for pos in p_position:
-        if pos[0] == main:
-            pos.extend([name])
-    return p_position
-
 
 def extract_persons(doc, all_persons):
     """Extract ambassadors and board members from a text using a rule-based method.
@@ -408,18 +129,21 @@ def extract_persons(doc, all_persons):
     # identify people to be analysed
     people = identify_potential_people(doc, all_persons)
 
+    
     for members in people:
         # Determine relevant sentences, main and sub job category, and select main name from synonyms
-        sentences, surroundings = relevant_sentences(doc, members)
-        m_ft_dbr = determine_main_job(JobKeywords.main_jobs, sentences, surroundings)
-        sub_cat = determine_sub_job(members, sentences, m_ft_dbr[0])
         member = members[0]
-
+        jobsdetermination = DetermineJobs(members=members, name=member, doc=doc, 
+                                          main_jobs=JobKeywords.main_jobs, p_position=p_position) 
+        m_ft_dbr = jobsdetermination.determine_main_job()
+        jobsdetermination.main_jobs = m_ft_dbr[0]
+        sub_cat = jobsdetermination.determine_sub_job()
+        
         # Check for ambassadeur: ambassadeur unlikely if sub_cat is determined
         if m_ft_dbr[0] == 'ambassadeur':
             if sub_cat[0] != '':
-                m_ft_dbr[0] = determine_main_job(JobKeywords.main_jobs_no_amb, sentences,
-                                                 surroundings)[0]
+                jobsdetermination.main_jobs = JobKeywords.main_jobs_no_amb
+                m_ft_dbr[0] = jobsdetermination.determine_main_job()[0]
             else:
                 p_position = append_p_position(p_position, m_ft_dbr[0], member)
 
@@ -431,11 +155,11 @@ def extract_persons(doc, all_persons):
             b_position = np.append(b_position, member + ' - ' + m_ft_dbr[0] + ' - ' + sub_cat[0])
             if m_ft_dbr[0] == 'directeur':
                 if sub_cat[0] == '':
-                    m_ft_dbr[0] = determine_main_job(JobKeywords.main_jobs_backup, sentences,
-                                                     surroundings)[0]
+                    jobsdetermination.main_jobs = JobKeywords.main_jobs_backup
+                    m_ft_dbr[0] = jobsdetermination.determine_main_job()[0]
                 else:
-                    m_ft_dbr[0] = determine_main_job(JobKeywords.main_jobs_backup_noamb, sentences,
-                                                     surroundings)[0]
+                    jobsdetermination.main_jobs = JobKeywords.main_jobs_backup_noamb
+                    m_ft_dbr[0] = jobsdetermination.determine_main_job()[0]
                 pot_director.append([member, sub_cat[0], m_ft_dbr[1], m_ft_dbr[0], sub_cat[1],
                                      m_ft_dbr[2], m_ft_dbr[3]])
             elif m_ft_dbr[0] == 'rvt':
@@ -444,6 +168,7 @@ def extract_persons(doc, all_persons):
                 pot_bestuur.append([member, sub_cat[0], m_ft_dbr[2]])
             elif m_ft_dbr[0] in JobKeywords.main_job[:-1]:
                 p_position = append_p_position(p_position, m_ft_dbr[0], member)
+
 
     # Additional checks for potential directeur position
     pot_director = np.array(pot_director, dtype=object)
@@ -468,24 +193,6 @@ def extract_persons(doc, all_persons):
             array_p_position(p_position, 'ledenraad'),
             array_p_position(p_position, 'kascommissie'),
             array_p_position(p_position, 'controlecommissie'))
-
-
-def array_p_position(p_position, position):
-    """Returns an array made out of sublist of the list p_position.
-    
-    This function returns an array made out of sublist of the list p_position. The sublist must start with
-    the term position.
-
-    Args:
-        p_position (list): A list of sublists, each of which contains a main job category and 
-        names of people for that job if any
-        position (str): a main job position for which the associated names should be extracted.
-    
-    Returns:
-        numpy.ndarray: An array containing the names associated with the specified 'position'. If no sublist
-                       with the given 'position' is found, an empty array is returned.
-    """
-    return np.array([i[1:] for i in p_position if i[0] == position][0])
 
 
 def director_check(pot_director, b_position, pot_rvt, pot_bestuur, p_position):
@@ -634,3 +341,40 @@ def check_bestuur(pot_bestuur, b_position, p_position):
         else:
             p_position = append_p_position(p_position, 'bestuur', bestuur[1][0])
     return b_position, p_position
+
+
+def array_p_position(p_position: list, position: str):
+    """Returns an array made out of sublist of the list p_position.
+    
+    This function returns an array made out of sublist of the list p_position. The sublist must start with
+    the term position.
+
+    Args:
+        p_position (list): A list of sublists, each of which contains a main job category and 
+        names of people for that job if any
+        position (str): a main job position for which the associated names should be extracted.
+    
+    Returns:
+        numpy.ndarray: An array containing the names associated with the specified 'position'. If no sublist
+                    with the given 'position' is found, an empty array is returned.
+    """
+    return np.array([i[1:] for i in p_position if i[0] == position][0])
+
+
+def append_p_position(p_position, main, name):
+    """Append a person's name to their main position in the list of positions.
+
+    Args:
+        p_position (list): A list of sublists representing various position categories, where each sublist
+                           starts with the main position's name.
+        main (str): The main position name (e.g., 'directeur', 'bestuur', etc.) to which the 'name' should
+                    be appended.
+        name (str): The name to append to the main position in the 'p_position'.
+
+    Returns:
+        list: The updated list 'p_position' with the persons 'name' appended to the appropriate main position.
+    """
+    for pos in p_position:
+        if pos[0] == main:
+            pos.extend([name])
+    return p_position
