@@ -49,7 +49,7 @@ jobs:
             conda update openssl ca-certificates certifi
             conda install -c conda-forge/label/gcc7 poppler
             sudo apt-get update -y
-            sudo apt-get install build-essential libpoppler-cpp-dev pkg-config python-dev
+            sudo apt-get install build-essential libpoppler-cpp-dev pkg-config
           else
             conda install -c conda-forge poppler
           fi
