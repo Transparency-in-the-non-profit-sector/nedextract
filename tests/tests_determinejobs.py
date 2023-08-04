@@ -1,9 +1,17 @@
 """Unit tests for functions in clas DetermineJobs"""
+import os
 import unittest
 import numpy as np
+import stanza
 from auto_extract.determinejobs import DetermineJobs
 from auto_extract.keywords import JobKeywords
-import stanza
+from auto_extract.preprocessing import preprocess_pdf
+
+
+indir = os.path.join(os.getcwd(), 'tests')
+infile = os.path.join(indir, 'test_report.pdf')
+text = preprocess_pdf(infile, ' ')
+doc = stanza.Pipeline(lang='nl', processors='tokenize,ner')(text)
 
 class TestsDetermineJobs(unittest.TestCase):
     """Class containing functions to determine jobs.
@@ -39,13 +47,14 @@ class TestsDetermineJobs(unittest.TestCase):
             AssertionError: If the returned variable is not an array, or if the return values do
             not match the expected return values.
         """
-        DetermineJobs(text = np.array(['Jane vice voorzitter', 'vice-voorzitter Jane', 'Jane, algemeen directeur.',
-                        'Jane is de directeur', 'penningmeester Jane Doe Voorzitter Jane']))
+        text = np.array(['Jane vice voorzitter', 'vice-voorzitter Jane', 'Jane, algemeen directeur.',
+                        'Jane is de directeur', 'penningmeester Jane Doe Voorzitter Jane'])
+        DetermineJobs()
         expected = np.array(['vicevoorzitter', 'vicevoorzitter', 'search4term', 'search4term',
                             'directeur', 'directeur', 'is', 'penningmeester', 'voorzitter',
                             'voorzitter'])
         search_names = ['Jane', 'Jane Doe']
-        outp = DetermineJobs.surrounding_words(search_names)
+        outp = DetermineJobs.surrounding_words(text, search_names)
         self.assertTrue(isinstance(outp, np.ndarray))
         self.assertTrue(np.array_equal(outp, expected))
 
@@ -63,23 +72,24 @@ class TestsDetermineJobs(unittest.TestCase):
             AssertionError: If the return values do not match the expected return values.
         """
         # Test case 1
-        DetermineJobs(text = np.array(['bedrijfsstructuur directeur jane doe, directeur van bedrijf.',
-                        'dr. j. doe werkt bij bedrijf.']))
+        DetermineJobs()
+        text = np.array(['bedrijfsstructuur directeur jane doe, directeur van bedrijf.',
+                        'dr. j. doe werkt bij bedrijf.'])
         search_words = ['directeur', 'directrice']
-        totalcount, totalcount_sentence = DetermineJobs.count_occurrence(search_words)
+        totalcount, totalcount_sentence = DetermineJobs.count_occurrence(text, search_words)
         self.assertEqual(totalcount, 2)
         self.assertEqual(totalcount_sentence, 1)
 
         # Test case 2
-        DetermineJobs(text = np.array(['vice-voorzitter Jane']))
+        text = np.array(['vice-voorzitter Jane'])
         search_words = ['voorzitter']
-        totalcount, totalcount_sentence = DetermineJobs.count_occurrence(search_words)
+        totalcount, totalcount_sentence = DetermineJobs.count_occurrence(text, search_words)
         self.assertEqual(totalcount, 0)
         self.assertEqual(totalcount_sentence, 0)
 
         # Test case 3
         search_words = ['vice-voorzitter', 'vicevoorzitter', 'vice voorzitter']
-        totalcount, totalcount_sentence = DetermineJobs.count_occurrence(search_words)
+        totalcount, totalcount_sentence = DetermineJobs.count_occurrence(text, search_words)
         self.assertEqual(totalcount, 1)
         self.assertEqual(totalcount_sentence, 1)
 
@@ -96,32 +106,24 @@ class TestsDetermineJobs(unittest.TestCase):
         Raises:
             AssertionError: If the return values do not match the expected return values for any of the test cases.
         """
-        
+        DetermineJobs_instance = DetermineJobs(main_jobs=[JobKeywords.directeur, JobKeywords.rvt, JobKeywords.bestuur])
         # Starting definitions for sentences and surrounding sentences
-        members = [jane doe, dr. j.]
-        text = np.array(['deze tekst dient enkel om te testen rvt.',
-                         'bedrijfsstructuur directeur jane doe, directeur van bedrijf.',
-                         'dr. j. doe werkt bij bedrijf.',
-                         'bedrijf heeft een rvt, raad van toezicht rvt, absoluut, ab, absurt.'])
-        doc = stanza.Pipeline(lang='nl', processors='tokenize,ner')(text)
-        DetermineJobs(main_jobs=[JobKeywords.directeur, JobKeywords.rvt, JobKeywords.bestuur], doc=doc,
-                      members=members)
-        '''sentences = np.array(['bedrijfsstructuur directeur jane doe, directeur van bedrijf.',
+        sentences = np.array(['bedrijfsstructuur directeur jane doe, directeur van bedrijf.',
                             'dr. j. doe werkt bij bedrijf.'])
         surroundings = np.array(['deze tekst dient enkel om te testen rvt.',
                                 'bedrijfsstructuur directeur jane doe, directeur van bedrijf.',
                                 'dr. j. doe werkt bij bedrijf.',
-                                'bedrijf heeft een rvt, raad van toezicht rvt, absoluut, ab, absurt.''''
+                                'bedrijf heeft een rvt, raad van toezicht rvt, absoluut, ab, absurt.'
                                 ])
         # Test case 1
-        check = determine_main_job(sentences, surroundings)
+        check = DetermineJobs_instance.determine_main_job(sentences=sentences, surroundings=surroundings)
         self.assertEqual(check[0], 'directeur')
         self.assertEqual(check[1], 2)
         self.assertEqual(check[2], 1)
 
         # Test case 2
         sentences = np.array(['rvt, directeur'])
-        check = determine_main_job(jobs, sentences, surroundings)
+        check = DetermineJobs_instance.determine_main_job(sentences=sentences, surroundings=surroundings)
         self.assertEqual(check[0], 'rvt')
 
         # Test case 3
@@ -129,34 +131,34 @@ class TestsDetermineJobs(unittest.TestCase):
                                 'bedrijfsstructuur directeur jane doe, van bedrijf.',
                                 'dr. j. doe werkt bij bedrijf.',
                                 'bedrijf heeft een, raad van toezicht, absoluut, ab, absurt.'])
-        check = determine_main_job(jobs, sentences, surroundings)
+        check = DetermineJobs_instance.determine_main_job(sentences=sentences, surroundings=surroundings)
         self.assertEqual(check[0], 'directeur')
 
         # Test case 4
         sentences = np.array(['directeur rvt directeur'])
         surroundings = np.array(['directeur', 'rvt'])
-        check = determine_main_job(jobs, sentences, surroundings)
+        check = DetermineJobs_instance.determine_main_job(sentences=sentences, surroundings=surroundings)
         self.assertEqual(check[0], 'directeur')
 
         # Test case 5
         sentences = np.array(['directeur rvt'])
         surroundings = np.array(['directeur rvt directeur'])
-        check = determine_main_job(jobs, sentences, surroundings)
+        check = DetermineJobs_instance.determine_main_job(sentences=sentences, surroundings=surroundings)
         self.assertEqual(check[0], 'directeur')
 
         # Test case 6
-        check = determine_main_job(jobs, sentences, sentences)
+        check = DetermineJobs_instance.determine_main_job(sentences=sentences, surroundings=sentences)
         self.assertEqual(check[0], 'directeur')
 
         # Test case 7
         sentences = np.array([' '])
         surroundings = np.array(['directeur rvt'])
-        check = determine_main_job(jobs, sentences, surroundings)
+        check = DetermineJobs_instance.determine_main_job(sentences=sentences, surroundings=surroundings)
         self.assertEqual(check[0], 'directeur')
 
         # Test case 8
         sentences = np.array(['niets'])
-        check = determine_main_job(jobs, sentences, sentences)
+        check = DetermineJobs_instance.determine_main_job(sentences=sentences, surroundings=sentences)
         self.assertTrue(check[0] is None)
 
 
@@ -177,25 +179,27 @@ class TestsDetermineJobs(unittest.TestCase):
         # Test case 1
         sentences = np.array(['directeur Jane Doe directeur. J. Doe voorzitter'])
         main_cat = 'directeur'
-        check = determine_sub_job(members, sentences, main_cat)
+        DetermineJobs_instance = DetermineJobs(members=members, main_job=main_cat)
+        check = DetermineJobs_instance.determine_sub_job(sentences=sentences)
         self.assertEqual(check[0], 'directeur')
         self.assertEqual(check[1], '')
 
         # Test case 2
         sentences = np.array(['Jane Doe is niet directeur van bedrijf. J. Doe not voorzitter'])
-        check = determine_sub_job(members, sentences, main_cat)
+        check = DetermineJobs_instance.determine_sub_job(sentences=sentences)
         self.assertEqual(check[0], '')
 
         # Test case 3
-        check = determine_sub_job(members, np.array(['Jane Doe']), main_cat)
+        check = DetermineJobs_instance.determine_sub_job(sentences=np.array(['Jane Doe']))
         self.assertEqual(check[0], '')
 
         # Test case 4
-        check = determine_sub_job(members, np.array(['Jane Doe voorzitter']), main_cat)
+        check = DetermineJobs_instance.determine_sub_job(sentences= np.array(['Jane Doe voorzitter']))
         self.assertEqual(check[0], 'voorzitter')
 
         # Test case 5
-        check = determine_sub_job(members, np.array(['Jane Doe voorzitter']), 'rvt')
+        DetermineJobs_instance.main_job = 'rvt'
+        check = DetermineJobs_instance.determine_sub_job(sentences=np.array(['Jane Doe voorzitter']))
         self.assertEqual(check[0], 'voorzitter')
 
     def test_relevant_sentences(self):
@@ -211,9 +215,12 @@ class TestsDetermineJobs(unittest.TestCase):
             if the return values do not match the expected return values.
         """
         # Test case
-        sentences, surroundings = relevant_sentences(doc, ['Jane Doe', 'J. Doe'])
-        self.assertTrue(isinstance(sentences, np.ndarray))
-        self.assertTrue(isinstance(surroundings, np.ndarray))
+        #sentences, surroundings = relevant_sentences(doc, ['Jane Doe', 'J. Doe'])
+        DetermineJobs_instance = DetermineJobs(doc=doc, members = ['Jane Doe', 'J. Doe'])
+        DetermineJobs_instance.relevant_sentences()
+
+        self.assertTrue(isinstance(DetermineJobs_instance.sentences, np.ndarray))
+        self.assertTrue(isinstance(DetermineJobs_instance.surroundings, np.ndarray))
 
         expected_s = np.array(['bedrijfsstructuur jane doe, directeur van bedrijf.',
                             'dr. j. doe werkt bij bedrijf.'])
@@ -221,5 +228,5 @@ class TestsDetermineJobs(unittest.TestCase):
                                 'bedrijfsstructuur jane doe, directeur van bedrijf.',
                                 'dr. j. doe werkt bij bedrijf.',
                                 'bedrijf heeft een raad van toezicht rvt.'])
-        self.assertTrue(np.array_equal(expected_s, sentences))
-        self.assertTrue(np.array_equal(expected_sur, surroundings))
+        self.assertTrue(np.array_equal(expected_s, DetermineJobs_instance.sentences))
+        self.assertTrue(np.array_equal(expected_sur, DetermineJobs_instance.surroundings))
