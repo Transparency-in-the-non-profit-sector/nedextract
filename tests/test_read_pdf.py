@@ -1,10 +1,11 @@
 """Tests for functions included in read_pdf."""
-import unittest
 import os
+import unittest
 import numpy as np
 import stanza
 from auto_extract.preprocessing import preprocess_pdf
 from auto_extract.read_pdf import PDFInformationExtractor
+
 
 # Files containing unit ttest data
 indir = os.path.join(os.getcwd(), 'tests')
