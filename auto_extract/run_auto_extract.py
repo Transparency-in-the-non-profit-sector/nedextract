@@ -15,23 +15,18 @@ from auto_extract.read_pdf import PDFInformationExtractor
 
 
 def main(testarg=None):
-    desc = """This script can read annual report pdf files and extract relevant information about:
-    - Board members (directors, bestuur, raad van toezicht, kascommissie, controlecommissie,
-      ledenraad)
-    - Ambassadors
-    - Other organizations mentioned in the text
-    - Classify the sector of the organisation
+    """This program is designed to read Dutch annual report pdf files from non-profit organisation 
+    and extract relevant information.
 
-    To do:
-    - Classify the subsector
-    - Determine mission statements
-    - Determine activities
-    - Determine the type of related organizations (use kvk data/wiki data?)
-    - Determine the type of relationship with related organizations
-
-    The information is converted into structured output in the form of an Excel file.
-
-    Run with either -d, -f, -u or -uf. """
+    The following general steps are taken:
+    - Read in the pdf files(s) and preprocess the text.
+    - (optional) Extract mentioned people from the text and identify their position within the organisation.
+      Which of the people named in the text can be found to likely hold any of the positions of board members (directors, 
+      bestuur, raad van toezicht, kascommissie, controlecommissie, edenraad), or ambassadors
+    - (optional) Extract mentioned organisations in the text
+    - (optional) Classify the sector in which the organisation is active.
+    - The gathered information is converted into structured output in the form of an Excel file.
+    """
 
     # start time
     start_time = f"{datetime.now():%Y-%m-%d %H:%M:%S}"
