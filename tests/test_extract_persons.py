@@ -1,6 +1,6 @@
 """This module contains unit tests for the functions in extract_persons"""
-import unittest
 import os
+import unittest
 import numpy as np
 import stanza
 from auto_extract.extract_persons import append_p_position
@@ -11,6 +11,7 @@ from auto_extract.extract_persons import director_check
 from auto_extract.extract_persons import extract_persons
 from auto_extract.extract_persons import identify_potential_people
 from auto_extract.preprocessing import preprocess_pdf
+
 
 # Download stanza
 stanza.download('nl')
