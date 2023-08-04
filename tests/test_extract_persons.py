@@ -36,19 +36,17 @@ class TestExtractPersons(unittest.TestCase):
     Test methods:
         - test_identify_potential_people: tests the 'identify_potential_people' function that analyses text to find names of
           people that may have one of the predifined jobs.
-        - test_append_p_position: tests the 'append_p_position' function that append a person's name to their main position in
-          the list of positions.
-        - test_array_p_position: tests the 'array_p_position' function that returns an array of names taken from a sublist of
-          the list p_position.
         - test_extract_persons: tests the 'extract_persons' function that extracts ambassadors and board members from a text using a rule-based method.
         - test_director_check: tests the director_check function that performs checks for potential directors and update their 
           positions if necessary
         - test_check_rvt: tests the check_rvt function that determines whether potential rvt members can be considered try=ue rvt memebers.
         - test_check_bestuur: tests the check_bestuur function that determines whether potential bestuur members can be considered true bestuur memebers.
+        - test_append_p_position: tests the 'append_p_position' function that append a person's name to their main position in
+          the list of positions.
+        - test_array_p_position: tests the 'array_p_position' function that returns an array of names taken from a sublist of
+          the list p_position.
+
     """
-
-
-
 
     def test_identify_potential_people(self):
         """Unit test for the function 'identify_potential_people'
@@ -71,27 +69,6 @@ class TestExtractPersons(unittest.TestCase):
         self.assertEqual(people.sort(), expected.sort())
 
 
-
-
-    def test_append_p_position(self):
-        """Unit test for the 'append_p_position' function.
-        
-        This function tests the 'append_p_position' function that append a person's name to their main position in
-          the list of positions.
-        
-        There is one test case
-
-        Raises:
-            AssertionError: If the returned parameter does not match the expected return value.
-        """
-        p_position = [['directeur'], ['bestuur'], ['rvt'], ['ledenraad'], ['kascommissie'],
-                    ['controlecommissie'], ['ambassadeur']]
-        main = 'rvt'
-        name = 'Jane Doe'
-        expected = [['directeur'], ['bestuur'], ['rvt', 'Jane Doe'], ['ledenraad'], ['kascommissie'],
-                    ['controlecommissie'], ['ambassadeur']]
-        result = append_p_position(p_position, main, name)
-        self.assertEqual(result, expected)
 
 
     def test_extract_persons(self):
@@ -141,21 +118,6 @@ class TestExtractPersons(unittest.TestCase):
         # Test case 2
         d = extract_persons(doc2, all_persons2)[2]
         self.assertTrue(np.array_equal(np.array(['Jane Doe']), d))
-
-
-    def test_array_p_position(self):
-        """Unit test for the function 'array_p_position'.
-        
-        This function tests the 'array_p_position' function that returns an array of names taken from a sublist of
-        the list p_position.
-
-        Raises:
-            AssertionError: If the returned parameter does not match the expected return value.
-        """
-        p_position = [['directeur'], ['bestuur'], ['rvt', 'Jane Doe', 'J. Doe'], ['ledenraad']]
-        expected = np.array(['Jane Doe', 'J. Doe'])
-        result = array_p_position(p_position, 'rvt')
-        self.assertTrue(np.array_equal(expected, result))
 
 
     def test_director_check(self):
@@ -324,3 +286,38 @@ class TestExtractPersons(unittest.TestCase):
         check_b, check_p = check_bestuur(pot_bestuur, b_position, p_position)
         self.assertEqual(check_p, exp_p)
         self.assertTrue(np.array_equal(check_b, exp_b))
+
+    def test_append_p_position(self):
+        """Unit test for the 'append_p_position' function.
+        
+        This function tests the 'append_p_position' function that append a person's name to their main position in
+          the list of positions.
+        
+        There is one test case
+
+        Raises:
+            AssertionError: If the returned parameter does not match the expected return value.
+        """
+        p_position = [['directeur'], ['bestuur'], ['rvt'], ['ledenraad'], ['kascommissie'],
+                    ['controlecommissie'], ['ambassadeur']]
+        main = 'rvt'
+        name = 'Jane Doe'
+        expected = [['directeur'], ['bestuur'], ['rvt', 'Jane Doe'], ['ledenraad'], ['kascommissie'],
+                    ['controlecommissie'], ['ambassadeur']]
+        result = append_p_position(p_position, main, name)
+        self.assertEqual(result, expected)
+
+
+    def test_array_p_position(self):
+        """Unit test for the function 'array_p_position'.
+        
+        This function tests the 'array_p_position' function that returns an array of names taken from a sublist of
+        the list p_position.
+
+        Raises:
+            AssertionError: If the returned parameter does not match the expected return value.
+        """
+        p_position = [['directeur'], ['bestuur'], ['rvt', 'Jane Doe', 'J. Doe'], ['ledenraad']]
+        expected = np.array(['Jane Doe', 'J. Doe'])
+        result = array_p_position(p_position, 'rvt')
+        self.assertTrue(np.array_equal(expected, result))
