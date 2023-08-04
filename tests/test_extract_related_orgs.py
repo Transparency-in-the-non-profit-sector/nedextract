@@ -24,7 +24,7 @@ nlp = stanza.Pipeline(lang='nl', processors='tokenize,ner')
 doc = nlp(text)
 
 
-def test_collect_orgs():
+def test_collect_orgs(unittest.TestCase):
     orgs = collect_orgs(infile, nlp)
     assert(orgs == ['Bedrijf2', 'Bedrijf3'])
 
