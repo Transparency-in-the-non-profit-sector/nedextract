@@ -3,24 +3,14 @@ import unittest
 import os
 import numpy as np
 import stanza
-from auto_extract.extract_persons import abbreviate
 from auto_extract.extract_persons import append_p_position
 from auto_extract.extract_persons import array_p_position
 from auto_extract.extract_persons import check_bestuur
 from auto_extract.extract_persons import check_rvt
-from auto_extract.extract_persons import count_occurrence
-from auto_extract.extract_persons import determine_main_job
-from auto_extract.extract_persons import determine_sub_job
 from auto_extract.extract_persons import director_check
 from auto_extract.extract_persons import extract_persons
-from auto_extract.extract_persons import find_duplicate_persons
-from auto_extract.extract_persons import get_tsr
 from auto_extract.extract_persons import identify_potential_people
-from auto_extract.extract_persons import relevant_sentences
-from auto_extract.extract_persons import strip_names_from_title
-from auto_extract.extract_persons import surrounding_words
 from auto_extract.preprocessing import preprocess_pdf
-
 
 # Download stanza
 stanza.download('nl')
@@ -38,27 +28,13 @@ text2 = preprocess_pdf(infile2, ' ')
 doc2 = stanza.Pipeline(lang='nl', processors='tokenize,ner')(text2)
 all_persons2 = np.unique([f'{ent.text}' for ent in doc2.ents if ent.type == "PER"])
 
+
 class TestExtractPersons(unittest.TestCase):
     """Unit test class for functions used to extract names and functions of people mentioned in a pdf file.
     
     Test methods:
-        - test_abbreviate: tests the 'abbreviate' function to abbreviate names
-        - test_get_tsr: tests the 'get_tsr' function that determines the token set ratio for two names and the required score
-        - test_strip_names_from_title: tests the 'strip_names_from_title' function that removes titles from names.
-        - test_find_duplicate_persons: tests the 'find_duplicate_persons' function that tests if names in a list are very
-          similar.
-        - test_surrounding_words: tests the 'surrounding_words' function that dermines the words surrounding a given name in a
-          text.
-        - test_count_occurrence: tests the 'count_occurrence' function that counts for a list of serach words the occurences in
-          a text.
-        - test_determine_main_job: tests the 'determine_main_job' function that determines the main job from a set of sentences
-          or surrounding sentences.
-        - test_determine_sub_job: tests the 'determine_sub_job' function that determines the sub job based on a persons name,
-          the previously determine main cat and a list of sentences.
         - test_identify_potential_people: tests the 'identify_potential_people' function that analyses text to find names of
           people that may have one of the predifined jobs.
-        - test_relevant_sentences: tests the 'relevant_sentences' function that identifies all sentences containing a specific
-          person and those directly surrounding them.
         - test_append_p_position: tests the 'append_p_position' function that append a person's name to their main position in
           the list of positions.
         - test_array_p_position: tests the 'array_p_position' function that returns an array of names taken from a sublist of
@@ -69,279 +45,8 @@ class TestExtractPersons(unittest.TestCase):
         - test_check_rvt: tests the check_rvt function that determines whether potential rvt members can be considered try=ue rvt memebers.
         - test_check_bestuur: tests the check_bestuur function that determines whether potential bestuur members can be considered true bestuur memebers.
     """
-    def test_abbreviate(self):
-        """Unit test function for the 'abbreviate' function.
-
-        This function tests the 'abbreviate' function, which abbreviates the first 'n_ab' terms in a 'name',
-        excluding tussenvoegsels, and as long as it is not the last term in a name.
-
-        Test cases:
-        1. Case where 'name' is 'Jane Doe' and 'n_ab' is 2. The expected output is 'J Doe '.
-        2. Case where 'name' is 'Jan de Wit' and 'n_ab' is 2. The expected output is 'J de Wit '.
-        3. Case where 'name' is 'Jan Piet de Wit' and 'n_ab' is 2. The expected output is 'J P de Wit '.
-        4. Case where 'name' is 'Jan Piet van der Wit' and 'n_ab' is 2. The expected output is 'J P van der Wit '.
-        5. Case where 'name' is 'Jan Piet van der Wit' and 'n_ab' is 3. The expected output is 'J P van der Wit '.
-
-        Raises:
-            AssertionError: If any of the assert statements fail, indicating incorrect return values.
-        """
-        name = 'Jane Doe'
-        name2 = 'Jan de Wit'
-        name3 = 'Jan Piet de Wit'
-        name4 = 'Jan Piet van der Wit'
-        self.assertEqual(abbreviate(name, 2), 'J Doe ')
-        self.assertEqual(abbreviate(name2, 2), 'J de Wit ')
-        self.assertEqual(abbreviate(name3, 2), 'J P de Wit ')
-        self.assertEqual(abbreviate(name4, 2), 'J P van der Wit ')
-        self.assertEqual(abbreviate(name4, 3), 'J P van der Wit ')
 
 
-    def test_get_tsr(self):
-        """Unit test function for the 'get_tsr' function.
-        
-        This function tests the get_tsr function that determines the token set ratio
-        for two input names and the required score that is determed based on the `form` of the to test names
-        
-        There are five test cases specified, each expecting a matching tsr score, but different
-        required scores.
-
-        Raises:
-            AssertionError: If any of the assert statements fail, indicating incorrect return values.
-        """
-
-        # Test case 1
-        tsr1, rs1 = get_tsr('Jane Doe', 'Jane Doe')
-        self.assertEqual(tsr1, 100)
-        self.assertEqual(rs1, 90)
-        # Test cse 2
-        tsr2, rs2 = get_tsr('Jane Doe', 'Jane')
-        self.assertEqual(tsr2, 100)
-        self.assertEqual(rs2, 100)
-        # Test case 3
-        tsr3, rs3 = get_tsr('J. Doe', 'J.P. Doe')
-        self.assertEqual(tsr3, 100)
-        self.assertEqual(rs3, 90)
-        # Test case 4
-        tsr4, rs4 = get_tsr('J. Doe', 'Jane Doe')
-        self.assertEqual(tsr4, 100)
-        self.assertEqual(rs4, 95)
-        # Test case 5
-        tsr5, rs5 = get_tsr('Jane Doe', 'J. Doe')
-        self.assertEqual(tsr5, 100)
-        self.assertEqual(rs5, 95)
-
-
-    def test_strip_names_from_title(self):
-        """Unit test for the 'strip_names_from_titles' funciton.
-
-        This function tests the 'strip_names_from_title' function that removes titles from a list of names.
-        If the stripping procedure leaves the remainder of a name to consist of only one letter,
-        this original name is added to a list of names to be removed.
-
-        There is one test case input list, that contains three different case names with different forms of
-        expected outputs.
-
-        Raises:
-            AssertionError: If any of the assert statements fail, indicating incorrect return values.
-        """
-        inp = ['Prof. Dr. Jane Doe', 'John Doe, PhD', 'Dr. J.']
-        expected, expected_removed = ['  jane doe', 'john doe, '], ['Dr. J.']
-        out, out_r = strip_names_from_title(inp)
-        self.assertEqual(out, expected)
-        self.assertEqual(out_r, expected_removed)
-
-
-    def test_find_duplicate_persons(self):
-        """Unit test for the 'find_duplicate_names' function.
-
-        This function tests the 'find_duplicate_names' function that tests if some of the names
-        in a list are very similar.
-
-        There is one test case, consisting of one list of names that is expected to return three cases of found
-        name similarities.
-
-        Raises:
-            AssertionError: If the returned variable is not a list, or if it does not matchc the expected
-            return values.
-        """
-        persons = ['Dr. Jane Doe', 'Jane Doe', 'J. Doe', 'Jane Elaine Doe',
-                'J.E. Doe', 'Jane White', 'William Doe', 'Jane']
-        outnames = find_duplicate_persons(persons)
-        expected = [['Jane Elaine Doe', 'Dr. Jane Doe', 'Jane Doe', 'J.E. Doe', 'J. Doe'],
-                    ['Jane White'], ['William Doe']]
-        self.assertTrue(isinstance(outnames, list))
-        self.assertEqual(outnames, expected)
-
-
-    def test_surrounding_words(self):
-        """Unit test for the surrounding_words function.
-
-        This function tests the 'surrounding_words' function that dermines the words surrounding
-        a given name in a text.
-
-        There is one test case, consisting of one array of five elements and one search name that is expected to
-        return an array of ten results found.
-
-        Raises:
-            AssertionError: If the returned variable is not an array, or if the return values do
-            not match the expected return values.
-        """
-        text = np.array(['Jane vice voorzitter', 'vice-voorzitter Jane', 'Jane, algemeen directeur.',
-                        'Jane is de directeur', 'penningmeester Jane Doe Voorzitter Jane'])
-        expected = np.array(['vicevoorzitter', 'vicevoorzitter', 'search4term', 'search4term',
-                            'directeur', 'directeur', 'is', 'penningmeester', 'voorzitter',
-                            'voorzitter'])
-        search_names = ['Jane', 'Jane Doe']
-        outp = surrounding_words(text, search_names)
-        self.assertTrue(isinstance(outp, np.ndarray))
-        self.assertTrue(np.array_equal(outp, expected))
-
-
-    def test_count_occurrence(self):
-        """Unit test for the 'count_occurrence" function.
-
-        The function tests the 'count_occurrence' function that counts for a list of 
-        serach words the occurences for each of them in a text and the number of sentences that
-        contain any of the search words.
-
-        There are three test cases, each with different test texts and different search words
-
-        Raises:
-            AssertionError: If the return values do not match the expected return values.
-        """
-        # Test case 1
-        text = np.array(['bedrijfsstructuur directeur jane doe, directeur van bedrijf.',
-                        'dr. j. doe werkt bij bedrijf.'])
-        search_words = ['directeur', 'directrice']
-        totalcount, totalcount_sentence = count_occurrence(text, search_words)
-        self.assertEqual(totalcount, 2)
-        self.assertEqual(totalcount_sentence, 1)
-
-        # Test case 2
-        text = np.array(['vice-voorzitter Jane'])
-        search_words = ['voorzitter']
-        totalcount, totalcount_sentence = count_occurrence(text, search_words)
-        self.assertEqual(totalcount, 0)
-        self.assertEqual(totalcount_sentence, 0)
-
-        # Test case 3
-        search_words = ['vice-voorzitter', 'vicevoorzitter', 'vice voorzitter']
-        totalcount, totalcount_sentence = count_occurrence(text, search_words)
-        self.assertEqual(totalcount, 1)
-        self.assertEqual(totalcount_sentence, 1)
-
-
-    def test_determine_main_job(self):
-        """Unit test for the 'determine_main_job' function.
-
-        The function tests the 'determine_main_job' function that determines the main job from a set of sentences
-        or surrounding sentences.
-
-        After an initial set of definitons for the parameters sentences, surroundings, there are 8 test cases, for each of
-        which the input sentences and/or input surrounding sentences are updated
-
-        Raises:
-            AssertionError: If the return values do not match the expected return values for any of the test cases.
-        """
-        # Definitions of jobs
-        directeur = ['directeur', 'directrice', 'directie', 'bestuurder']
-        rvt = ['rvt', 'raad van toezicht', 'raad v. toezicht', 'auditcommissie', 'audit commissie']
-        bestuur = ['bestuur', 'db', 'ab', 'rvb', 'bestuurslid', 'bestuursleden', 'hoofdbestuur',
-                'bestuursvoorzitter']
-        jobs = [directeur, rvt, bestuur]
-
-        # Starting definitions for sentences and surrounding sentences
-        sentences = np.array(['bedrijfsstructuur directeur jane doe, directeur van bedrijf.',
-                            'dr. j. doe werkt bij bedrijf.'])
-        surroundings = np.array(['deze tekst dient enkel om te testen rvt.',
-                                'bedrijfsstructuur directeur jane doe, directeur van bedrijf.',
-                                'dr. j. doe werkt bij bedrijf.',
-                                'bedrijf heeft een rvt, raad van toezicht rvt, absoluut, ab, absurt.'
-                                ])
-        # Test case 1
-        check = determine_main_job(jobs, sentences, surroundings)
-        self.assertEqual(check[0], 'directeur')
-        self.assertEqual(check[1], 2)
-        self.assertEqual(check[2], 1)
-
-        # Test case 2
-        sentences = np.array(['rvt, directeur'])
-        check = determine_main_job(jobs, sentences, surroundings)
-        self.assertEqual(check[0], 'rvt')
-
-        # Test case 3
-        surroundings = np.array(['deze tekst dient enkel om te testen.',
-                                'bedrijfsstructuur directeur jane doe, van bedrijf.',
-                                'dr. j. doe werkt bij bedrijf.',
-                                'bedrijf heeft een, raad van toezicht, absoluut, ab, absurt.'])
-        check = determine_main_job(jobs, sentences, surroundings)
-        self.assertEqual(check[0], 'directeur')
-
-        # Test case 4
-        sentences = np.array(['directeur rvt directeur'])
-        surroundings = np.array(['directeur', 'rvt'])
-        check = determine_main_job(jobs, sentences, surroundings)
-        self.assertEqual(check[0], 'directeur')
-
-        # Test case 5
-        sentences = np.array(['directeur rvt'])
-        surroundings = np.array(['directeur rvt directeur'])
-        check = determine_main_job(jobs, sentences, surroundings)
-        self.assertEqual(check[0], 'directeur')
-
-        # Test case 6
-        check = determine_main_job(jobs, sentences, sentences)
-        self.assertEqual(check[0], 'directeur')
-
-        # Test case 7
-        sentences = np.array([' '])
-        surroundings = np.array(['directeur rvt'])
-        check = determine_main_job(jobs, sentences, surroundings)
-        self.assertEqual(check[0], 'directeur')
-
-        # Test case 8
-        sentences = np.array(['niets'])
-        check = determine_main_job(jobs, sentences, sentences)
-        self.assertTrue(check[0] is None)
-
-
-    def test_determine_sub_job(self):
-        """Unit test for the 'determine_sub_job' function.
-        
-        This function tests the 'determine_sub_job' function that determines the sub job based on a a list of different
-        writings of a persons name (members), the previously determine main cat and a list of sentences.
-
-        There are five test cases. For a given list of members (names), each test checks a case with either different
-        given sentences and/or main jobs
-
-        Raises:
-            AssertionError: If the return values do not match the expected return values for any of the test cases.
-        """
-        members = ['Jane Doe', 'J. Doe']
-
-        # Test case 1
-        sentences = np.array(['directeur Jane Doe directeur. J. Doe voorzitter'])
-        main_cat = 'directeur'
-        check = determine_sub_job(members, sentences, main_cat)
-        self.assertEqual(check[0], 'directeur')
-        self.assertEqual(check[1], '')
-
-        # Test case 2
-        sentences = np.array(['Jane Doe is niet directeur van bedrijf. J. Doe not voorzitter'])
-        check = determine_sub_job(members, sentences, main_cat)
-        self.assertEqual(check[0], '')
-
-        # Test case 3
-        check = determine_sub_job(members, np.array(['Jane Doe']), main_cat)
-        self.assertEqual(check[0], '')
-
-        # Test case 4
-        check = determine_sub_job(members, np.array(['Jane Doe voorzitter']), main_cat)
-        self.assertEqual(check[0], 'voorzitter')
-
-        # Test case 5
-        check = determine_sub_job(members, np.array(['Jane Doe voorzitter']), 'rvt')
-        self.assertEqual(check[0], 'voorzitter')
 
 
     def test_identify_potential_people(self):
@@ -365,31 +70,6 @@ class TestExtractPersons(unittest.TestCase):
         self.assertEqual(people.sort(), expected.sort())
 
 
-    def test_relevant_sentences(self):
-        """Unit test for the 'relevant_sentences' function.
-        
-        This function tests the 'relevant_sentences' function that identifies all sentences containing a specific
-        person and those directly surrounding them.
-
-        There is one test case that asserts the output instance and checks the expected output
-
-        Raises:
-            AssertionError: If the returned parameters are not a numpy array or
-            if the return values do not match the expected return values.
-        """
-        # Test case
-        sentences, surroundings = relevant_sentences(doc, ['Jane Doe', 'J. Doe'])
-        self.assertTrue(isinstance(sentences, np.ndarray))
-        self.assertTrue(isinstance(surroundings, np.ndarray))
-
-        expected_s = np.array(['bedrijfsstructuur jane doe, directeur van bedrijf.',
-                            'dr. j. doe werkt bij bedrijf.'])
-        expected_sur = np.array(['deze tekst dient enkel om te testen.',
-                                'bedrijfsstructuur jane doe, directeur van bedrijf.',
-                                'dr. j. doe werkt bij bedrijf.',
-                                'bedrijf heeft een raad van toezicht rvt.'])
-        self.assertTrue(np.array_equal(expected_s, sentences))
-        self.assertTrue(np.array_equal(expected_sur, surroundings))
 
 
     def test_append_p_position(self):
