@@ -16,14 +16,11 @@ class DetermineJobs:
     - count_occurrence
     - relevant_sentences"""
 
-    def __init__(self, main_jobs, main_job, members, name, doc, sentences, surroundings, p_position, position):
+    def __init__(self, main_jobs, main_job, members, doc, p_position, position):
         self.main_job = main_job
         self.main_jobs = main_jobs
         self.members = members
-        self.name = name
         self.doc = doc
-        self.sentences = sentences
-        self.surroundings = surroundings
         self.p_position = p_position
         self.position = position
 
