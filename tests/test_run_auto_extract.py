@@ -1,6 +1,6 @@
 """Tests for run_auto_extract."""
-import unittest
 import os
+import unittest
 from auto_extract.run_auto_extract import main
 
 
