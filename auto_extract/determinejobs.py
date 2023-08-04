@@ -1,7 +1,7 @@
 """Class with functions to determine job positions."""
 import re
 import numpy as np
-from keywords import JobKeywords
+from auto_extract.keywords import JobKeywords
 
 
 class DetermineJobs:
@@ -16,7 +16,7 @@ class DetermineJobs:
     - count_occurrence
     - relevant_sentences"""
 
-    def __init__(self, main_jobs, main_job, members, doc, p_position, position):
+    def __init__(self, main_jobs=None, main_job=None, members=None, doc=None, p_position=None, position=None):
         self.main_job = main_job
         self.main_jobs = main_jobs
         self.members = members
@@ -107,7 +107,7 @@ class DetermineJobs:
         return totalcount, totalcount_sentence
 
 
-    def determine_main_job(self):
+    def determine_main_job(self, sentences=None, surroundings=None):
         """Determine main job category based on sentence and overall frequency.
 
         This function determines the primary job category by analyzing the occurrence frequency of
@@ -147,6 +147,9 @@ class DetermineJobs:
         """
 
         # Define sentence (fs, fss) and total frequencies (ft, fts) for direct sentences and surrounding sentences
+        if sentences is None: sentences = self.sentences
+        if surroundings is None: surroundings = self.surroundings
+
         fs = np.empty(len(self.main_jobs))
         fss = np.empty(len(self.main_jobs))
         ft = np.empty(len(self.main_jobs))
@@ -156,8 +159,8 @@ class DetermineJobs:
 
         # Determine ft,fs, fts, and ftss for each job
         for m, m_j in enumerate(self.main_jobs):
-            ft[m], fs[m] = DetermineJobs.count_occurrence(self.sentences, m_j)
-            fts[m], fss[m] = DetermineJobs.count_occurrence(self.surroundings, m_j)
+            ft[m], fs[m] = DetermineJobs.count_occurrence(sentences, m_j)
+            fts[m], fss[m] = DetermineJobs.count_occurrence(surroundings, m_j)
         
         # Select based on most occuring category in the direct text using sentence frequency, no tie
         if (max(fs) > 0 and len(np.where(fs == max(fs))[0]) == 1):
@@ -192,7 +195,7 @@ class DetermineJobs:
         return [main_cat, ft_director, fts_bestuur, fts_rvt]
 
 
-    def determine_sub_job(self):
+    def determine_sub_job(self, sentences=None):
         """Determine the sub job category based on the words mentioned in the provided 'sentences' and main category ('main_cat').
 
         This function determines the sub job category by analyzing the occurrence frequency of each
@@ -219,11 +222,12 @@ class DetermineJobs:
                 - The determined sub job category (str) or an empty string if no category is found.
                 - The backup sub job category (str) or an empty string if no category is found.
         """
-        # Define c_sub_job
+        if sentences is None: sentences = self.sentences
+        # Define c_sub_jobs
         c_sub_job = np.array([])
 
         # Determine the surrounding words and use these to determine the count of each sub job 
-        surrounding_w = DetermineJobs.surrounding_words(self.sentences, self.members)
+        surrounding_w = DetermineJobs.surrounding_words(sentences, self.members)
         if surrounding_w.size > 0:
             for sj in JobKeywords.sub_jobs:
                 c_sub_job = np.append(c_sub_job, DetermineJobs.count_occurrence(surrounding_w, sj)[0])
@@ -233,7 +237,7 @@ class DetermineJobs:
         # Determine sub_cat and backup_sub_cat
         if max(c_sub_job) > 0 and len(np.where(c_sub_job == max(c_sub_job))[0]) == 1:
             sub_cat = backup_sub_cat = JobKeywords.sub_job[np.where(c_sub_job == max(c_sub_job))[0]][0]
-            if self.main_cat == 'directeur' and sub_cat == 'directeur':
+            if self.main_job == 'directeur' and sub_cat == 'directeur':
                 backup_sub_cat = ''
         else:
             sub_cat = backup_sub_cat = ''
