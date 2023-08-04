@@ -1,5 +1,4 @@
-# Copyright 2022 Netherlands eScience Center and Vrije Universiteit Amsterdam
-# Licensed under the Apache License, version 2.0. See LICENSE for details.
+"""Functions used to download pdf files from an url and preprocess the text in pdf files."""
 
 import os
 import urllib.request
@@ -7,6 +6,21 @@ import pdftotext
 
 
 def preprocess_pdf(infile, r_blankline=', ', r_eol=' ', r_par=''):
+    """
+    Preprocesses the text extracted from a PDF file.
+
+    This function takes the path of a PDF file, reads the text content, and performs several text
+    preprocessing steps to clean and format the text.
+
+    Args:
+        infile (str): The path to the PDF file.
+        r_blankline (str, optional): The replacement for consecutive blank lines. Defaults to ', '.
+        r_eol (str, optional): The replacement for end-of-line characters. Defaults to ' '.
+        r_par (str, optional): The replacement for parentheses. Defaults to ''.
+
+    Returns:
+        str: The preprocessed text extracted from the PDF file.
+    """
     with open(infile, 'rb') as f:
         pdf = pdftotext.PDF(f)
     text = "\n".join(pdf)
@@ -38,7 +52,7 @@ def preprocess_pdf(infile, r_blankline=', ', r_eol=' ', r_par=''):
 
 
 def download_pdf(url):
-    """ Download a pdf file from a url and safe it in the cwd """
+    """Download a pdf file from an url and safe it in the cwd."""
     with urllib.request.urlopen(url) as urlfile:
         filename = os.path.join(os.getcwd(), "downloaded.pdf")
         with open(filename, 'wb') as file:
@@ -47,6 +61,6 @@ def download_pdf(url):
 
 
 def delete_downloaded_pdf():
-    """ Delete the file that is downloaded with the function download_pdf and saved as
+    """Delete the file that is downloaded with the function download_pdf and saved as
     downloaded.pdf from the cwd."""
     os.remove(os.path.join(os.getcwd(), "downloaded.pdf"))
