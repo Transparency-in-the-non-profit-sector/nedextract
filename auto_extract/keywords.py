@@ -6,6 +6,7 @@ This class contains:
 - a list of common tussenvoegsels in names found in the Netherlands
 - a list of common titles.
 """
+import numpy as np
 
 
 class JobKeywords:
