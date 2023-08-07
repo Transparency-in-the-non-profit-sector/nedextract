@@ -89,13 +89,16 @@ def train(data: pd.DataFrame, train_size: float, alpha: float, save: bool = Fals
     # Train a Naive Bayes classifier on the training data
     clf = MultinomialNB(alpha=alpha)
     clf.fit(x_train_tf, y_train)
+    
     # Predict sector of test data
     predicted = clf.predict(x_test_tf)
+
     # calculate accuracy of predictions
     print(f'Total accuracy classification score: {metrics.accuracy_score(y_test, predicted)}')
     print('Confusion matrix for the following labels:')
     print(label)
     print(metrics.confusion_matrix(y_test, predicted))
+    
     # save the model
     if save:
         dump(clf, os.path.join(os.path.join(os.getcwd(), 'Pretrained'),
