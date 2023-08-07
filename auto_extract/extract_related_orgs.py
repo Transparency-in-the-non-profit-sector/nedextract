@@ -10,9 +10,9 @@ Functions:
 import numpy as np
 import pandas as pd
 from helpers_org_extraction import check_single_orgs
+from helpers_org_extraction import individual_org_check
 from helpers_org_extraction import keyword_check
 from helpers_org_extraction import percentage_considered_org
-from helpers_org_extraction import single_org_check
 from helpers_org_extraction import strip_function_of_entity
 from auto_extract.preprocessing import preprocess_pdf
 from keywords import Org_Keywords
@@ -105,7 +105,7 @@ def decide_org(org: str, pco: tuple, org_pp: np.array, org_c:np.array, nlp: stan
         is likely a true organisation
     """
     final = False
-    is_org = single_org_check(org, nlp)
+    is_org = individual_org_check(org, nlp)
     per_c, n_c, per_p, n_p = pco[0][0], pco[0][1], pco[1][0], pco[1][1]
 
     # decision tree

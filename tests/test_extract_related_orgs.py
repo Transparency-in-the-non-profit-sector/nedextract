@@ -7,16 +7,17 @@ Functions:
 - test_apply_matching
 """
 
-import unittest
 import os
+import unittest
 import numpy as np
 import pandas as pd
 import stanza
+from auto_extract.extract_related_orgs import apply_matching
 from auto_extract.extract_related_orgs import collect_orgs
 from auto_extract.extract_related_orgs import decide_org
-from auto_extract.extract_related_orgs import apply_matching
 from auto_extract.extract_related_orgs import match_anbis
 from auto_extract.preprocessing import preprocess_pdf
+
 
 # Define test text
 stanza.download('nl')

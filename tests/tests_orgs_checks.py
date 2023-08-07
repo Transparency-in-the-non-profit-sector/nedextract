@@ -4,33 +4,42 @@ Functions:
 - test_keyword_check
 - test_check_single_orgs
 - test_part_of_other
-- test_single_org_check
+- test_individual_org_check
 - test_pco
 - test_strip_function_of_entity
 - test_count_number_of_mentions
 """
 import unittest
 import numpy as np
+import stanza
 from auto_extract.orgs_checks import check_single_orgs
 from auto_extract.orgs_checks import count_number_of_mentions
+from auto_extract.orgs_checks import individual_org_check
 from auto_extract.orgs_checks import keyword_check
 from auto_extract.orgs_checks import part_of_other
 from auto_extract.orgs_checks import percentage_considered_org
-from auto_extract.orgs_checks import single_org_check
 from auto_extract.orgs_checks import strip_function_of_entity
 
+
+stanza.download('nl')
+indir = os.path.join(os.getcwd(), 'tests')
+infile = os.path.join(indir, 'test_report.pdf')
+text = preprocess_pdf(infile, ' ')
+nlp = stanza.Pipeline(lang='nl', processors='tokenize,ner')
+doc = nlp(text)
 
 class TestsOrgs_Checks(unittest.TestCase):
     """Unit test class for functions used to extract names and functions of people mentioned in a pdf file.
     
     Test methods:
     - test_keyword_check: tests the keyword_check function that determines if an org is likely to be or not be an organisation
-        based on keywords
+      based on keywords
     - test_check_single_orgs: tests the check_single_orgs function that appends an org to an input list if it 
-        passes the keyword check and is not part of other org
+      passes the keyword check and is not part of other org
     - test_part_of_other: tests the function part_of_other that checks if a member of
-        orgs is part of the org string.
-    - test_single_org_check:
+      orgs is part of the org string.
+    - test_individual_org_check: tests the individual_org_check that checks if an potential ORG is considered and ORG
+      if just that name is analysed by Stanza NER.
     - test_pco:
     - test_strip_function_of_entity:
     - test_count_number_of_mentions:
@@ -96,14 +105,17 @@ class TestsOrgs_Checks(unittest.TestCase):
         assert(is_part)
 
 
-    def test_single_org_check(self):
-        """
+    def test_individual_org_check(self):
+        """Unit test for the function individual_org_check
         
+        This function tests the individual_org_check that checks if an potential ORG is considered and ORG
+        if just that name is analysed by Stanza NER. Contains one test case. 
+
         Raises:
             AssertionError: If the assert statement fails, indicating an incorrect return value.
         """
         org = 'Stichting Huppeldepup'
-        is_org = single_org_check(org, nlp)
+        is_org = individual_org_check(org, nlp)
         assert(is_org)
 
 

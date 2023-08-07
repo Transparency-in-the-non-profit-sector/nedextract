@@ -105,14 +105,18 @@ class OrgExtraction:
         return is_part
 
 
-    def single_org_check(org, nlp):
-        '''Check if an potential ORG is considered and ORG if just that name is analysed by Stanza NER.
+    def individual_org_check(org: str, nlp: stanza.pipeline):
+        """Check if org term individually is considered an NER ORG.
+        
+        Check if an potential ORG is considered and ORG if just that name is analysed by Stanza NER.
         (Without the context of any sentences)
         
-                Args:
+        Args:
             org (str): The orgination name to be checked for keyword presence.
+            nlp (stanza.pipeline): the stanza pipeline used to analyse texts
 
-        Returns:'''
+        Returns: 
+            is_org(bool): true if the test passes"""
         doc_o = nlp(org)
         o_t = [f'{ent.text}' for ent in doc_o.ents if ent.type == "ORG"]
         is_org = bool(len(o_t) == 1 and org in o_t)
@@ -122,7 +126,6 @@ class OrgExtraction:
     def percentage_considered_org(doc, org, orgs, counts):
         '''identify all sentences in which the org is found. Then calculate in what fraction of the
         total number of mentions, the org is identified as org by NER
-        \
                 Args:
             org (str): The orgination name to be checked for keyword presence.
 
