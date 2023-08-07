@@ -10,15 +10,11 @@ Functions:
 - test_count_number_of_mentions
 """
 import unittest
+import os
 import numpy as np
 import stanza
-from classes.orgs_checks import check_single_orgs
-from classes.orgs_checks import count_number_of_mentions
-from classes.orgs_checks import individual_org_check
-from classes.orgs_checks import keyword_check
-from classes.orgs_checks import part_of_other
-from classes.orgs_checks import percentage_considered_org
-from classes.orgs_checks import strip_function_of_entity
+from classes.orgs_checks import OrganisationExtraction
+from auto_extract.preprocessing import preprocess_pdf
 
 
 stanza.download('nl')
@@ -47,6 +43,7 @@ class TestsOrgs_Checks(unittest.TestCase):
     - test_count_number_of_mentions: Tests the count_number_of_mentions function that the number of mentions of org in the text,
       taking into account word boundaries
     """
+    
     def test_keyword_check(self):
         """Unit test function for the keyword_check function.
         
@@ -58,22 +55,24 @@ class TestsOrgs_Checks(unittest.TestCase):
         Raises:
             AssertionError: If any of the assert statements fail, indicating incorrect return values.
         """
+        extraction = OrganisationExtraction()
+
         # Test case 1
         org = 'Huppeldepup B.V'
         final = False
-        kwc = keyword_check(final, org)
+        kwc = extraction(final=final, org=org).keyword_check()
         self.assertTrue(kwc)
 
         # Test case 2
         org = 'Ministerie'
         final = False
-        kwc = keyword_check(final, org)
+        kwc = extraction(final=final, org=org).keyword_check()
         self.assertFalse(kwc)
 
         # Test case 3
         org = 'Hogeschool'
         final = False
-        kwc = keyword_check(final, org)
+        kwc = extraction(final=final, org=org).keyword_check()
         self.assertFalse(kwc)
 
     def test_check_single_orgs(self):
@@ -88,7 +87,7 @@ class TestsOrgs_Checks(unittest.TestCase):
         org = 'Stichting Huppeldepup'
         true_orgs = []
         doc_c = 'Hij werkt bij Stichting Huppeldepup'
-        to = check_single_orgs(org, true_orgs, doc_c)
+        to = OrganisationExtraction(org=org, true_orgs=true_orgs, doc=doc_c).check_single_orgs()
         e_to = ['Stichting Huppeldepup']
         assert(to == e_to)
 
@@ -104,7 +103,7 @@ class TestsOrgs_Checks(unittest.TestCase):
         """
         orgs = ['Bedrijf']
         org = 'Bedrijf bla'
-        is_part = part_of_other(orgs, org, doc)
+        is_part = OrganisationExtraction(orgs=[orgs], org=org, doc=doc).part_of_other()
         assert(is_part)
 
 
@@ -118,7 +117,7 @@ class TestsOrgs_Checks(unittest.TestCase):
             AssertionError: If the assert statement fails, indicating an incorrect return value.
         """
         org = 'Stichting Huppeldepup'
-        is_org = individual_org_check(org, nlp)
+        is_org = OrganisationExtraction(org=org, nlp=nlp).individual_org_check()
         assert(is_org)
 
 
@@ -133,11 +132,12 @@ class TestsOrgs_Checks(unittest.TestCase):
         Raises:
             AssertionError: If any of the assertion statements fails, indicating an incorrect return value.
         """
+        extraction = OrganisationExtraction()
         # Test case 1
         org = 'Bedrijf'
         orgs = np.array(['Bedrijf'])
         counts = np.array([7])
-        pco = percentage_considered_org(doc, org, orgs, counts)
+        pco = extraction(doc = doc, org=org, (orgs, counts)).percentage_considered_org()
         assert(pco[0] == 100.)
         assert(pco[1] == 7)
 
@@ -165,6 +165,7 @@ class TestsOrgs_Checks(unittest.TestCase):
         Raises:
             AssertionError: If the assert statement fails, indicating an incorrect return value.
         """
+        extraction = OrganisationExtraction()
         org = "Lid van de Raad van Advies bij Bedrijfsnaam b.v."
         e_org = "Bedrijfsnaam b.v."
         o_org = strip_function_of_entity(org)
@@ -181,6 +182,7 @@ class TestsOrgs_Checks(unittest.TestCase):
         Raises:
             AssertionError: If any of the assert statements fails, indicating an incorrect return value.
         """
+        extraction = OrganisationExtraction()
         org = 'Bedrijf'
         n = count_number_of_mentions(doc, org)
         assert(n == 7)

@@ -8,10 +8,10 @@ import os
 from datetime import datetime
 import numpy as np
 import stanza
+from classes.orgs_checks import OrganisationExtraction
 from auto_extract.classify_organisation import predict_main_sector
 from auto_extract.extract_persons import extract_persons
 from auto_extract.extract_related_orgs import collect_orgs
-from auto_extract.extract_related_orgs import count_number_of_mentions
 from auto_extract.preprocessing import preprocess_pdf
 
 
@@ -185,7 +185,7 @@ class PDFInformationExtractor:
 
 
     @staticmethod
-    def output_related_orgs(infile: str, doc: stanza.doc, nlp : stanza.method):
+    def output_related_orgs(infile: str, doc, nlp):
         """Gather information about all mentioned orgnaizations in the text and structure the output.
         
         Args:
@@ -202,7 +202,7 @@ class PDFInformationExtractor:
         orgs = collect_orgs(infile, nlp)
         output = []
         for o in orgs:
-            n_org = count_number_of_mentions(doc, o)
+            n_org = OrganisationExtraction(doc=doc, org=o).count_number_of_mentions()
             op = [os.path.basename(infile), o, str(n_org)]
             if n_org > 0:
                 output.append(op)

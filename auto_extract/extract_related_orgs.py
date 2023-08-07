@@ -9,13 +9,10 @@ Functions:
 
 import numpy as np
 import pandas as pd
-from classes.orgs_checks import check_single_orgs
-from helpers_org_extraction import individual_org_check
-from helpers_org_extraction import keyword_check
-from helpers_org_extraction import percentage_considered_org
-from helpers_org_extraction import strip_function_of_entity
+import stanza
+from classes.keywords import Org_Keywords
+from classes.orgs_checks import OrganisationExtraction
 from auto_extract.preprocessing import preprocess_pdf
-from keywords import Org_Keywords
 
 
 def collect_orgs(infile: str, nlp: stanza.Pipeline):
@@ -46,6 +43,7 @@ def collect_orgs(infile: str, nlp: stanza.Pipeline):
     """
     true_orgs = []
     single_orgs = []
+    extraction = OrganisationExtraction()
     # preprocessing method 1
     doc_c = nlp(preprocess_pdf(infile, r_blankline=', ', r_par=', '))
     org_c = np.unique([ent.text.rstrip('.') for ent in doc_c.ents if ent.type == "ORG"],
@@ -64,14 +62,14 @@ def collect_orgs(infile: str, nlp: stanza.Pipeline):
     # steps to dertermine 'true' orgs
     for org in org_all:
         if any(kw in org.lower() for kw in Org_Keywords.search_strip):
-            n_org = strip_function_of_entity(org)
+            n_org = extraction(org=org).strip_function_of_entity()
         else:
             n_org = org
         if n_org != org and len(n_org) >= 3:
             single_orgs.append(n_org)
         else:
-            pco = percentage_considered_org(doc_c, org, org_c[0], org_c[1]),
-            percentage_considered_org(doc_p, org, org_p[0], org_p[1])
+            pco = extraction(doc = doc_c, org=org, orgs=org_c[0], counts=org_c[1]).percentage_considered_org(),
+            extraction(doc = doc_p, org = org, orgs=org_p[0], counts=org_p[1]).percentage_considered_org()
             decision = decide_org(org, pco, org_pp, org_c, nlp)
             # process conclusion
             if decision is True:
@@ -79,11 +77,11 @@ def collect_orgs(infile: str, nlp: stanza.Pipeline):
             elif decision == 'maybe':
                 single_orgs.append(org)
     for org in single_orgs:
-        true_orgs = check_single_orgs(org, true_orgs, doc_c)
+        true_orgs = extraction(org = org, true_orgs=true_orgs, doc=doc_c).check_single_orgs()
     return sorted(list(set(true_orgs)))
 
 
-def decide_org(org: str, pco: tuple, org_pp: np.array, org_c:np.array, nlp: stanza.Pipleline):
+def decide_org(org: str, pco: tuple, org_pp: np.array, org_c:np.array, nlp: stanza.Pipeline):
     """Decision tree to determine if an potential ORG is likely to be a true org.
 
     Decisions are based on: the overall number of mentions of the pot. org in the text,
@@ -104,8 +102,10 @@ def decide_org(org: str, pco: tuple, org_pp: np.array, org_c:np.array, nlp: stan
         list: final True, False no or maybe indication the decision on whether the organistion candidate 
         is likely a true organisation
     """
+    extraction = OrganisationExtraction(org=org, nlp=nlp)
     final = False
-    is_org = individual_org_check(org, nlp)
+
+    is_org = extraction().individual_org_check()
     per_c, n_c, per_p, n_p = pco[0][0], pco[0][1], pco[1][0], pco[1][1]
 
     # decision tree
@@ -119,7 +119,7 @@ def decide_org(org: str, pco: tuple, org_pp: np.array, org_c:np.array, nlp: stan
         if per_p == 100.:
             final = True
     elif n_p == 1 and n_c == 1:
-        kw_check = keyword_check(final, org)
+        kw_check = extraction.keyword_check(final=final)
         if per_p == per_c == 100. and ((org in org_pp) or (is_org is True) or (kw_check is True)):
             final = 'maybe'
         elif per_p == 100. and (org in o for o in org_c) and ((org in org_pp) or
@@ -138,7 +138,7 @@ def decide_org(org: str, pco: tuple, org_pp: np.array, org_c:np.array, nlp: stan
     
     # check for hits and misses
     if final not in ('maybe', 'no') and n_p >= 1:
-        final = keyword_check(final, org)
+        final = extraction.keyword_check(final=final)
     return final
 
 
