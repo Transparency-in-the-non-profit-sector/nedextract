@@ -9,7 +9,7 @@ Functions:
 
 import numpy as np
 import pandas as pd
-from helpers_org_extraction import check_single_orgs
+from classes.orgs_checks import check_single_orgs
 from helpers_org_extraction import individual_org_check
 from helpers_org_extraction import keyword_check
 from helpers_org_extraction import percentage_considered_org

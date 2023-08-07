@@ -1,6 +1,6 @@
 #"""Unit tests for functions in class NameAnalysis"""
 import unittest
-from auto_extract.NameAnalysis import NameAnalysis
+from classes.nameanalysis import NameAnalysis
 
 
 # input names for NameAnalysis class

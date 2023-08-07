@@ -12,13 +12,13 @@ Functions:
 import unittest
 import numpy as np
 import stanza
-from auto_extract.orgs_checks import check_single_orgs
-from auto_extract.orgs_checks import count_number_of_mentions
-from auto_extract.orgs_checks import individual_org_check
-from auto_extract.orgs_checks import keyword_check
-from auto_extract.orgs_checks import part_of_other
-from auto_extract.orgs_checks import percentage_considered_org
-from auto_extract.orgs_checks import strip_function_of_entity
+from classes.orgs_checks import check_single_orgs
+from classes.orgs_checks import count_number_of_mentions
+from classes.orgs_checks import individual_org_check
+from classes.orgs_checks import keyword_check
+from classes.orgs_checks import part_of_other
+from classes.orgs_checks import percentage_considered_org
+from classes.orgs_checks import strip_function_of_entity
 
 
 stanza.download('nl')

@@ -3,8 +3,8 @@ import os
 import unittest
 import numpy as np
 import stanza
-from auto_extract.determinejobs import DetermineJobs
-from auto_extract.keywords import JobKeywords
+from classes.determinejobs import DetermineJobs
+from classes.keywords import JobKeywords
 from auto_extract.preprocessing import preprocess_pdf
 
 

@@ -1,7 +1,7 @@
 """This file contains the class DetermineJobs with functions to determine job positions."""
 import re
 import numpy as np
-from auto_extract.keywords import JobKeywords
+from classes.keywords import JobKeywords
 
 
 class DetermineJobs:
