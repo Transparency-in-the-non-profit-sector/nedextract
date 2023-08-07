@@ -85,7 +85,7 @@ class OrgExtraction:
         and it is not the cases that he only difference is the presence of a keyword org, return True
         
         Args:
-            orgs: list
+            orgs: list of organisations
             org (str): The orgination name to be checked for keyword presence.
             doc: stanza processed text in which to look for organisations.
     
@@ -123,13 +123,21 @@ class OrgExtraction:
         return is_org
 
 
-    def percentage_considered_org(doc, org, orgs, counts):
-        '''identify all sentences in which the org is found. Then calculate in what fraction of the
-        total number of mentions, the org is identified as org by NER
-                Args:
-            org (str): The orgination name to be checked for keyword presence.
+    def percentage_considered_org(doc: stanza.doc, org: str, orgs: list, counts: int):
+        """Determine the percenatge of mention cases for which the org was considered an NER ORG.
 
-        Returns:'''
+        This function identifies all mentions of the org within the text. Then calculate in what percentage of the
+        total number of mentions, the org is identified as org by NER.
+        
+        Args:
+            doc: stanza processed text in which to look for organisations.
+            org (str): The orgination name to be checked for keyword presence.
+            orgs (list): list of organisations
+
+        Returns:
+            percentage(float): percentage of cases in which org was identified as org
+            n_orgs(int): number if mentions within the text
+        """
         n_orgs = count_number_of_mentions(doc, org)
         if n_orgs >= 1 and org in orgs:
             n_orgs_found = counts[orgs == org][0]
@@ -175,6 +183,7 @@ class OrgExtraction:
         
                 Args:
             org (str): The orgination name to be checked for keyword presence.
+            doc: stanza processed text in which to look for organisations.
 
         Returns:'''
         if '-' not in org:

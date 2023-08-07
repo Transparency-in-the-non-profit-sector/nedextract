@@ -40,7 +40,8 @@ class TestsOrgs_Checks(unittest.TestCase):
       orgs is part of the org string.
     - test_individual_org_check: tests the individual_org_check that checks if an potential ORG is considered and ORG
       if just that name is analysed by Stanza NER.
-    - test_pco:
+    - test_pco: tests the percentage_consired_org function that identifies the percentage of cases for which 
+      a an organisation was identified by NER as organisation within the text
     - test_strip_function_of_entity:
     - test_count_number_of_mentions:
     """
@@ -120,22 +121,31 @@ class TestsOrgs_Checks(unittest.TestCase):
 
 
     def test_pco(self):
-        """
-        
-        Raises:
-            AssertionError: If the assert statement fails, indicating an incorrect return value.
+        """Unit test for the percentage_considered_org function.
 
+        Tests the percentage_considered_org function that identifies the percentage of cases for which 
+        a an organisation was identified by NER as organisation within the text. Contains three test cases
+        asserting the percentage of cases and total number of mentioned for different input terms using the 
+        test doc.
+
+        Raises:
+            AssertionError: If any of the assertion statements fails, indicating an incorrect return value.
         """
+        # Test case 1
         org = 'Bedrijf'
         orgs = np.array(['Bedrijf'])
         counts = np.array([7])
         pco = percentage_considered_org(doc, org, orgs, counts)
         assert(pco[0] == 100.)
         assert(pco[1] == 7)
+
+        # Test case 2
         orgs = np.array(['Bedrij'])
         pco = percentage_considered_org(doc, org, orgs, counts)
         assert(pco[0] == 0.)
         assert(pco[1] == 7)
+
+        # Test case 3
         counts = np.array([0])
         org = 'Bedrijfsk'
         orgs = np.array(['Bedrijfsk'])
