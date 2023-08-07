@@ -83,16 +83,30 @@ def collect_orgs(infile: str, nlp: stanza.Pipeline):
     return sorted(list(set(true_orgs)))
 
 
-def decide_org(org, pco, org_pp, org_c, nlp: stanza.Pipleline):
-    """ Decision tree to determine if an potential ORG is likely to be a true org.
+def decide_org(org: str, pco: tuple, org_pp: np.array, org_c:np.array, nlp: stanza.Pipleline):
+    """Decision tree to determine if an potential ORG is likely to be a true org.
+
     Decisions are based on: the overall number of mentions of the pot. org in the text,
     the percentage of mentions in which it was actually considered an ORG by Stanza,
     whether a standalone pot. org is considered an ORG by Stanza,
     the precense of keywords that make it likely that the pot. org is an org,
-    the precense of keywords that make it likely that the pot. org is NOT an org."""
+    the precense of keywords that make it likely that the pot. org is NOT an org.
+    
+    Args:
+        infile (str): Path to the input PDF file.
+        pco (tuple): tuple of percentage (float), percentage of mentioned at which the organisation was found as org,
+            n_orgs (int) number of times the oganisation was mentioned in the text
+        org_pp (np.array): array of unique organoisations found in the text found using preprocessing mentod 3
+        org_c (np.array): array of unique organoisations found in the text found using preprocessing mentod 1
+        nlp (stanza.Pipeline): The stanza language model used for text processing.
+
+    Returns:
+        list: A sorted list of filtered organizational entities extracted from the PDF document.
+    """
     final = False
     is_org = single_org_check(org, nlp)
     per_c, n_c, per_p, n_p = pco[0][0], pco[0][1], pco[1][0], pco[1][1]
+
     # decision tree
     if n_p >= 5 or n_c >= 5:
         if per_p >= 50. and per_c >= 50.:
@@ -120,6 +134,7 @@ def decide_org(org, pco, org_pp, org_c, nlp: stanza.Pipleline):
             final = 'no'
         else:
             final = 'maybe'
+    
     # check for hits and misses
     if final not in ('maybe', 'no') and n_p >= 1:
         final = keyword_check(final, org)

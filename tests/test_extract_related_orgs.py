@@ -31,15 +31,16 @@ class TestExtractRelatedOrgas(unittest.TestCase):
     
     Test methods:
     - test_collect_orgs: tests the function collect organisations that collects organisations that are mentioned in text
-    - test_decide_org
+    - test_decide_org: tests the function decide_orgs that defines a decision tree to determine if a mentioned organisations is likely a true organisation
     - test_match_anbis
     - test_apply_matching
     """
     def test_collect_orgs(self):
         """Unit test for the collect_orgs function.
         
-        The collect_orgs function collects organisations that are mentioned in a text using stanza NER with a number of 
-        postprocessing steps. One test case is applied, that tests if the expected organisations are return from a test file.
+        Function that tests the collect_orgs function that collects organisations that are mentioned in a text using stanza NER
+        with a number of postprocessing steps. One test case is applied, that tests if the expected organisations are 
+        returned from a test file.
         
         Raises:
             AssertionError: If any of the assert statement fails, indicating incorrect return values.
@@ -49,41 +50,68 @@ class TestExtractRelatedOrgas(unittest.TestCase):
 
 
     def test_decide_org(self):
+        """Unit test for the function decide_org.
+        
+        Function that tests the function decide_orgs that defines a decision tree to determine if a mentioned organisations
+        is likely a true organisation.
+        
+        Nine assertion tests are defined that test for various test names, if the expected result is returned
+        for different percentage the organisation was found as org, and the total number of times the organisaiont was
+        found in the text.
+        """
+        # initalisations
         org = 'Bedrijf'
-        pco = ((50, 6), (50, 6))
         org_pp = np.array(['Bedrijf'])
         org_c = np.array(['Bedrijf'])
+
+        # Test case 1
+        pco = ((50, 6), (50, 6))
         final = decide_org(org, pco, org_pp, org_c, nlp)
-        assert(final)
+        self.assertTrue(final)
+
+        # Test case 2
         pco = ((50, 3), (50, 3))
         final = decide_org(org, pco, org_pp, org_c, nlp)
-        assert(final is False)
+        self.assertFalse(final)
+
+        # Test case 3
         pco = ((70, 3), (70, 3))
         final = decide_org(org, pco, org_pp, org_c, nlp)
-        assert(True)
+        self.assertTrue(final)
+
+        # Test case 4
         pco = ((100, 1), (100, 1))
         final = decide_org(org, pco, org_pp, org_c, nlp)
-        assert(final == 'maybe')
+        self.assertEqual(final, 'maybe')
+
+        # Test case 5
         pco = ((0, 1), (100, 1))
         final = decide_org(org, pco, org_pp, org_c, nlp)
-        assert(final == 'maybe')
+        self.assertEqual(final, 'maybe')
+
+        # Test case 6
         pco = ((100, 1), (0, 1))
         final = decide_org(org, pco, org_pp, org_c, nlp)
-        assert(final == 'no')
+        self.assertEqual(final, 'no')
+
+        # Test case 7
         pco = ((0, 0), (0, 0))
         final = decide_org(org, pco, org_pp, org_c, nlp)
-        assert(final is False)
+        self.assertFalse(False)
+
+        # Test case 8
         pco = ((0, 1), (0, 1))
         org = 'Stichting Huppeldepup'
         org_pp = ['Stichting Huppeldepup']
         final = decide_org(org, pco, org_pp, org_c, nlp)
-        assert(final == 'maybe')
+        self.assertEqual(final, 'maybe')
+
+        # Test case 9
         pco = ((0, 0), (0, 0))
         org = 'Stichting Huppeldepup'
         org_pp = ['Stichting Huppeldepup']
         final = decide_org(org, pco, org_pp, org_c, nlp)
-        assert(final == 'maybe')
-
+        self.assertEqual(final, 'maybe')
 
     def test_apply_matching(self):
         df = pd.DataFrame({'currentStatutoryName': ['Bedrijf1', 'Bedrijf2'],
