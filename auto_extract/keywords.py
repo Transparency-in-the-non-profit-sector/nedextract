@@ -1,10 +1,11 @@
-"""Class with keywords.
+"""Classes with keywords.
 
-This class contains:
-- keywords related to main jobs (directors, bestuur, raad van toezicht) and 
+Classes:
+- JobKeywords: keywords related to main jobs (directors, bestuur, raad van toezicht) and 
     related to positions within certain commissions etc (related to main jobs)
-- a list of common tussenvoegsels in names found in the Netherlands
-- a list of common titles.
+- Tussenvoegsels: a list of common tussenvoegsels in names found in the Netherlands
+- Titles: a list of common titles.
+- Org_Keywords: multiple lists used to extract organisations from a text.
 """
 import numpy as np
 
@@ -74,4 +75,68 @@ class Titles:
     titles = ['prof.', 'dr.', 'mr.', 'ir.', 'drs.', 'bacc.', 'kand.', 'dr.h.c.', 'ing.', 'bc.',
               'phd', 'phd.', 'dhr.', 'mevr.', 'mw.', 'ds.', 'mgr.', 'mevrouw', 'meneer', 'jhr.']
 
+class Org_Keywords:
+    """Class that stored lists with various keywords used to extract organisations from a text.
+    """
+    # keywords that indicate that, when present in an pot. organisation, it is likely a true org, independently of cases
+    true_keys = ['bv', r'b\.v', 'congregatie', r'fonds\b', r'fondsen\b', r'fund\b',
+                 'ministerie', 'umc', r'nederland\b']
+    
+    # keywords that indicate that, when present in an pot. organisation, it is likely a true org, but only when found with 
+    # the included caps.
+    true_keys_cap = ['Association', 'Coöperatie', r'\bCBF\b', 'Firma', 'Foundation',
+                     'Hospice', 'Hogeschool', 'Holding',
+                     'Institute', 'Instituut', r'Inc\.',
+                     'Koninklijk Nederlands', 'Koninklijke Nederlandse',
+                     'Loterij', 'LLP',
+                     'Medisch Centrum', 'Museum', 'NV', r'N\.V',
+                     'Stichting', 'Trust', r'U\.A', 'Universiteit', 'University', 'Vereniging',
+                     'Ziekenhuis', 'Ziekenhuizen']
+    
+    # keywords that, when found in an pot. org., it is likely to be a false org, independently of cases.
+    false_keys = ['abonnement', 'activa', 'afdeling', 'akkoord', 'assembly',
+                  'baten', 'bedrijfsvoering', 'begroting', 'beleid', 'bestuur', 'board',
+                  'cao', 'commissie', 'commissaris', 'committee', 'congres', 'corona', 'council',
+                  'covid', 'directeur', 'directie', 'docent', 'emeritus',
+                  'fonds op naam', 'fondsen op naam', 'functie', 'fy2', 'interim',
+                  'jaarrekening', 'jaarverslag', 'jury', r'lid\b', 'kosten',
+                  'magazine', 'manager', 'managing', 'netwerk',
+                  'overhead', 'overige', 'passiva', 'penningmeester', 'portefeuille', 'premie',
+                  'president',
+                  'raad', 'regeling', 'reserve', 'review', 'richtlijn', 'rj640', 'rj 640',
+                  'rj 650', 'rj 2016', 'saldo', 'startdatum', r'\btbv\b', 'traineeship',
+                  'van toezicht', 'verkiezing',
+                  'voorzitter', r'www\.', r'\.nl', r'\.com']
+    
+    # keywords that, when found in whole as a pot. org., indicate a false org, indipendently of cases
+    false_keys_s = ['aandelen', 'ab', 'agile', 'algemeen nut beogende instelling', 'anbi', 'arbo',
+                    'avg', 'beheer & administratie', 'beheer en administratie', 'beweging', 'bhv',
+                    'bic', 'b&a', 'bw', 'ceo', 'cfo', 'cio', 'corporate', 'country offices',
+                    'crm', 'customer relationship management', 'cto',
+                    'db', 'derden', 'ebola', 'eindredactie', 'eur',
+                    'finance & operations', 'financiën', 'finance', 'fondsenwerving',
+                    'fonds', 'fondsen', 'fte', 'fundraising',
+                    'gdpr', 'great fundraising', 'good governance', 'governance',
+                    'hr', 'hrm', 'huisvesting', 'human resources', 'iban', 'ict', 'industrie',
+                    'integrity', 'leasing', 'lobby', 'lobbyen',
+                    'managementteam', 'management team', 'management', 'marketing', 'mt',
+                    'naam', 'national organization',
+                    'national organizations', 'pensioenfonds', 'pensioenfondsen',
+                    'personeelsopbouw', 'program offices', 'project offices', 'p&o',
+                    'risk and audit', 'rj', 'rvt', 'rvb', 'sar', 'sars', 'sv', 'tv',
+                    'vgba', 'vio', 'vog', 'war']
+    
+    # Keywords to be stripped of pot. orgs (case insensitive)
+    position = ['adviseur', 'bestuurslid', 'ceo', 'cfo', 'chief technology officer', 'cio',
+                'commissaris', 'cto', 'directeur', 'lid', 'penningmeester', 'secretaris',
+                'vice voorzitter', 'vicevoorzitter', 'vice-voorzitter', 'voorzitter']
+    lidwoord_voorzetsels = [r'van\b', r'voor\b', r'bij\b', r'in\b', r'v\.', r'en\b', r'de\b',
+                            r'het\b', r'een\b']
+    raad = ['raad']
+    commissie = ['wetenschappelijke adviesraad', 'maatschappelijke adviesraad', 'bestuur',
+                 'toezicht', 'advies', 'commissarissen', 'adviesraad', 'rvt', 'rvc', 'rvb']
+    
+    # keywords that, when present in pot org, call for the attempt of keyword strip
+    search_strip = position + commissie
+    functies = ['hoofdfuncties', 'hoofdfunctie', 'nevenfuncties', 'nevenfunctie']
 
