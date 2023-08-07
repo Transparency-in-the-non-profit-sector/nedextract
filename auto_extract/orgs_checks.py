@@ -185,13 +185,15 @@ class OrgExtraction:
 
     @staticmethod
     def count_number_of_mentions(doc, org):
-        ''' Count the number of mentions of org in the text, taking into account word boundaries.
+        """Count the number of mentions of org in the text, taking into account word boundaries.
         
-                Args:
+        Args:
             org (str): The orgination name to be checked for keyword presence.
             doc: stanza processed text in which to look for organisations.
 
-        Returns:'''
+        Returns:
+            n_counts (int): number of mentions found.
+        """
         if '-' not in org:
             n_counts = len(re.findall(r"\b" + org + r"\b", doc.text.replace('-', '')))
         else:

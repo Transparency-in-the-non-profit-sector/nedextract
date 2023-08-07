@@ -44,7 +44,8 @@ class TestsOrgs_Checks(unittest.TestCase):
       a an organisation was identified by NER as organisation within the text
     - test_strip_function_of_entity: tests the strip_function_of_entity function that removes any persons work role
       of the name of a potential org.
-    - test_count_number_of_mentions:
+    - test_count_number_of_mentions: Tests the count_number_of_mentions function that the number of mentions of org in the text,
+      taking into account word boundaries
     """
     def test_keyword_check(self):
         """Unit test function for the keyword_check function.
@@ -171,10 +172,15 @@ class TestsOrgs_Checks(unittest.TestCase):
 
 
     def test_count_number_of_mentions(self):
-        """
+        """Unit test for the count_number_of_mentions.
+
+        Tests the count_number_of_mentions function that the number of mentions of org in the text,
+        taking into account word boundaries. Contains two test cases, same org name, different word boundaries,
+        applied to the test doc.
+
         Raises:
-            AssertionError: If the assert statement fails, indicating an incorrect return value.
-"""
+            AssertionError: If any of the assert statements fails, indicating an incorrect return value.
+        """
         org = 'Bedrijf'
         n = count_number_of_mentions(doc, org)
         assert(n == 7)
