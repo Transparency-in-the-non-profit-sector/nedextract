@@ -24,7 +24,7 @@ class OrgExtraction:
 
         Args:
             final (bool): The current decision status .
-            org (str): The organizational name to be checked for keyword presence.
+            org (str): The orginasation name to be checked for keyword presence.
 
         Returns:
             bool: The updated decision status based on keyword presence.
@@ -35,7 +35,7 @@ class OrgExtraction:
                 final = True
                 if len(org) == len(kw):
                     final = False
-                    
+
         # potential decision update: true if org contains a keyword as standalone word, unless it is the only word
         for kw in Org_Keywords.true_keys_cap:
             if len(re.findall((r"\b" + kw + r"\b"), org)) > 0:
@@ -53,9 +53,20 @@ class OrgExtraction:
         return final
 
 
-    def check_single_orgs(org, true_orgs, doc_c):
-        '''append org to true or false list depending on whether part_of_other
-        is false or true respectively, and it is not blocked by the keyword check.'''
+    def check_single_orgs(org: str, true_orgs: list, doc_c: stanza.doc):
+        """Append org to true list if it passes the keyword check and is not part of other org.
+        
+        This function appends an org to true_orgs list if part_of_other
+        is false or true respectively, and it is not blocked by the keyword check.
+        
+        Args:
+            org (str): The orgination name to be checked for keyword presence.
+            true_orgs: list of organisations that are already found to be likely true
+            doc_c: the stanza processes text
+
+        Returns:
+            true_orgs: The updated true_orgs list.
+        """
         final = True
         keyword = keyword_check(final, org)
         poo = part_of_other(true_orgs, org, doc_c)

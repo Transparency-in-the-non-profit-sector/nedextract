@@ -61,7 +61,6 @@ class TestExtractPersons(unittest.TestCase):
         Raises:
             AssertionError: If any of the assert statements fail, indicating incorrect return values.
         """
-
         # Test case 1
         tsr1, rs1 = NameAnalysis.get_tsr('Jane Doe', 'Jane Doe')
         self.assertEqual(tsr1, 100)
