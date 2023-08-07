@@ -9,7 +9,7 @@ Functions:
 - test_strip_function_of_entity
 - test_count_number_of_mentions
 """
-
+import unittest
 import numpy as np
 from auto_extract.orgs_checks import check_single_orgs
 from auto_extract.orgs_checks import count_number_of_mentions
@@ -24,30 +24,43 @@ class TestsOrgs_Checks(unittest.TestCase):
     """Unit test class for functions used to extract names and functions of people mentioned in a pdf file.
     
     Test methods:
-    - test_keyword_check: 
-    - test_check_single_orgs
-    - test_part_of_other
-    - test_single_org_check
-    - test_pco
-    - test_strip_function_of_entity
-    - test_count_number_of_mentions
+    - test_keyword_check: tests the keyword_check function that determines if an org is likely to be or not be an organisation
+        based on keywords
+    - test_check_single_orgs:
+    - test_part_of_other:
+    - test_single_org_check:
+    - test_pco:
+    - test_strip_function_of_entity:
+    - test_count_number_of_mentions:
     """
-
-
     def test_keyword_check(self):
-        """Unit test function for the """
+        """Unit test function for the keyword_check function.
+        
+        This function tests the keyword_check function that determines if an org is likely to be or not be an organisation
+        based on keywords.
+
+        This function comtains three test cases, each asserting the output for a different input organisation.
+
+        Raises:
+            AssertionError: If any of the assert statements fail, indicating incorrect return values.
+        """
+        # Test case 1
         org = 'Huppeldepup B.V'
         final = False
         kwc = keyword_check(final, org)
-        assert(kwc)
+        self.assertTrue(kwc)
+
+        # Test case 2
         org = 'Ministerie'
         final = False
         kwc = keyword_check(final, org)
-        assert(kwc is False)
+        self.assertFalse(kwc)
+
+        # Test case 3
         org = 'Hogeschool'
         final = False
         kwc = keyword_check(final, org)
-        assert(kwc is False)
+        self.assertFalse(kwc)
 
     def test_check_single_orgs(self):
         org = 'Stichting Huppeldepup'

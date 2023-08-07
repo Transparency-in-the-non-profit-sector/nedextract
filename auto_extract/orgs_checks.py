@@ -16,18 +16,34 @@ class OrgExtraction:
     def __init__(self) -> None:
         pass
 
-    def keyword_check(final, org):
-        ''' Check if org is likely to be or not be an organisation based on keywords.'''
+    def keyword_check(final: bool, org: str):
+        """Check if org is likely to be or not be an organisation based on keywords.
+        
+        This function contains a decision tree that determines if it is likely that a candidate organisation is a
+        true orginasation, taking into account the presence of 'organisational' keywords.
+
+        Args:
+            final (bool): The current decision status .
+            org (str): The organizational name to be checked for keyword presence.
+
+        Returns:
+            bool: The updated decision status based on keyword presence.
+        """
+        # decision is true if org contains a keyword, unless org is only a keyword
         for kw in Org_Keywords.true_keys:
             if len(re.findall(kw, org.lower())) > 0:
                 final = True
                 if len(org) == len(kw):
                     final = False
+                    
+        # potential decision update: true if org contains a keyword as standalone word, unless it is the only word
         for kw in Org_Keywords.true_keys_cap:
             if len(re.findall((r"\b" + kw + r"\b"), org)) > 0:
                 final = True
                 if len(org) == len(kw):
                     final = False
+
+        # decision is still false if the org contains a 'false' keyword, a keyword indicating that the name is not an org
         if final is True:
             for kw in Org_Keywords.false_keys:
                 if len(re.findall(kw, org.lower())) > 0:
