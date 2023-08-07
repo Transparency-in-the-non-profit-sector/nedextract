@@ -9,12 +9,12 @@ Functions:
 
 import numpy as np
 import pandas as pd
-from auto_extract.preprocessing import preprocess_pdf
 from helpers_org_extraction import check_single_orgs
 from helpers_org_extraction import keyword_check
 from helpers_org_extraction import percentage_considered_org
 from helpers_org_extraction import single_org_check
 from helpers_org_extraction import strip_function_of_entity
+from auto_extract.preprocessing import preprocess_pdf
 from keywords import Org_Keywords
 
 
