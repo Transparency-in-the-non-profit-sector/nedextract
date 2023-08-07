@@ -101,7 +101,8 @@ def decide_org(org: str, pco: tuple, org_pp: np.array, org_c:np.array, nlp: stan
         nlp (stanza.Pipeline): The stanza language model used for text processing.
 
     Returns:
-        list: A sorted list of filtered organizational entities extracted from the PDF document.
+        list: final True, False no or maybe indication the decision on whether the organistion candidate 
+        is likely a true organisation
     """
     final = False
     is_org = single_org_check(org, nlp)
@@ -141,7 +142,20 @@ def decide_org(org: str, pco: tuple, org_pp: np.array, org_c:np.array, nlp: stan
     return final
 
 
-def match_anbis(df_in, anbis_file):
+def match_anbis(df_in: pd.DataFrame, anbis_file: str):
+    """Match potential organizations with known ANBI information.
+
+    This function takes an input DataFrame 'df_in' containing potential organisations,
+    and an file 'anbis_file' (CSV format) containing information about known ANBI organisions.
+    Potential organizations from 'df_in' are matched with ANBI records based on their names.
+
+    Args:
+        df_in (pd.DataFrame): Input DataFrame containing potential organisations.
+        anbis_file (str): Path to the ANBI file (CSV format) containing known ANBIs.
+
+    Returns:
+        pd.DataFrame: A DataFrame containing the matched organisations and ANBI information.
+    """
     df = pd.read_csv(anbis_file, usecols=["rsin", "currentStatutoryName", "shortBusinessName"],
                     dtype=str)
     df_match = df_in
@@ -149,18 +163,38 @@ def match_anbis(df_in, anbis_file):
                                                                         df,
                                                                         x, 'currentStatutoryName',
                                                                         'shortBusinessName'))
+    # perform join between df_match and df based on matched_anbi and currentStatutoryName
     df1 = df_match.merge(df[df['currentStatutoryName'].notnull()], how='left',
                          left_on='matched_anbi', right_on='currentStatutoryName')
+    # select data from d1 with unknown rsin
     df2 = df1[df1['rsin'].isna()][['Input_file', 'mentioned_organization', 'n_mentions',
                                    'matched_anbi']]
+    # select df1s with rsin
     df1_out = df1[df1['rsin'].notnull()]
+    # match df with df2 using shortBusinessName
     df2_out = df2.merge(df[df['shortBusinessName'].notnull()], how='left',
                         left_on='matched_anbi', right_on='shortBusinessName')
-    df_out = pd.concat([df1_out, df2_out])
+    # combine df1 and df2 output
+    df_out = pd.concat([df1_out, df2_out]) 
     return df_out.sort_values(by=['Input_file', 'mentioned_organization'])
 
 
 def apply_matching(df, m, c2, c3):
+    """Apply matching of name to df.
+
+    This funcion tries to match name 'm' with values in either the c2 or c3 column of a dataframe,
+    allowing for the term 'stichting' to be added to the name m for matching.
+
+     Args:
+        df (pandas.DataFrame): The DataFrame containing potential matching options.
+        potential_org (str): The organisation name to be matched.
+        c2 (str): The name of the first column to search for matches.
+        c3 (str): The name of the second column to search for matches.
+
+    Returns:
+        str or None: The matched organizational name if found, or None if no match is found.
+
+    """
     cc2 = df[df[c2].notnull()][c2].to_numpy()
     cc3 = df[df[c3].notnull()][c3].to_numpy()
     match_options = np.unique(np.append(cc2, cc3))
