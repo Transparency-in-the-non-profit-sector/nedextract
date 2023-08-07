@@ -18,7 +18,7 @@ from auto_extract.extract_related_orgs import apply_matching
 from auto_extract.extract_related_orgs import match_anbis
 from auto_extract.preprocessing import preprocess_pdf
 
-
+# Define test text
 stanza.download('nl')
 indir = os.path.join(os.getcwd(), 'tests')
 infile = os.path.join(indir, 'test_report.pdf')
@@ -27,11 +27,25 @@ nlp = stanza.Pipeline(lang='nl', processors='tokenize,ner')
 doc = nlp(text)
 
 class TestExtractRelatedOrgas(unittest.TestCase):
-
+    """Unit test class for functions used to extract orgaisations mentioned in a pdf file.
+    
+    Test methods:
+    - test_collect_orgs: tests the function collect organisations that collects organisations that are mentioned in text
+    - test_decide_org
+    - test_match_anbis
+    - test_apply_matching
+    """
     def test_collect_orgs(self):
-        """"""
+        """Unit test for the collect_orgs function.
+        
+        The collect_orgs function collects organisations that are mentioned in a text using stanza NER with a number of 
+        postprocessing steps. One test case is applied, that tests if the expected organisations are return from a test file.
+        
+        Raises:
+            AssertionError: If any of the assert statement fails, indicating incorrect return values.
+        """
         orgs = collect_orgs(infile, nlp)
-        assert(orgs == ['Bedrijf2', 'Bedrijf3'])
+        self.assertEqual(orgs, ['Bedrijf2', 'Bedrijf3'])
 
 
     def test_decide_org(self):
