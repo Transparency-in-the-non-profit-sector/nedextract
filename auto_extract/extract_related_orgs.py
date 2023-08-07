@@ -1,89 +1,67 @@
-# Copyright 2022 Netherlands eScience Center and Vrije Universiteit Amsterdam
-# Licensed under the Apache License, version 2.0. See LICENSE for details.
+"""The file contains functions used to extract organisations mentioned within a text.
 
-import re
+Functions:
+- collect_orgs
+- decide_org
+- match_anbis
+- apply_matching
+"""
+
 import numpy as np
 import pandas as pd
 from auto_extract.preprocessing import preprocess_pdf
+from helpers_org_extraction import check_single_orgs
+from helpers_org_extraction import keyword_check
+from helpers_org_extraction import percentage_considered_org
+from helpers_org_extraction import single_org_check
+from helpers_org_extraction import strip_function_of_entity
+from keywords import Org_Keywords
 
 
-class Org_Keywords:
-    # keywords that indicate that, when present in an pot. organisation, it is likely a true org,
-    # independently of cases
-    true_keys = ['bv', r'b\.v', 'congregatie', r'fonds\b', r'fondsen\b', r'fund\b',
-                 'ministerie', 'umc', r'nederland\b']
-    # keywords that indicate that,  when present in an pot. organisation, it is likely a true org,
-    # but only when found with the included caps.
-    true_keys_cap = ['Association', 'Coöperatie', r'\bCBF\b', 'Firma', 'Foundation',
-                     'Hospice', 'Hogeschool', 'Holding',
-                     'Institute', 'Instituut', r'Inc\.',
-                     'Koninklijk Nederlands', 'Koninklijke Nederlandse',
-                     'Loterij', 'LLP',
-                     'Medisch Centrum', 'Museum', 'NV', r'N\.V',
-                     'Stichting', 'Trust', r'U\.A', 'Universiteit', 'University', 'Vereniging',
-                     'Ziekenhuis', 'Ziekenhuizen']
-    # keywords that, when found in an pot. org., it is likely to be a false org,
-    # independently of cases.
-    false_keys = ['abonnement', 'activa', 'afdeling', 'akkoord', 'assembly',
-                  'baten', 'bedrijfsvoering', 'begroting', 'beleid', 'bestuur', 'board',
-                  'cao', 'commissie', 'commissaris', 'committee', 'congres', 'corona', 'council',
-                  'covid', 'directeur', 'directie', 'docent', 'emeritus',
-                  'fonds op naam', 'fondsen op naam', 'functie', 'fy2', 'interim',
-                  'jaarrekening', 'jaarverslag', 'jury', r'lid\b', 'kosten',
-                  'magazine', 'manager', 'managing', 'netwerk',
-                  'overhead', 'overige', 'passiva', 'penningmeester', 'portefeuille', 'premie',
-                  'president',
-                  'raad', 'regeling', 'reserve', 'review', 'richtlijn', 'rj640', 'rj 640',
-                  'rj 650', 'rj 2016', 'saldo', 'startdatum', r'\btbv\b', 'traineeship',
-                  'van toezicht', 'verkiezing',
-                  'voorzitter', r'www\.', r'\.nl', r'\.com']
-    # keywords that, when found in whole as a pot. org., indicate a false org,
-    # idnepoendenlty of cases
-    false_keys_s = ['aandelen', 'ab', 'agile', 'algemeen nut beogende instelling', 'anbi', 'arbo',
-                    'avg', 'beheer & administratie', 'beheer en administratie', 'beweging', 'bhv',
-                    'bic', 'b&a', 'bw', 'ceo', 'cfo', 'cio', 'corporate', 'country offices',
-                    'crm', 'customer relationship management', 'cto',
-                    'db', 'derden', 'ebola', 'eindredactie', 'eur',
-                    'finance & operations', 'financiën', 'finance', 'fondsenwerving',
-                    'fonds', 'fondsen', 'fte', 'fundraising',
-                    'gdpr', 'great fundraising', 'good governance', 'governance',
-                    'hr', 'hrm', 'huisvesting', 'human resources', 'iban', 'ict', 'industrie',
-                    'integrity', 'leasing', 'lobby', 'lobbyen',
-                    'managementteam', 'management team', 'management', 'marketing', 'mt',
-                    'naam', 'national organization',
-                    'national organizations', 'pensioenfonds', 'pensioenfondsen',
-                    'personeelsopbouw', 'program offices', 'project offices', 'p&o',
-                    'risk and audit', 'rj', 'rvt', 'rvb', 'sar', 'sars', 'sv', 'tv',
-                    'vgba', 'vio', 'vog', 'war']
-    # Keywords to be stripped of pot. orgs (case insensitive)
-    position = ['adviseur', 'bestuurslid', 'ceo', 'cfo', 'chief technology officer', 'cio',
-                'commissaris', 'cto', 'directeur', 'lid', 'penningmeester', 'secretaris',
-                'vice voorzitter', 'vicevoorzitter', 'vice-voorzitter', 'voorzitter']
-    lidwoord_voorzetsels = [r'van\b', r'voor\b', r'bij\b', r'in\b', r'v\.', r'en\b', r'de\b',
-                            r'het\b', r'een\b']
-    raad = ['raad']
-    commissie = ['wetenschappelijke adviesraad', 'maatschappelijke adviesraad', 'bestuur',
-                 'toezicht', 'advies', 'commissarissen', 'adviesraad', 'rvt', 'rvc', 'rvb']
-    # keywords that, when present in pot org, call for the attempt of keyword strip
-    search_strip = position + commissie
-    functies = ['hoofdfuncties', 'hoofdfunctie', 'nevenfuncties', 'nevenfunctie']
+def collect_orgs(infile: str, nlp: stanza.Pipeline):
+    """Extract mentioned organisations from a PDF document.
+    
+    This function is used to extract mentioned organisations (ORGs) in a text using Stanza NER. 
+    Candidates are select candidates by applying NER to different preprocessing choices. 
+    Additional checks are performed to determine which candidates are most likely true orgs.
+    It returns a list of filtered entities.
+    
+    Steps:
+    1. preprocess the text in three different ways, as it is often unclear what the best way of 'reading'
+       consequetive blacks lines, replacesent of end-of-line characters, or parentheses is, and gather for each way 
+       NER entities defined as ORG.
+    2. determine the unique entities mentioned as candidates.
+    3. Determine which candidates are considered 'true' organisations based on:
+       - whether is contains a typical orginastions keyword.
+       - term length.
+       - how often te term was identified as an organisation by NER.
+       - wether it passes the check_single_orgs check
 
+    Args:
+        infile (str): Path to the input PDF file.
+        nlp (stanza.Pipeline): The stanza language model used for text processing.
 
-def collect_orgs(infile, nlp):
-    '''Determine all ORGs in the text using Stanza NER. Select candidates by applying NER
-    to different preprocessing choices. Perform additional checks to determine which
-    candidates are most likely true orgs.'''
+    Returns:
+        list: A sorted list of filtered organizational entities extracted from the PDF document.
+    """
     true_orgs = []
     single_orgs = []
+    # preprocessing method 1
     doc_c = nlp(preprocess_pdf(infile, r_blankline=', ', r_par=', '))
     org_c = np.unique([ent.text.rstrip('.') for ent in doc_c.ents if ent.type == "ORG"],
                         return_counts=True)
+    # Preprocessing method 2
     doc_p = nlp(preprocess_pdf(infile, r_blankline='. ', r_par=', '))
     org_p = np.unique([ent.text.rstrip('.') for ent in doc_p.ents if ent.type == "ORG"],
                         return_counts=True)
+    # Preprocessing method 3
     doc_pp = nlp(preprocess_pdf(infile, r_blankline='. ', r_eol='. ', r_par=', '))
     org_pp = np.unique([ent.text.rstrip('.') for ent in doc_pp.ents if ent.type == "ORG"])
+
+    # determine unique orgs candidates based on all 'forms' of entities gathered with the different preprocessing steps
     org_all = np.unique(np.concatenate((org_c[0], org_p[0], org_pp)))
+
+    # steps to dertermine 'true' orgs
     for org in org_all:
         if any(kw in org.lower() for kw in Org_Keywords.search_strip):
             n_org = strip_function_of_entity(org)
@@ -92,7 +70,8 @@ def collect_orgs(infile, nlp):
         if n_org != org and len(n_org) >= 3:
             single_orgs.append(n_org)
         else:
-            pco = percentage_considered_org(doc_c, org, org_c[0], org_c[1]), percentage_considered_org(doc_p, org, org_p[0], org_p[1])
+            pco = percentage_considered_org(doc_c, org, org_c[0], org_c[1]),
+            percentage_considered_org(doc_p, org, org_p[0], org_p[1])
             decision = decide_org(org, pco, org_pp, org_c, nlp)
             # process conclusion
             if decision is True:
@@ -104,13 +83,13 @@ def collect_orgs(infile, nlp):
     return sorted(list(set(true_orgs)))
 
 
-def decide_org(org, pco, org_pp, org_c, nlp):
-    ''' Decision tree to determine if an potential ORG is likely to be a true org.
+def decide_org(org, pco, org_pp, org_c, nlp: stanza.Pipleline):
+    """ Decision tree to determine if an potential ORG is likely to be a true org.
     Decisions are based on: the overall number of mentions of the pot. org in the text,
     the percentage of mentions in which it was actually considered an ORG by Stanza,
     whether a standalone pot. org is considered an ORG by Stanza,
     the precense of keywords that make it likely that the pot. org is an org,
-    the precense of keywords that make it likely that the pot. org is NOT an org.'''
+    the precense of keywords that make it likely that the pot. org is NOT an org."""
     final = False
     is_org = single_org_check(org, nlp)
     per_c, n_c, per_p, n_p = pco[0][0], pco[0][1], pco[1][0], pco[1][1]
@@ -145,111 +124,6 @@ def decide_org(org, pco, org_pp, org_c, nlp):
     if final not in ('maybe', 'no') and n_p >= 1:
         final = keyword_check(final, org)
     return final
-
-
-def keyword_check(final, org):
-    ''' Check if org is likely to be or not be an organisation based on keywords.'''
-    for kw in Org_Keywords.true_keys:
-        if len(re.findall(kw, org.lower())) > 0:
-            final = True
-            if len(org) == len(kw):
-                final = False
-    for kw in Org_Keywords.true_keys_cap:
-        if len(re.findall((r"\b" + kw + r"\b"), org)) > 0:
-            final = True
-            if len(org) == len(kw):
-                final = False
-    if final is True:
-        for kw in Org_Keywords.false_keys:
-            if len(re.findall(kw, org.lower())) > 0:
-                final = False
-        if org.lower() in Org_Keywords.false_keys_s:
-            final = False
-    return final
-
-
-def check_single_orgs(org, true_orgs, doc_c):
-    '''append org to true or false list depending on whether part_of_other
-    is false or true respectively, and it is not blocked by teh keyword check.'''
-    final = True
-    keyword = keyword_check(final, org)
-    poo = part_of_other(true_orgs, org, doc_c)
-    if poo is False and keyword is True:
-        true_orgs.append(org)
-    return true_orgs
-
-
-def part_of_other(orgs, org, doc):
-    '''Check if a part of org is in orgs, and if that member of orgs is common.
-    Only allow for a match if the member of orgs is long enough'''
-    is_part = False
-    for o in orgs:
-        if org != o and o in org and len(o) > 5:
-            n_orgs = len(re.findall(r"\b" + o + r"\b", doc.text))
-            if n_orgs > 5:
-                kw_final = False
-                kw_o = keyword_check(kw_final, o)
-                kw_org = keyword_check(kw_final, org)
-                if not (kw_o is False and kw_org is True):
-                    is_part = True
-    return is_part
-
-
-def single_org_check(org, nlp):
-    '''Check if an potential ORG is considered and ORG if just that name is analysed by Stanza NER.
-    (Without the context of any sentences)'''
-    doc_o = nlp(org)
-    o_t = [f'{ent.text}' for ent in doc_o.ents if ent.type == "ORG"]
-    is_org = bool(len(o_t) == 1 and org in o_t)
-    return is_org
-
-
-def percentage_considered_org(doc, org, orgs, counts):
-    '''identify all sentences in which the org is found. Then calculate in what fraction of the
-    total number of mentions, the org is identified as org by NER'''
-    n_orgs = count_number_of_mentions(doc, org)
-    if n_orgs >= 1 and org in orgs:
-        n_orgs_found = counts[orgs == org][0]
-        percentage = n_orgs_found/float(n_orgs)*100.
-    elif org in orgs:
-        percentage = -10
-    else:
-        percentage = 0.
-    return percentage, n_orgs
-
-
-def strip_function_of_entity(org):
-    '''Strip the function of an potential org. Example: if fed with
-    "Lid van de Raad van Advies bij Bedrijfsnaam", only "Bedrijfsnaam"
-    would be returned.'''
-    for p in Org_Keywords.position:
-        org = re.sub('^' + p + r"\b", '', org, flags=re.IGNORECASE).lstrip()
-    for lv in Org_Keywords.lidwoord_voorzetsels:
-        org = re.sub('^' + lv, '', org).lstrip()
-    for p in Org_Keywords.position:
-        org = re.sub('^' + p + r"\b", '', org, flags=re.IGNORECASE).lstrip()
-    for lv in Org_Keywords.lidwoord_voorzetsels:
-        org = re.sub('^' + lv, '', org).lstrip()
-    for r in Org_Keywords.raad:
-        org = re.sub('^' + r + r"\b", '', org, flags=re.IGNORECASE).lstrip()
-    for lv in Org_Keywords.lidwoord_voorzetsels:
-        org = re.sub('^' + lv, '', org).lstrip()
-    for c in Org_Keywords.commissie:
-        org = re.sub('^' + c + r"\b", '', org, flags=re.IGNORECASE).lstrip()
-    for lv in Org_Keywords.lidwoord_voorzetsels:
-        org = re.sub('^' + lv, '', org).lstrip()
-    for f in Org_Keywords.functies:
-        org = re.sub(f + '$', '', org, flags=re.IGNORECASE).rstrip()
-    return org
-
-
-def count_number_of_mentions(doc, org):
-    ''' Count the number of mentions of org in the text, taking into account word boundaries.'''
-    if '-' not in org:
-        n_counts = len(re.findall(r"\b" + org + r"\b", doc.text.replace('-', '')))
-    else:
-        n_counts = len(re.findall(r"\b" + org + r"\b", doc.text))
-    return n_counts
 
 
 def match_anbis(df_in, anbis_file):
