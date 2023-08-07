@@ -26,8 +26,10 @@ class TestsOrgs_Checks(unittest.TestCase):
     Test methods:
     - test_keyword_check: tests the keyword_check function that determines if an org is likely to be or not be an organisation
         based on keywords
-    - test_check_single_orgs:
-    - test_part_of_other:
+    - test_check_single_orgs: tests the check_single_orgs function that appends an org to an input list if it 
+        passes the keyword check and is not part of other org
+    - test_part_of_other: tests the function part_of_other that checks if a member of
+        orgs is part of the org string.
     - test_single_org_check:
     - test_pco:
     - test_strip_function_of_entity:
@@ -63,6 +65,14 @@ class TestsOrgs_Checks(unittest.TestCase):
         self.assertFalse(kwc)
 
     def test_check_single_orgs(self):
+        """Unit tes for the function check_single_orgs.
+        
+        This function tests the check_single_orgs function that appends an org to an input list if it 
+        passes the keyword check and is not part of other org. Contains one test case.
+        
+        Raises:
+            AssertionError: If the assert statement fails, indicating an incorrect return value.
+        """
         org = 'Stichting Huppeldepup'
         true_orgs = []
         doc_c = 'Hij werkt bij Stichting Huppeldepup'
@@ -72,6 +82,14 @@ class TestsOrgs_Checks(unittest.TestCase):
 
 
     def test_part_of_other(self):
+        """Unit test for the function part_of_other.
+        
+        This function tests the function part_of_other that checks if a member of
+        orgs is part of the org string. Contains one test case.
+        
+        Raises:
+            AssertionError: If the assert statement fails, indicating an incorrect return value.
+        """
         orgs = ['Bedrijf']
         org = 'Bedrijf bla'
         is_part = part_of_other(orgs, org, doc)
@@ -79,12 +97,23 @@ class TestsOrgs_Checks(unittest.TestCase):
 
 
     def test_single_org_check(self):
+        """
+        
+        Raises:
+            AssertionError: If the assert statement fails, indicating an incorrect return value.
+        """
         org = 'Stichting Huppeldepup'
         is_org = single_org_check(org, nlp)
         assert(is_org)
 
 
     def test_pco(self):
+        """
+        
+        Raises:
+            AssertionError: If the assert statement fails, indicating an incorrect return value.
+
+        """
         org = 'Bedrijf'
         orgs = np.array(['Bedrijf'])
         counts = np.array([7])
@@ -104,6 +133,10 @@ class TestsOrgs_Checks(unittest.TestCase):
 
 
     def test_strip_function_of_entity(self):
+        """
+        Raises:
+            AssertionError: If the assert statement fails, indicating an incorrect return value.
+"""
         org = "Lid van de Raad van Advies bij Bedrijfsnaam b.v."
         e_org = "Bedrijfsnaam b.v."
         o_org = strip_function_of_entity(org)
@@ -111,6 +144,10 @@ class TestsOrgs_Checks(unittest.TestCase):
 
 
     def test_count_number_of_mentions(self):
+        """
+        Raises:
+            AssertionError: If the assert statement fails, indicating an incorrect return value.
+"""
         org = 'Bedrijf'
         n = count_number_of_mentions(doc, org)
         assert(n == 7)

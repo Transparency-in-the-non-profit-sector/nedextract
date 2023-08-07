@@ -1,12 +1,13 @@
 """
 Functions:
+
+- keyword_check
+- check_single_orgs
+- single_org_check
 - percentage_considered_org
 - strip_function_of_entity
 - count_number_of_mentions
 - part_of_other
-- keyword_check
-- check_single_orgs
-- single_org_check
 """
 import re
 from keywords import Org_Keywords
@@ -76,9 +77,21 @@ class OrgExtraction:
 
 
     @staticmethod
-    def part_of_other(orgs, org, doc):
-        '''Check if a part of org is in orgs, and if that member of orgs is common.
-        Only allow for a match if the member of orgs is long enough'''
+    def part_of_other(orgs: list, org: str, doc: stanza.doc):
+        """Check if a member of orgs is part of the org string.
+
+        This function checks if an orginasations 'o' in the list orgs is part of the input 'org'. 
+        If it is and the matching 'o' has enough characters, is common enough in the analysed test,
+        and it is not the cases that he only difference is the presence of a keyword org, return True
+        
+        Args:
+            orgs: list
+            org (str): The orgination name to be checked for keyword presence.
+            doc: stanza processed text in which to look for organisations.
+    
+        Returns:
+            is_part (bool): returns true if a memeber of orgs in a part of org.
+        """
         is_part = False
         for o in orgs:
             if org != o and o in org and len(o) > 5:
@@ -94,7 +107,12 @@ class OrgExtraction:
 
     def single_org_check(org, nlp):
         '''Check if an potential ORG is considered and ORG if just that name is analysed by Stanza NER.
-        (Without the context of any sentences)'''
+        (Without the context of any sentences)
+        
+                Args:
+            org (str): The orgination name to be checked for keyword presence.
+
+        Returns:'''
         doc_o = nlp(org)
         o_t = [f'{ent.text}' for ent in doc_o.ents if ent.type == "ORG"]
         is_org = bool(len(o_t) == 1 and org in o_t)
@@ -103,7 +121,12 @@ class OrgExtraction:
 
     def percentage_considered_org(doc, org, orgs, counts):
         '''identify all sentences in which the org is found. Then calculate in what fraction of the
-        total number of mentions, the org is identified as org by NER'''
+        total number of mentions, the org is identified as org by NER
+        \
+                Args:
+            org (str): The orgination name to be checked for keyword presence.
+
+        Returns:'''
         n_orgs = count_number_of_mentions(doc, org)
         if n_orgs >= 1 and org in orgs:
             n_orgs_found = counts[orgs == org][0]
@@ -118,7 +141,11 @@ class OrgExtraction:
     def strip_function_of_entity(org):
         '''Strip the function of an potential org. Example: if fed with
         "Lid van de Raad van Advies bij Bedrijfsnaam", only "Bedrijfsnaam"
-        would be returned.'''
+        would be returned.
+                Args:
+            org (str): The orgination name to be checked for keyword presence.
+
+        Returns:'''
         for p in Org_Keywords.position:
             org = re.sub('^' + p + r"\b", '', org, flags=re.IGNORECASE).lstrip()
         for lv in Org_Keywords.lidwoord_voorzetsels:
@@ -141,7 +168,12 @@ class OrgExtraction:
 
     @staticmethod
     def count_number_of_mentions(doc, org):
-        ''' Count the number of mentions of org in the text, taking into account word boundaries.'''
+        ''' Count the number of mentions of org in the text, taking into account word boundaries.
+        
+                Args:
+            org (str): The orgination name to be checked for keyword presence.
+
+        Returns:'''
         if '-' not in org:
             n_counts = len(re.findall(r"\b" + org + r"\b", doc.text.replace('-', '')))
         else:
