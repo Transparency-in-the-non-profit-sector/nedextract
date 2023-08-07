@@ -42,7 +42,8 @@ class TestsOrgs_Checks(unittest.TestCase):
       if just that name is analysed by Stanza NER.
     - test_pco: tests the percentage_consired_org function that identifies the percentage of cases for which 
       a an organisation was identified by NER as organisation within the text
-    - test_strip_function_of_entity:
+    - test_strip_function_of_entity: tests the strip_function_of_entity function that removes any persons work role
+      of the name of a potential org.
     - test_count_number_of_mentions:
     """
     def test_keyword_check(self):
@@ -155,10 +156,14 @@ class TestsOrgs_Checks(unittest.TestCase):
 
 
     def test_strip_function_of_entity(self):
-        """
+        """Unit test for the strip_function_of_entity function.
+
+        This function tests the strip_function_of_entity function that removes any persons work role
+        of the name of a potential org.
+
         Raises:
             AssertionError: If the assert statement fails, indicating an incorrect return value.
-"""
+        """
         org = "Lid van de Raad van Advies bij Bedrijfsnaam b.v."
         e_org = "Bedrijfsnaam b.v."
         o_org = strip_function_of_entity(org)

@@ -150,13 +150,19 @@ class OrgExtraction:
 
 
     def strip_function_of_entity(org):
-        '''Strip the function of an potential org. Example: if fed with
-        "Lid van de Raad van Advies bij Bedrijfsnaam", only "Bedrijfsnaam"
-        would be returned.
-                Args:
+        """Strip the work roles of an potential org.
+        
+        This function removes terms indicating a persons role within a organisation off the organisation's name.
+
+        Example: if fed with
+        "Lid van de Raad van Advies bij Bedrijfsnaam", only "Bedrijfsnaam" would be returned.
+        
+        Args:
             org (str): The orgination name to be checked for keyword presence.
 
-        Returns:'''
+        Returns:
+            org (str): The orgination name from which the role is removed if found.
+        """         
         for p in Org_Keywords.position:
             org = re.sub('^' + p + r"\b", '', org, flags=re.IGNORECASE).lstrip()
         for lv in Org_Keywords.lidwoord_voorzetsels:
