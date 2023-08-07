@@ -1,5 +1,9 @@
 """Run auto extract program.
 
+Functions:
+- main
+- write_output
+
 Copyright 2022 Netherlands eScience Center and Vrije Universiteit Amsterdam
 Licensed under the Apache License, version 2.0. See LICENSE for details."""
 

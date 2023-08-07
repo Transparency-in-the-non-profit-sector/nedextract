@@ -1,10 +1,7 @@
-"""Class functions to extract information from pdf files.
+"""This file contains the lass PDFInformationExtractor wiht functions to extract information from pdf files.
 
 The different functions use the stanza Dutch pipeline to extract 
 information on persons and organisations from pdf files and structure the output.
-
-Copyright 2022 Netherlands eScience Center and Vrije Universiteit Amsterdam
-Licensed under the Apache License, version 2.0. See LICENSE for details.
 """
 
 import os
@@ -38,8 +35,8 @@ class PDFInformationExtractor:
             Extract information from a PDF file using the stanza pipeline
         output_people(infile: str, doc, organization: str): Gathers information about people 
                                                             and structures the output.
-        output_related_orgs(infile: str, doc, nlp): Gathers information about mentioned 
-                                                   organizations and structures the output.
+        output_related_orgs(infile: str, doc: stanza.doc, nlp: stanza.Pipeline):
+            Gathers information about mentioned organizations and structures the output.
         ots(inp: np.array): Converts array output to a backspace-seperated string
         atc(inp: np.array, length: int): Splits an array into [length] variables for output columns.
         download_stanza_NL(): Downloads the stanza Dutch library if not already present.
@@ -188,7 +185,7 @@ class PDFInformationExtractor:
 
 
     @staticmethod
-    def output_related_orgs(infile: str, doc, nlp):
+    def output_related_orgs(infile: str, doc: stanza.doc, nlp : stanza.method):
         """Gather information about all mentioned orgnaizations in the text and structure the output.
         
         Args:

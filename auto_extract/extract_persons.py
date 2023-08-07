@@ -4,9 +4,6 @@ In general, the functions try to obtain for each name, what the function of that
 Various functions are defined that try to reduce the number of duplicate names and determine the correct function
 of the persons based on various (con)textual challenges.
 
-Copyright 2022 Netherlands eScience Center and Vrije Universiteit Amsterdam
-Licensed under the Apache License, version 2.0. See LICENSE for details.
-
 Functions:
 
 - identify_potential_people

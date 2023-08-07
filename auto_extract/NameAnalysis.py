@@ -1,4 +1,4 @@
-"""Class NameAnalysis"""
+"""This file contains the class NameAnalysis."""
 import itertools
 import re
 import numpy as np

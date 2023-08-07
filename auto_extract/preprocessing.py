@@ -1,4 +1,9 @@
-"""Functions used to download pdf files from an url and preprocess the text in pdf files."""
+"""This file contains functions used to download pdf files from an url and preprocess the text in pdf files.
+
+Functions:
+- preprocess_pdf
+- download_pdf
+- delete_downloaded_pdf"""
 
 import os
 import urllib.request
