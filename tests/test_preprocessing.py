@@ -1,5 +1,5 @@
-import unittest
 import os
+import unittest
 from auto_extract.preprocessing import delete_downloaded_pdf
 from auto_extract.preprocessing import download_pdf
 from auto_extract.preprocessing import preprocess_pdf

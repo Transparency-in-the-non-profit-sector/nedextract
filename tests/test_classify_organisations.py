@@ -1,6 +1,6 @@
 """Unit tests for the file /extract_pdf/classify_organisations."""
-import unittest
 import os
+import unittest
 import pandas as pd
 from auto_extract.classify_organisation import file_to_pd
 from auto_extract.classify_organisation import predict_main_sector
