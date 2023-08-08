@@ -10,7 +10,6 @@ Functions:
 - part_of_other
 """
 import re
-import numpy as np
 from classes.keywords import Org_Keywords
 
 
