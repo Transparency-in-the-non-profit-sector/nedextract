@@ -116,7 +116,7 @@ class TestExtractPersons(unittest.TestCase):
             AssertionError: If the returned variable is not a list, or if it does not matchc the expected
             return values.
         """
-        outnames = NameAnalysis.find_duplicate_persons(pnames)
+        outnames = NameAnalysis.find_duplicate_persons()
         expected = [['Jane Elaine Doe', 'Dr. Jane Doe', 'Jane Doe', 'J.E. Doe', 'J. Doe'],
                     ['Jane White'], ['William Doe']]
         self.assertTrue(isinstance(outnames, list))
