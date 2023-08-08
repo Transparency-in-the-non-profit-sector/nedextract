@@ -27,7 +27,7 @@ class OrganisationExtraction:
             self.counts = None
         self.decision = final
 
-    def keyword_check(self, final: None, org: None):
+    def keyword_check(self, final= None, org= None):
         """Check if org is likely to be or not be an organisation based on keywords.
         
         This function contains a decision tree that determines if it is likely that a candidate organisation is a
@@ -157,7 +157,7 @@ class OrganisationExtraction:
         """
         org = self.org
         orgs = self.orgs
-        n_orgs = OrganisationExtraction.count_number_of_mentions(org)
+        n_orgs = OrganisationExtraction.count_number_of_mentions(org=org)
         if n_orgs >= 1 and org in orgs:
             n_orgs_found = self.counts[orgs == org][0]
             percentage = n_orgs_found/float(n_orgs)*100.
@@ -204,7 +204,7 @@ class OrganisationExtraction:
         return org
 
 
-    def count_number_of_mentions(self, org: None, doc: None):
+    def count_number_of_mentions(self, org= None, doc= None):
         """Count the number of mentions of org in the text, taking into account word boundaries.
         
         Args:
