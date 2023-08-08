@@ -108,6 +108,7 @@ def main(testarg=None):
             opd_p, opd_g, opd_o = pdf_extractor.extract_pdf(infile, opd_p, opd_g, opd_o)
             delete_downloaded_pdf()
 
+    # Write output to files
     write_output(args.tasks, opd_p, opd_g, opd_o, args.anbis_file)
 
     # end time
@@ -116,15 +117,29 @@ def main(testarg=None):
     return args
 
 
-def write_output(tasks, opd_p, opd_g, opd_o, anbis_file):
-    '''Return extracted information to output'''
+def write_output(tasks: list, opd_p: np.array, opd_g: np.array, opd_o: np.array, anbis_file: str):
+    """Write extracted information to output files.
+    
+    Create three output files for people, sectors, and organisations.
+    Args:
+        tasks (list): list of arguments used to define which tasks had to be executed
+        opd_p (np.array): output results for people task
+        opd_g (np.array): output results for sectors tasks
+        opd_o (np.array): output results for organisations task
+        anbis_file (str): name of the anbis file used to match organisations with info of known organisations
+    Returns:
+    """
     outtime = time.strftime("%Y%m%d_%H%M%S", time.localtime())
+
+    # Define outputfiles
     opf_p = os.path.join(os.path.join(os.getcwd(), 'Output'),
                          'output' + str(outtime) + '_people.xlsx')
     opf_g = os.path.join(os.path.join(os.getcwd(), 'Output'),
                          'output' + str(outtime) + '_general.xlsx')
     opf_o = os.path.join(os.path.join(os.getcwd(), 'Output'),
                          'output' + str(outtime) + '_related_organizations.xlsx')
+    
+    # Write extracted people to output file
     if 'all' in tasks or 'people' in tasks:
         cols_p = ['Input_file', 'Organization', 'Persons', 'Ambassadors',
                   'Board_members', 'Job_description']
@@ -138,12 +153,14 @@ def write_output(tasks, opd_p, opd_g, opd_o, anbis_file):
         df1.to_excel(opf_p, engine='xlsxwriter')
         print('Output people written to:', opf_p)
 
+    # Write sectors to output file
     if 'all' in tasks or 'sectors' in tasks:
         cols_g = ['Input_file', 'Organization', 'Main_sector']
         df2 = pd.DataFrame(opd_g, columns=cols_g)
         df2.to_excel(opf_g, engine='xlsxwriter')
         print('Output sectors written to:', opf_g)
 
+    # Write extracted organisations to output file
     if 'all' in tasks or 'orgs' in tasks:
         cols_o = ['Input_file', 'mentioned_organization', 'n_mentions']
         df3 = pd.DataFrame(opd_o, columns=cols_o)
