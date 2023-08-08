@@ -70,10 +70,12 @@ def collect_orgs(infile: str, nlp: stanza.Pipeline):
             single_orgs.append(n_org)
         else:
             extraction.doc = doc_c
-            extraction.organisation = org_c
+            extraction.orgs = org_c[0]
+            extraction.counts = org_c[1]
             pco_c = extraction.percentage_considered_org()
             extraction.doc = doc_p
-            extraction.organisation = org_p
+            extraction.orgs = org_p[0]
+            extraction.counts = org_p[1]
             pco_p = extraction.percentage_considered_org()
             pco = pco_c, pco_p
             decision = decide_org(org, pco, org_pp, org_c, nlp)

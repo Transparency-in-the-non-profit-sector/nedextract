@@ -14,17 +14,13 @@ from classes.keywords import Org_Keywords
 
 
 class OrganisationExtraction:
-    def __init__(self, nlp=None, doc=None, org: str=None, organisations=None, true_orgs: list=None, final=None, **kwargs):
+    def __init__(self, nlp=None, doc=None, org: str=None, orgs=None, counts=None, true_orgs: list=None, final=None, **kwargs):
         self.nlp = nlp
         self.doc = doc
         self.org = org
         self.true_orgs = true_orgs
-        if organisations: 
-            self.orgs = organisations[0]
-            self.counts = organisations[1]
-        else:
-            self.orgs = None
-            self.counts = None
+        self.orgs = orgs
+        self.counts = counts
         self.decision = final
 
     def keyword_check(self, final= None, org= None):
