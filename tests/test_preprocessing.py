@@ -13,7 +13,7 @@ class UnitTestsPreprocessing(unittest.TestCase):
     - test_download_pdf
     - test_delete_pdf"""
 
-    def test_preprocess_pdf():
+    def test_preprocess_pdf(self):
         """Unit test for the function preprocess_pdf.
         
         The function tests the preprocess_pdf function that takes in a PDF file, reads the text content,
@@ -26,7 +26,7 @@ class UnitTestsPreprocessing(unittest.TestCase):
         assert(isinstance(text, str))
 
 
-    def test_download_pdf():
+    def test_download_pdf(self):
         """Unit test for the function download_pdf.
         
         This function tests the download_pdf dunction that downloads a pdf file from an url and safe it in the cwd."""
@@ -36,7 +36,7 @@ class UnitTestsPreprocessing(unittest.TestCase):
         assert(os.path.exists(filename))
 
 
-    def test_delete_downloaded_pdf():
+    def test_delete_downloaded_pdf(self):
         """Unit test for the function delete_downloaded_pdf.
         
         This function tests the funciton delete_downloaded pdf that deletes the file that is downloaded with the function
