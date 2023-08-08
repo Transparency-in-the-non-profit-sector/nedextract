@@ -76,8 +76,7 @@ class Titles:
               'phd', 'phd.', 'dhr.', 'mevr.', 'mw.', 'ds.', 'mgr.', 'mevrouw', 'meneer', 'jhr.']
 
 class Org_Keywords:
-    """Class that stored lists with various keywords used to extract organisations from a text.
-    """
+    """Class that stored lists with various keywords used to extract organisations from a text."""
     # keywords that indicate that, when present in an pot. organisation, it is likely a true org, independently of cases
     true_keys = ['bv', r'b\.v', 'congregatie', r'fonds\b', r'fondsen\b', r'fund\b',
                  'ministerie', 'umc', r'nederland\b']

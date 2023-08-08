@@ -14,7 +14,7 @@ from classes.keywords import Org_Keywords
 
 
 class OrganisationExtraction:
-    def __init__(self, nlp=None, doc=None, org: str=None, orgs=None, counts=None, true_orgs: list=None, final=None, **kwargs):
+    def __init__(self, nlp=None, doc=None, org: str=None, orgs=None, counts=None, true_orgs: list=None, final=None):
         self.nlp = nlp
         self.doc = doc
         self.org = org
@@ -23,7 +23,7 @@ class OrganisationExtraction:
         self.counts = counts
         self.decision = final
 
-    def keyword_check(self, final= None, org= None):
+    def keyword_check(self, final: bool= None, org: str= None):
         """Check if org is likely to be or not be an organisation based on keywords.
         
         This function contains a decision tree that determines if it is likely that a candidate organisation is a
@@ -36,6 +36,7 @@ class OrganisationExtraction:
         Returns:
             bool: The updated decision status based on keyword presence.
         """
+        # Set initial values if not defined in function args
         if not final:
             final = self.decision
         if not org:
@@ -84,6 +85,7 @@ class OrganisationExtraction:
         final = True
         keyword = self.keyword_check(final, org)
         poo = OrganisationExtraction.part_of_other(true_orgs, org, self.doc)
+
         if poo is False and keyword is True:
             true_orgs.append(org)
         return true_orgs
@@ -107,6 +109,7 @@ class OrganisationExtraction:
         """
         oe = OrganisationExtraction()
         is_part = False
+
         for o in orgs:
             if org != o and o in org and len(o) > 5:
                 n_orgs = len(re.findall(r"\b" + o + r"\b", doc.text))
@@ -156,6 +159,7 @@ class OrganisationExtraction:
         org = self.org
         orgs = self.orgs
         n_orgs = self.count_number_of_mentions(org=org)
+
         if n_orgs >= 1 and org in orgs:
             n_orgs_found = self.counts[orgs == org][0]
             percentage = n_orgs_found/float(n_orgs)*100.
@@ -181,28 +185,37 @@ class OrganisationExtraction:
             org (str): The orgination name from which the role is removed if found.
         """         
         org = self.org
+        
         for p in Org_Keywords.position:
             org = re.sub('^' + p + r"\b", '', org, flags=re.IGNORECASE).lstrip()
+
         for lv in Org_Keywords.lidwoord_voorzetsels:
             org = re.sub('^' + lv, '', org).lstrip()
+
         for p in Org_Keywords.position:
             org = re.sub('^' + p + r"\b", '', org, flags=re.IGNORECASE).lstrip()
+
         for lv in Org_Keywords.lidwoord_voorzetsels:
             org = re.sub('^' + lv, '', org).lstrip()
+
         for r in Org_Keywords.raad:
             org = re.sub('^' + r + r"\b", '', org, flags=re.IGNORECASE).lstrip()
+
         for lv in Org_Keywords.lidwoord_voorzetsels:
             org = re.sub('^' + lv, '', org).lstrip()
+
         for c in Org_Keywords.commissie:
             org = re.sub('^' + c + r"\b", '', org, flags=re.IGNORECASE).lstrip()
+
         for lv in Org_Keywords.lidwoord_voorzetsels:
             org = re.sub('^' + lv, '', org).lstrip()
+
         for f in Org_Keywords.functies:
             org = re.sub(f + '$', '', org, flags=re.IGNORECASE).rstrip()
         return org
 
 
-    def count_number_of_mentions(self, org= None, doc= None):
+    def count_number_of_mentions(self, org: str= None, doc= None):
         """Count the number of mentions of org in the text, taking into account word boundaries.
         
         Args:
@@ -214,6 +227,7 @@ class OrganisationExtraction:
         """
         if org is None: org=self.org
         if doc is None: doc=self.doc
+
         if '-' not in org:
             n_counts = len(re.findall(r"\b" + org + r"\b", doc.text.replace('-', '')))
         else:

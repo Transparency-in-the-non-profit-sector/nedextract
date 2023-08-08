@@ -27,24 +27,26 @@ class DetermineJobs:
         self.surroundings = None
 
     @staticmethod
-    def surrounding_words(text, search_names):
+    def surrounding_words(text: np.array, search_names: list):
         """Determine words surrounding an name in a text.
 
         For a given 'text' and search words ('search_name'), this function returns an array of words that are
         found before and after the 'search_name'.
         
         Args:
-            text (str): text to search through
-            search_name (str): name to look for in the text
+            text (np.array): text to search through
+            search_names (list): name to look for in the text
         
         Returns:
             surrounding_words (np.array): array of words that are
             found before and after the 'search_name'.
         """
+        # function definitions
         surrounding_words = np.array([])
         text = np.array2string(text, separator=' ')
         searchnames = sorted(search_names, key=len, reverse=True)
 
+        # preprocess text
         for search_name in searchnames:
             text = text.lower().replace(search_name.lower(), 'search4term')
         text = re.sub('[^0-9a-zA-Z ]+', ' ', text)
@@ -54,6 +56,7 @@ class DetermineJobs:
         text = text.replace('interim', '')
         text_split = text.split()
 
+        # obtain surrounding words
         for i, word in enumerate(text_split):
             if word == 'search4term':
                 if i != 0:
@@ -64,7 +67,7 @@ class DetermineJobs:
 
 
     @staticmethod
-    def count_occurrence(text, search_words):
+    def count_occurrence(text: np.array, search_words: list):
         """Return the summed total of occurrences of search words in text.
         
         This function counts the total number of occurrences of each word in the 'search_words'
@@ -73,7 +76,7 @@ class DetermineJobs:
         partial matches.
 
         Args:
-            text (list of str): A list of sentences or paragraphs as strings.
+            text (np.array): A list of sentences or paragraphs as strings.
             search_words (list of str): A list of words to be searched for in the 'text'.
 
         Returns:
@@ -109,7 +112,7 @@ class DetermineJobs:
         return totalcount, totalcount_sentence
 
 
-    def determine_main_job(self, sentences=None, surroundings=None):
+    def determine_main_job(self, sentences: list=None, surroundings: list=None):
         """Determine main job category based on sentence and overall frequency.
 
         This function determines the primary job category by analyzing the occurrence frequency of
@@ -168,29 +171,36 @@ class DetermineJobs:
         # Select based on most occuring category in the direct text using sentence frequency, no tie
         if (max(fs) > 0 and len(np.where(fs == max(fs))[0]) == 1):
             main_cat = main_job[np.where(fs == max(fs))[0]][0]
+
         # Select based on sentence frequency from surrounding sentences, no tie
         elif (max(fss) > 0 and len(np.where(fss == max(fss))[0]) == 1):
             main_cat = main_job[np.where(fss == max(fss))[0]][0]
+
         # Select based on overall frequency in main text, no tie
         elif (max(ft) > 0 and len(np.where(ft == max(ft))[0]) == 1):
             main_cat = main_job[np.where(ft == max(ft))[0]][0]
+
         # Select based on overall frequency in surrounding text, no tie
         elif (max(fts) > 0 and len(np.where(fts == max(fts))[0]) == 1):
             main_cat = main_job[np.where(fts == max(fts))[0]][0]
+
         # Selection based on most occuring category in the direct text based on sentence frequency gives a tie, therefor
         # select first element of tied fs list
         elif max(fs) > 0:
             main_cat = main_job[np.where(fs == max(fs))[0]][0]
+
         # Selection based on most occuring category in the surrounding text based on frequency gives a tie, therefore select first
         # element of tied fss list
         elif max(fss) > 0:
             main_cat = main_job[np.where(fss == max(fss))[0]][0]
+
         # do not select a main category
         else:
             main_cat = None
         
         # define term frequency of selected main job directeur based on direct sentences
         ft_director = ft[np.where(main_job == 'directeur')]
+
         # define term frequency of selected main job bestuur/rvt based on surrounding sentences
         fts_bestuur = fts[np.where(main_job == 'bestuur')]
         fts_rvt = fts[np.where(main_job == 'rvt')]
@@ -198,7 +208,7 @@ class DetermineJobs:
         return [main_cat, ft_director, fts_bestuur, fts_rvt]
 
 
-    def determine_sub_job(self, sentences=None):
+    def determine_sub_job(self, sentences: list=None):
         """Determine the sub job category based on the words mentioned in the provided 'sentences' and main category ('main_cat').
 
         This function determines the sub job category by analyzing the occurrence frequency of each

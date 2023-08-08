@@ -39,6 +39,7 @@ class NameAnalysis:
         """
         splitname = name.split()
         abbreviation = ''
+
         for i, n in enumerate(splitname):
             if i < len(splitname)-1 and i <= n_ab and n not in Tussenvoegsels.tussenvoegsels:
                 abbreviation = abbreviation + n[0] + ' '
@@ -68,9 +69,11 @@ class NameAnalysis:
         # if the second name is only one word
         if len(p_j.split()) == 1:
             req_score = 100
+
         # if both names contain initials
         elif (p_i.count('.') >= 1 and p_j.count('.') >= 1):
             req_score = 90
+
         # if one name contains initials, try to abbreviate the other one with up to
         # the same number of initials and then compare
         elif p_i.count('.') >= 1:
@@ -79,12 +82,14 @@ class NameAnalysis:
                 tsr = np.append(tsr, fuzz.token_set_ratio(p_i, NameAnalysis.abbreviate(p_j, n_initials)))
             token_set_ratio = max(tsr)
             req_score = 95
+
         elif p_j.count('.') >= 1:
             tsr = np.array(0)
             for n_initials in range(1, p_j.count('.') + 1):
                 tsr = np.append(tsr, fuzz.token_set_ratio(NameAnalysis.abbreviate(p_i, n_initials), p_j))
             token_set_ratio = max(tsr)
             req_score = 95
+
         # if name is normal
         else:
             req_score = 90
@@ -147,17 +152,19 @@ class NameAnalysis:
         ideal = 0
         names.sort(key=len, reverse=True)
         maxlen = len(names[0])
+
         for i, n in enumerate(names):
             if n.count('.') >= 1 and len(names) > i+1:
                 if len(names[i+1]) > maxlen/2. and names[i+1].count(' ') >= 1:
                     ideal = i + 1
             else:
                 break
+
         names.insert(0, names.pop(ideal))
         return names
 
     @staticmethod
-    def find_similar_names(persons):
+    def find_similar_names(persons: list):
         """Find similar names and group them together.
 
         This function takes a list of persons' names as input and returns a list of lists,
@@ -174,14 +181,15 @@ class NameAnalysis:
         4. Duplicate lists of names are removed to avoid redundant grouping.
 
         Args:
-            persons (List[str]): A list of names to be grouped.
+            persons (List): A list of names to be grouped.
 
         Returns:
-            List[List[str]]: A list of lists, where each inner list contains similar names grouped together.
+            List: A list of lists, where each inner list contains similar names grouped together.
         """
         outnames = []
         p, p_remove = NameAnalysis.strip_names_from_title(persons)
         persons = [n for n in persons if n not in p_remove]
+        
         # loop through list of input names to find matches
         for i, sn in enumerate(persons):
             same_name = [sn]
