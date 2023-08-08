@@ -23,6 +23,8 @@ class DetermineJobs:
         self.doc = doc
         self.p_position = p_position
         self.position = position
+        self.sentences = None
+        self.surroundings = None
 
     @staticmethod
     def surrounding_words(text, search_names):
