@@ -105,14 +105,15 @@ class OrganisationExtraction:
         Returns:
             is_part (bool): returns true if a member of orgs in a part of org.
         """
+        oe = OrganisationExtraction()
         is_part = False
         for o in orgs:
             if org != o and o in org and len(o) > 5:
                 n_orgs = len(re.findall(r"\b" + o + r"\b", doc.text))
                 if n_orgs > 5:
                     kw_final = False
-                    kw_o = self.keyword_check(kw_final, o)
-                    kw_org = self.keyword_check(kw_final, org)
+                    kw_o = oe.keyword_check(final=kw_final, org=o)
+                    kw_org = oe.keyword_check(final=kw_final, org=org)
                     if not (kw_o is False and kw_org is True):
                         is_part = True
         return is_part
