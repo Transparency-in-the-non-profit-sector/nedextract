@@ -149,6 +149,7 @@ class DetermineJobs:
         """
 
         # Define sentence (fs, fss) and total frequencies (ft, fts) for direct sentences and surrounding sentences
+        self.relevant_sentences()
         if sentences is None: sentences = self.sentences
         if surroundings is None: surroundings = self.surroundings
 
@@ -224,7 +225,9 @@ class DetermineJobs:
                 - The determined sub job category (str) or an empty string if no category is found.
                 - The backup sub job category (str) or an empty string if no category is found.
         """
+        self.relevant_sentences()
         if sentences is None: sentences = self.sentences
+        
         # Define c_sub_jobs
         c_sub_job = np.array([])
 
