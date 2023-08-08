@@ -17,7 +17,7 @@ class OrganisationExtraction:
     def __init__(self, nlp=None, doc=None, org: str=None, organisations=None, true_orgs: list=None, final=None, **kwargs):
         self.nlp = nlp
         self.doc = doc
-        self.organisation = org
+        self.org = org
         self.true_orgs = true_orgs
         if organisations: 
             self.orgs = organisations[0]
@@ -43,7 +43,7 @@ class OrganisationExtraction:
         if not final:
             final = self.decision
         if not org:
-            org = self.organisation
+            org = self.org
         
         # decision is true if org contains a keyword, unless org is only a keyword
         for kw in Org_Keywords.true_keys:
@@ -86,7 +86,7 @@ class OrganisationExtraction:
         true_orgs = self.true_orgs
         org = self.org
         final = True
-        keyword = OrganisationExtraction.keyword_check(final, org)
+        keyword = self.keyword_check(final, org)
         poo = OrganisationExtraction.part_of_other(true_orgs, org, self.doc)
         if poo is False and keyword is True:
             true_orgs.append(org)
@@ -115,8 +115,8 @@ class OrganisationExtraction:
                 n_orgs = len(re.findall(r"\b" + o + r"\b", doc.text))
                 if n_orgs > 5:
                     kw_final = False
-                    kw_o = OrganisationExtraction.keyword_check(kw_final, o)
-                    kw_org = OrganisationExtraction.keyword_check(kw_final, org)
+                    kw_o = self.keyword_check(kw_final, o)
+                    kw_org = self.keyword_check(kw_final, org)
                     if not (kw_o is False and kw_org is True):
                         is_part = True
         return is_part
@@ -134,9 +134,10 @@ class OrganisationExtraction:
 
         Returns: 
             is_org(bool): true if the test passes"""
-        doc_o = self.nlp(self.org)
+        org = self.org
+        doc_o = self.nlp(org)
         o_t = [f'{ent.text}' for ent in doc_o.ents if ent.type == "ORG"]
-        is_org = bool(len(o_t) == 1 and self.org in o_t)
+        is_org = bool(len(o_t) == 1 and org in o_t)
         return is_org
 
 
@@ -157,7 +158,7 @@ class OrganisationExtraction:
         """
         org = self.org
         orgs = self.orgs
-        n_orgs = OrganisationExtraction.count_number_of_mentions(org=org)
+        n_orgs = self.count_number_of_mentions(org=org)
         if n_orgs >= 1 and org in orgs:
             n_orgs_found = self.counts[orgs == org][0]
             percentage = n_orgs_found/float(n_orgs)*100.
