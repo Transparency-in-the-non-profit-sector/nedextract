@@ -44,14 +44,17 @@ def collect_orgs(infile: str, nlp: stanza.Pipeline):
     true_orgs = []
     single_orgs = []
     extraction = OrganisationExtraction()
+
     # preprocessing method 1
     doc_c = nlp(preprocess_pdf(infile, r_blankline=', ', r_par=', '))
     org_c = np.unique([ent.text.rstrip('.') for ent in doc_c.ents if ent.type == "ORG"],
                         return_counts=True)
+    
     # Preprocessing method 2
     doc_p = nlp(preprocess_pdf(infile, r_blankline='. ', r_par=', '))
     org_p = np.unique([ent.text.rstrip('.') for ent in doc_p.ents if ent.type == "ORG"],
                         return_counts=True)
+    
     # Preprocessing method 3
     doc_pp = nlp(preprocess_pdf(infile, r_blankline='. ', r_eol='. ', r_par=', '))
     org_pp = np.unique([ent.text.rstrip('.') for ent in doc_pp.ents if ent.type == "ORG"])
@@ -79,6 +82,7 @@ def collect_orgs(infile: str, nlp: stanza.Pipeline):
             pco_p = extraction.percentage_considered_org()
             pco = pco_c, pco_p
             decision = decide_org(org, pco, org_pp, org_c, nlp)
+
             # process conclusion
             if decision is True:
                 true_orgs.append(org)
@@ -92,7 +96,7 @@ def collect_orgs(infile: str, nlp: stanza.Pipeline):
     return sorted(list(set(true_orgs)))
 
 
-def decide_org(org: str, pco: tuple, org_pp: np.array, org_c:np.array, nlp: stanza.Pipeline):
+def decide_org(org: str, pco: tuple, org_pp: np.array, org_c: np.array, nlp: stanza.Pipeline):
     """Decision tree to determine if an potential ORG is likely to be a true org.
 
     Decisions are based on: the overall number of mentions of the pot. org in the text,
@@ -174,23 +178,28 @@ def match_anbis(df_in: pd.DataFrame, anbis_file: str):
                                                                         df,
                                                                         x, 'currentStatutoryName',
                                                                         'shortBusinessName'))
+    
     # perform join between df_match and df based on matched_anbi and currentStatutoryName
     df1 = df_match.merge(df[df['currentStatutoryName'].notnull()], how='left',
                          left_on='matched_anbi', right_on='currentStatutoryName')
+    
     # select data from d1 with unknown rsin
     df2 = df1[df1['rsin'].isna()][['Input_file', 'mentioned_organization', 'n_mentions',
                                    'matched_anbi']]
+    
     # select df1s with rsin
     df1_out = df1[df1['rsin'].notnull()]
+
     # match df with df2 using shortBusinessName
     df2_out = df2.merge(df[df['shortBusinessName'].notnull()], how='left',
                         left_on='matched_anbi', right_on='shortBusinessName')
+    
     # combine df1 and df2 output
     df_out = pd.concat([df1_out, df2_out]) 
     return df_out.sort_values(by=['Input_file', 'mentioned_organization'])
 
 
-def apply_matching(df, m, c2, c3):
+def apply_matching(df: pd.DataFrame, m: str, c2: str, c3: str):
     """Apply matching of name to df.
 
     This funcion tries to match name 'm' with values in either the c2 or c3 column of a dataframe,
@@ -198,7 +207,7 @@ def apply_matching(df, m, c2, c3):
 
      Args:
         df (pandas.DataFrame): The DataFrame containing potential matching options.
-        potential_org (str): The organisation name to be matched.
+        m (str): The organisation name to be matched.
         c2 (str): The name of the first column to search for matches.
         c3 (str): The name of the second column to search for matches.
 
