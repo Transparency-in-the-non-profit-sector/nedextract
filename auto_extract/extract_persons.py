@@ -130,7 +130,7 @@ def extract_persons(doc, all_persons):
     for members in people:
         # Determine relevant sentences, main and sub job category, and select main name from synonyms
         member = members[0]
-        jobsdetermination = DetermineJobs(members=members, name=member, doc=doc, 
+        jobsdetermination = DetermineJobs(members=members, doc=doc, 
                                           main_jobs=JobKeywords.main_jobs, p_position=p_position) 
         m_ft_dbr = jobsdetermination.determine_main_job()
         jobsdetermination.main_jobs = m_ft_dbr[0]
