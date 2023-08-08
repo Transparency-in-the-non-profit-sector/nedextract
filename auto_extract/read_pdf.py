@@ -42,7 +42,7 @@ class PDFInformationExtractor:
         download_stanza_NL(): Downloads the stanza Dutch library if not already present.
     """
     
-    def __init__(self, tasks, pf_m: str =None, pf_l: str =None, pf_v: str =None):
+    def __init__(self, tasks, pf_m: str = None, pf_l: str = None, pf_v: str = None):
         """Initialize the PDFInformationExtractor class with pretrained model file paths.
 
         Args:

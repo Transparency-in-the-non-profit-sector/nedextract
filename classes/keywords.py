@@ -77,6 +77,7 @@ class Titles:
 
 class Org_Keywords:
     """Class that stored lists with various keywords used to extract organisations from a text."""
+
     # keywords that indicate that, when present in an pot. organisation, it is likely a true org, independently of cases
     true_keys = ['bv', r'b\.v', 'congregatie', r'fonds\b', r'fondsen\b', r'fund\b',
                  'ministerie', 'umc', r'nederland\b']
@@ -138,4 +139,3 @@ class Org_Keywords:
     # keywords that, when present in pot org, call for the attempt of keyword strip
     search_strip = position + commissie
     functies = ['hoofdfuncties', 'hoofdfunctie', 'nevenfuncties', 'nevenfunctie']
-

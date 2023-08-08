@@ -5,7 +5,8 @@ Functions:
 - write_output
 
 Copyright 2022 Netherlands eScience Center and Vrije Universiteit Amsterdam
-Licensed under the Apache License, version 2.0. See LICENSE for details."""
+Licensed under the Apache License, version 2.0. See LICENSE for details.
+"""
 
 import argparse
 import os
@@ -21,7 +22,9 @@ from auto_extract.read_pdf import PDFInformationExtractor
 
 
 def main(testarg=None):
-    """This program is designed to read Dutch annual report pdf files from non-profit organisation 
+    """Annual report information extraction.
+    
+    This program is designed to read Dutch annual report pdf files from non-profit organisation.
     and extract relevant information.
 
     The following general steps are taken:
@@ -33,7 +36,6 @@ def main(testarg=None):
     - (optional) Classify the sector in which the organisation is active.
     - The gathered information is converted into structured output in the form of an Excel file.
     """
-
     # start time
     start_time = f"{datetime.now():%Y-%m-%d %H:%M:%S}"
 
@@ -121,6 +123,7 @@ def write_output(tasks: list, opd_p: np.array, opd_g: np.array, opd_o: np.array,
     """Write extracted information to output files.
     
     Create three output files for people, sectors, and organisations.
+
     Args:
         tasks (list): list of arguments used to define which tasks had to be executed
         opd_p (np.array): output results for people task

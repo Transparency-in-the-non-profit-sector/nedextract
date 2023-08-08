@@ -14,9 +14,11 @@ class DetermineJobs:
     - determine_sub_job
     - surrounding_words
     - count_occurrence
-    - relevant_sentences"""
+    - relevant_sentences
+    """
 
-    def __init__(self, main_jobs=None, main_job=None, members=None, doc=None, p_position=None, position=None):
+    def __init__(self, main_jobs=None, main_job=None, members=None, doc=None, p_position=None, position=None): #pylint: disable=too-many-arguments'
+        """Define class variables."""
         self.main_job = main_job
         self.main_jobs = main_jobs
         self.members = members
@@ -112,7 +114,7 @@ class DetermineJobs:
         return totalcount, totalcount_sentence
 
 
-    def determine_main_job(self, sentences: list=None, surroundings: list=None):
+    def determine_main_job(self, sentences: list = None, surroundings: list = None):
         """Determine main job category based on sentence and overall frequency.
 
         This function determines the primary job category by analyzing the occurrence frequency of
@@ -150,7 +152,6 @@ class DetermineJobs:
                 - The total frequency of the category 'bestuur' in the surrounding sentences (int).
                 - The total frequency of the category 'rvt' in the surrounding sentences (int).
         """
-
         # Define sentence (fs, fss) and total frequencies (ft, fts) for direct sentences and surrounding sentences
         self.relevant_sentences()
         if sentences is None: sentences = self.sentences
@@ -208,7 +209,7 @@ class DetermineJobs:
         return [main_cat, ft_director, fts_bestuur, fts_rvt]
 
 
-    def determine_sub_job(self, sentences: list=None):
+    def determine_sub_job(self, sentences: list = None):
         """Determine the sub job category based on the words mentioned in the provided 'sentences' and main category ('main_cat').
 
         This function determines the sub job category by analyzing the occurrence frequency of each

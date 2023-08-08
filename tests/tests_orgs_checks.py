@@ -103,12 +103,12 @@ class TestsOrgs_Checks(unittest.TestCase):
         """
         orgs = ['Bedrijf']
         org = 'Bedrijf bla'
-        is_part = OrganisationExtraction(orgs=[orgs], org=org, doc=doc).part_of_other()
+        is_part = OrganisationExtraction().part_of_other(orgs=[orgs], org=org, doc=doc)
         assert(is_part)
 
 
     def test_individual_org_check(self):
-        """Unit test for the function individual_org_check
+        """Unit test for the function individual_org_check.
         
         This function tests the individual_org_check that checks if an potential ORG is considered and ORG
         if just that name is analysed by Stanza NER. Contains one test case. 

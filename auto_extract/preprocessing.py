@@ -3,14 +3,15 @@
 Functions:
 - preprocess_pdf
 - download_pdf
-- delete_downloaded_pdf"""
+- delete_downloaded_pdf
+"""
 
 import os
 import urllib.request
 import pdftotext
 
 
-def preprocess_pdf(infile: str, r_blankline: str =', ', r_eol: str =' ', r_par: str=''):
+def preprocess_pdf(infile: str, r_blankline: str = ', ', r_eol: str = ' ', r_par: str = ''):
     """Preprocesses the text extracted from a PDF file.
 
     This function takes the path of a PDF file, reads the text content, and performs several text
@@ -67,6 +68,9 @@ def download_pdf(url):
 
 
 def delete_downloaded_pdf():
-    """Delete the file that is downloaded with the function download_pdf and saved as
-    downloaded.pdf from the cwd."""
+    """Delete downloaded file.
+    
+    Delete the file that is downloaded with the function download_pdf and saved as
+    downloaded.pdf from the cwd.
+    """
     os.remove(os.path.join(os.getcwd(), "downloaded.pdf"))

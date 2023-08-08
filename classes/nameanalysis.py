@@ -8,8 +8,7 @@ from fuzzywuzzy import fuzz
 
 
 class NameAnalysis:
-    """This class contains functions used to analyse names, to find for each name
-    a list of duplicate names that are found within the same text.
+    """This class contains functions used to analyse names.
 
     It contains the functions:
     - abbreviate
@@ -21,6 +20,7 @@ class NameAnalysis:
     """
 
     def __init__(self, names: list):
+        """Define class variables."""
         self.pnames = names
 
     @staticmethod

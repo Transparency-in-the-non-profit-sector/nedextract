@@ -1,4 +1,4 @@
-"""Unit tests for functions in clas DetermineJobs"""
+"""Unit tests for functions in clas DetermineJobs."""
 import os
 import unittest
 import numpy as np

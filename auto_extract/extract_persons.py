@@ -23,7 +23,7 @@ from classes.nameanalysis import NameAnalysis
 
 
 def identify_potential_people(doc, all_persons: list):
-    """identify potential ambassadors and board members based on keywords in sentences.
+    """Identify potential ambassadors and board members based on keywords in sentences.
     
     This function analyzes the given 'doc' containing (stanza) processed sentences and identifies
     potential people who may hold ambassadors or board member positions,

@@ -12,7 +12,7 @@ inputfile = os.path.join(infolder, 'test_excel.xlsx')
 
 
 class TestClassifyOrganisations(unittest.TestCase):
-    """Unit tests for classify_organisations
+    """Unit tests for classify_organisations.
     
     This class contains the following functions:
     - test_file_to_pd: tests the file_to_pd function that reads an excel file into a pandas dataframe and 
@@ -22,6 +22,7 @@ class TestClassifyOrganisations(unittest.TestCase):
     - test_predict_main_sector: tests the predict_main_section function which predicts the main sector 
       label of an organisation
     """
+    
     def test_file_to_pd(self):
         """Unit test function for the 'file_to_pd' function.
 

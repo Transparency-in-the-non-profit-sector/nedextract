@@ -1,3 +1,4 @@
+"""This file contains the unit tests for the preprocessing functions of auto_extract."""
 import os
 import unittest
 from auto_extract.preprocessing import delete_downloaded_pdf
@@ -11,13 +12,15 @@ class UnitTestsPreprocessing(unittest.TestCase):
     Contains:
     - test_preprocess_pdf
     - test_download_pdf
-    - test_delete_pdf"""
+    - test_delete_pdf
+    """
 
     def test_preprocess_pdf(self):
         """Unit test for the function preprocess_pdf.
         
         The function tests the preprocess_pdf function that takes in a PDF file, reads the text content,
-        and performs several text preprocessing steps to clean and format the text."""
+        and performs several text preprocessing steps to clean and format the text.
+        """
         indir = os.path.join(os.getcwd(), 'tests')
         infile = os.path.join(indir, 'test_report.pdf')
         text = preprocess_pdf(infile, ' ')
@@ -29,7 +32,8 @@ class UnitTestsPreprocessing(unittest.TestCase):
     def test_download_pdf(self):
         """Unit test for the function download_pdf.
         
-        This function tests the download_pdf dunction that downloads a pdf file from an url and safe it in the cwd."""
+        This function tests the download_pdf dunction that downloads a pdf file from an url and safe it in the cwd.
+        """
         url = ("https://github.com/Transparency-in-the-non-profit-sector/" +
             "np-transparency/blob/main/tests/test_report.pdf")
         filename = download_pdf(url)
@@ -40,7 +44,8 @@ class UnitTestsPreprocessing(unittest.TestCase):
         """Unit test for the function delete_downloaded_pdf.
         
         This function tests the funciton delete_downloaded pdf that deletes the file that is downloaded with the function
-        download_pdf and saved as downloaded.pdf from the cwd."""
+        download_pdf and saved as downloaded.pdf from the cwd.
+        """
         delete_downloaded_pdf()
         filename = os.path.join(os.getcwd(), "downloaded.pdf")
         assert(os.path.exists(filename) is False)

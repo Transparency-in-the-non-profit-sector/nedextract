@@ -38,6 +38,7 @@ class TestExtractRelatedOrgas(unittest.TestCase):
     - test_apply_matching: tests the apply_matching function that tries to match a name with values in
       one of two provided columns in a dataframe
     """
+    
     def test_collect_orgs(self):
         """Unit test for the collect_orgs function.
         
@@ -103,7 +104,7 @@ class TestExtractRelatedOrgas(unittest.TestCase):
         # Test case 7
         pco = ((0, 0), (0, 0))
         final = decide_org(org, pco, org_pp, org_c, nlp)
-        self.assertFalse(False)
+        self.assertFalse(final)
 
         # Test case 8
         pco = ((0, 1), (0, 1))

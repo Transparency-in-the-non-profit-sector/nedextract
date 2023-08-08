@@ -1,4 +1,4 @@
-"""This module contains unit tests for the functions in extract_persons"""
+"""This module contains unit tests for the functions in extract_persons."""
 import os
 import unittest
 import numpy as np
@@ -21,6 +21,25 @@ indir = os.path.join(os.getcwd(), 'tests')
 infile = os.path.join(indir, 'test_report.pdf')
 text = preprocess_pdf(infile, ' ')
 doc = stanza.Pipeline(lang='nl', processors='tokenize,ner')(text)
+
+# expected value for test_extract_persons test case 1
+e_bp = np.array(['Anna de Wit - rvt - vice-voorzitter',
+                'Dirkje Rooden - bestuur - lid',
+                'Eduard van Grijs - bestuur - ',
+                'Ferdinand de Blauw - bestuur - ',
+                'Gerard Roze - kascommissie - voorzitter',
+                'Hendrik Doe - rvt - voorzitter',
+                'Hendrik Groen - kascommissie - ',
+                'Jane Doe - directeur - directeur',
+                'Cornelis Geel - rvt - lid',
+                'Isaak Paars - ledenraad - voorzitter',
+                'Jan van Oranje - ledenraad - penningmeester',
+                'Karel - ledenraad - lid',
+                'Lodewijk - ledenraad - ',
+                'Maria - ledenraad - ',
+                'Mohammed El Idrissi - controlecommissie - ',
+                'Saïda Benali - controlecommissie - ',
+                'Bernard Zwartjes - rvt - '])
 
 # Definitions for test case 2
 all_persons = np.unique([f'{ent.text}' for ent in doc.ents if ent.type == "PER"])
@@ -45,11 +64,10 @@ class TestExtractPersons(unittest.TestCase):
           the list of positions.
         - test_array_p_position: tests the 'array_p_position' function that returns an array of names taken from a sublist of
           the list p_position.
-
     """
 
     def test_identify_potential_people(self):
-        """Unit test for the function 'identify_potential_people'
+        """Unit test for the function 'identify_potential_people'.
         
         This function tests the 'identify_potential_people' function hat analyses text to find names of
         people that may have one of the predifined jobs.
@@ -68,9 +86,6 @@ class TestExtractPersons(unittest.TestCase):
         self.assertTrue(isinstance(people, list))
         self.assertEqual(people.sort(), expected.sort())
 
-
-
-
     def test_extract_persons(self):
         """Unit test for the function 'extract_persons'.
         
@@ -83,23 +98,6 @@ class TestExtractPersons(unittest.TestCase):
         """
         # Test case 1
         e_a = np.array(['Sarah', 'Thomas'])
-        e_bp = np.array(['Anna de Wit - rvt - vice-voorzitter',
-                        'Dirkje Rooden - bestuur - lid',
-                        'Eduard van Grijs - bestuur - ',
-                        'Ferdinand de Blauw - bestuur - ',
-                        'Gerard Roze - kascommissie - voorzitter',
-                        'Hendrik Doe - rvt - voorzitter',
-                        'Hendrik Groen - kascommissie - ',
-                        'Jane Doe - directeur - directeur',
-                        'Cornelis Geel - rvt - lid',
-                        'Isaak Paars - ledenraad - voorzitter',
-                        'Jan van Oranje - ledenraad - penningmeester',
-                        'Karel - ledenraad - lid',
-                        'Lodewijk - ledenraad - ',
-                        'Maria - ledenraad - ',
-                        'Mohammed El Idrissi - controlecommissie - ',
-                        'Saïda Benali - controlecommissie - ',
-                        'Bernard Zwartjes - rvt - '])
         e_r = np.array(['Anna de Wit', 'Hendrik Doe', 'Cornelis Geel', 'Bernard Zwartjes'])
         e_b = np.array(['Dirkje Rooden', 'Eduard van Grijs', 'Ferdinand de Blauw'])
         e_l = np.array(['Isaak Paars', 'Jan van Oranje', 'Karel', 'Lodewijk', 'Maria'])

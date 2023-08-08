@@ -96,7 +96,7 @@ def collect_orgs(infile: str, nlp: stanza.Pipeline):
     return sorted(list(set(true_orgs)))
 
 
-def decide_org(org: str, pco: tuple, org_pp: np.array, org_c: np.array, nlp: stanza.Pipeline):
+def decide_org(org: str, pco: tuple, org_pp: np.array, org_c: np.array, nlp: stanza.Pipeline): #pylint: disable=too-many-arguments'
     """Decision tree to determine if an potential ORG is likely to be a true org.
 
     Decisions are based on: the overall number of mentions of the pot. org in the text,

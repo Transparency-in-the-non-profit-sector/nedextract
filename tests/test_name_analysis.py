@@ -1,4 +1,4 @@
-#"""Unit tests for functions in class NameAnalysis"""
+"""Unit tests for functions in class NameAnalysis."""
 import unittest
 from classes.nameanalysis import NameAnalysis
 
@@ -22,6 +22,7 @@ class TestExtractPersons(unittest.TestCase):
         - test_count_occurrence: tests the 'count_occurrence' function that counts for a list of serach words the occurences in
           a text.
     """
+    
     def test_abbreviate(self):
         """Unit test function for the 'abbreviate' function.
 
@@ -121,4 +122,3 @@ class TestExtractPersons(unittest.TestCase):
                     ['Jane White'], ['William Doe']]
         self.assertTrue(isinstance(outnames, list))
         self.assertEqual(outnames, expected)
-

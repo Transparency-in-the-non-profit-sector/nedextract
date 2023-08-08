@@ -1,20 +1,26 @@
-""" This file contains functions that are used by exxtract_related_orgs to determine wether the found orgs are true orgs
-Functions:
-
-- keyword_check
-- check_single_orgs
-- individual_org_check
-- percentage_considered_org
-- strip_function_of_entity
-- count_number_of_mentions
-- part_of_other
-"""
+"""This file contains functions that are used by exxtract_related_orgs to determine wether the found orgs are true orgs."""
 import re
 from classes.keywords import Org_Keywords
+import numpy as np
 
 
 class OrganisationExtraction:
-    def __init__(self, nlp=None, doc=None, org: str=None, orgs=None, counts=None, true_orgs: list=None, final=None):
+    """This class contains functions used to perform checks on potential organisations.
+
+    It contains the functions:
+    - keyword_check
+    - check_single_orgs
+    - individual_org_check
+    - percentage_considered_org
+    - strip_function_of_entity
+    - count_number_of_mentions
+    - part_of_other
+    """
+    
+    def __init__(self, nlp = None, doc = None, org: str = None, #pylint: disable=too-many-arguments'
+                 orgs: np.array = None, counts: np.array = None, 
+                 true_orgs: list = None, final = None): 
+        """Define class variables."""
         self.nlp = nlp
         self.doc = doc
         self.org = org
@@ -23,7 +29,7 @@ class OrganisationExtraction:
         self.counts = counts
         self.decision = final
 
-    def keyword_check(self, final: bool= None, org: str= None):
+    def keyword_check(self, final: bool = None, org: str = None):
         """Check if org is likely to be or not be an organisation based on keywords.
         
         This function contains a decision tree that determines if it is likely that a candidate organisation is a
@@ -133,7 +139,8 @@ class OrganisationExtraction:
             nlp (stanza.pipeline): the stanza pipeline used to analyse texts
 
         Returns: 
-            is_org(bool): true if the test passes"""
+            is_org(bool): true if the test passes
+        """
         org = self.org
         doc_o = self.nlp(org)
         o_t = [f'{ent.text}' for ent in doc_o.ents if ent.type == "ORG"]
@@ -215,7 +222,7 @@ class OrganisationExtraction:
         return org
 
 
-    def count_number_of_mentions(self, org: str= None, doc= None):
+    def count_number_of_mentions(self, org: str = None, doc = None):
         """Count the number of mentions of org in the text, taking into account word boundaries.
         
         Args:

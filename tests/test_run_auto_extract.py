@@ -5,6 +5,8 @@ from auto_extract.run_auto_extract import main
 
 
 class TestRunAutoExtract(unittest.TestCase):
+    """Class containing the unit test for the main function of run_auto_extract."""
+
     def test_main(self):
         """Unit test function for the 'main' function.
 
