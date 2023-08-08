@@ -42,7 +42,7 @@ class PDFInformationExtractor:
         download_stanza_NL(): Downloads the stanza Dutch library if not already present.
     """
     
-    def __init__(self, tasks, pf_m=None, pf_l=None, pf_v=None):
+    def __init__(self, tasks, pf_m: str =None, pf_l: str =None, pf_v: str =None):
         """Initialize the PDFInformationExtractor class with pretrained model file paths.
 
         Args:
@@ -98,11 +98,11 @@ class PDFInformationExtractor:
             nlp = stanza.Pipeline(lang='nl', processors='tokenize,ner')
             doc = nlp(text)
 
-            # Extract all unique persons and organizations from the text using
-            # the named entity recognition function of stanza
+            # Extract all unique persons and organizations from the text using the named entity recognition function of stanza
             organizations, corg = np.unique([f'{ent.text}' for ent in doc.ents if ent.type == "ORG"],
                                             return_counts=True)
 
+            # call corresponding functions for each specified tasks
             try:
                 organization = organizations[np.argmax(corg)]
                 if 'people' in self.tasks or 'all' in self.tasks:
@@ -161,10 +161,16 @@ class PDFInformationExtractor:
                 - Specified board member roles for members identified as bestuur:
                     directors, raad van toezicht, bestuursleden, ledenraad, kascommissie, controlecommisie
         """
+        # Collect unique persons named in text
         persons = np.unique([f'{ent.text}' for ent in doc.ents if ent.type == "PER"])
+
+        # call extract_persons function
         (ambassadors, board_positions, p_directeur, p_rvt, p_bestuur, p_ledenraad,
         p_kasc, p_controlec) = extract_persons(doc, persons)
+
+        # Combine results
         board = np.concatenate([p_directeur, p_bestuur, p_rvt, p_ledenraad, p_kasc, p_controlec])
+
         # try again if unlikely results
         if (len(p_rvt) > 12 or len(p_bestuur) > 12 or (len(p_rvt) == 0 and len(p_bestuur) == 0) or
                 len(board_positions) <= 3):
@@ -173,6 +179,8 @@ class PDFInformationExtractor:
             (ambassadors, board_positions, p_directeur, p_rvt, p_bestuur,
             p_ledenraad, p_kasc, p_controlec) = extract_persons(doc, persons)
             board = np.concatenate([p_directeur, p_bestuur, p_rvt, p_ledenraad, p_kasc, p_controlec])
+        
+        # Structure output
         output = [os.path.basename(infile), organization, self.ots(persons), self.ots(ambassadors), self.ots(board),
                 self.ots(board_positions)]
         output.extend(self.atc(p_directeur, 5))
@@ -230,7 +238,7 @@ class PDFInformationExtractor:
         return out_string
 
 
-    def atc(self, inp, length):
+    def atc(self, inp, length: int):
         """Array to columns: Split array into [length] list variables which will be converted into columns in the final output.
         
         This function takes the following steps:
