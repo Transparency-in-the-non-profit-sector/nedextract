@@ -22,7 +22,7 @@ from classes.keywords import JobKeywords
 from classes.nameanalysis import NameAnalysis
 
 
-def identify_potential_people(doc, all_persons):
+def identify_potential_people(doc, all_persons: list):
     """identify potential ambassadors and board members based on keywords in sentences.
     
     This function analyzes the given 'doc' containing (stanza) processed sentences and identifies
@@ -72,7 +72,7 @@ def identify_potential_people(doc, all_persons):
     
     return people
 
-def extract_persons(doc, all_persons):
+def extract_persons(doc, all_persons: list):
     """Extract ambassadors and board members from a text using a rule-based method.
 
     This function determines potential ambassadors and board members in a text based on the
@@ -116,10 +116,12 @@ def extract_persons(doc, all_persons):
     """
     ## Define variables
     b_position = np.array([])   # to be filled with strings of the form 'name - main pos - sub_ pot'
+
     # list of potential directors: name, sub_cat, ft_director, main_cat, backup_sub_cat,fts_bestuur,fts_rvt
     pot_director = []
     pot_rvt = []  # list of potential rvt members
     pot_bestuur = []  # list of potential board member
+
     # list with sublist of people per position [[position, name, name, ...], [...]]
     p_position = [[p[0]] for p in JobKeywords.main_jobs]
 
@@ -144,8 +146,7 @@ def extract_persons(doc, all_persons):
             else:
                 p_position = append_p_position(p_position, m_ft_dbr[0], member)
 
-        # Determine b_position array
-        # Add people identified as directeur, bestuur or rvt member to respective 'potential' lists 
+        # Determine b_position array: Add people identified as directeur, bestuur or rvt member to respective 'potential' lists 
         if m_ft_dbr[0] != 'ambassadeur':
             if m_ft_dbr[0] is None:
                 continue
@@ -178,6 +179,7 @@ def extract_persons(doc, all_persons):
     # Determine if people initially identified as rvt memeber are likely true rvt members
     pot_rvt = np.array(pot_rvt, dtype=object)
     b_position, p_position = check_rvt(pot_rvt, b_position, p_position)
+
     # Determine if people initially identified as bestuur memeber are likely true bestuur members
     pot_bestuur = np.array(pot_bestuur, dtype=object)
     b_position, p_position = check_bestuur(pot_bestuur, b_position, p_position)
@@ -192,7 +194,8 @@ def extract_persons(doc, all_persons):
             array_p_position(p_position, 'controlecommissie'))
 
 
-def director_check(pot_director, b_position, pot_rvt, pot_bestuur, p_position):
+def director_check(pot_director: np.array, b_position: np.array,
+                   pot_rvt: np.array, pot_bestuur: np.array, p_position: list):
     """Check potential directors and update their positions if necessary.
 
     A potential director is not considered a director if either:
@@ -211,8 +214,8 @@ def director_check(pot_director, b_position, pot_rvt, pot_bestuur, p_position):
     Otherwise, add the pot_director to p_position.
 
     Args:
-        pot_director (numpy.ndarray): An array of potential directors and associated information.
-        b_position (np.ndarray): An array in which each element has the form 'name - main position - sub position'.
+        pot_director (numpy.array): An array of potential directors and associated information.
+        b_position (np.array): An array in which each element has the form 'name - main position - sub position'.
         pot_rvt (np.array of lists): An array of lists containing potential 'rvt' (Raad van Toezicht) members.
                         Each list contains the name of the person, the associated 'rvt' position,
                         and the count of 'rvt' positions held by that person.
@@ -234,9 +237,11 @@ def director_check(pot_director, b_position, pot_rvt, pot_bestuur, p_position):
                 int(max(pot_director[:, 2])) > 5]) or
                 all([pot_director[i, 2] <= 1, int(max(pot_director[:, 2])) > 2]) or
                 (pot_director[i, 1] != 'directeur')):
+            
             # if condition is met remove from b_position
             b_position = b_position[b_position != (pot_director[i, 0] + ' - directeur - ' +
                                                    pot_director[i, 1])]
+            
             # Use backup main cat instad of directeur function and update pot_rvt/pot_bestuur/p_position accordingly
             if str(pot_director[i, 3]) == 'rvt':
                 pot_rvt.append([pot_director[i, 0], 
@@ -262,7 +267,7 @@ def director_check(pot_director, b_position, pot_rvt, pot_bestuur, p_position):
     return b_position, pot_rvt, pot_bestuur, p_position
 
 
-def check_rvt(pot_rvt, b_position, p_position):
+def check_rvt(pot_rvt: np.array, b_position: np.array, p_position: list):
     """Determine whether potential rvt memebers can be considered true rvt memebers.
 
     This function determines whether potential rvt members ('pot_rvt') can be considered true rvt memebers,
@@ -279,7 +284,7 @@ def check_rvt(pot_rvt, b_position, p_position):
         pot_rvt (np.array of lists): An array of lists containing potential 'rvt' (Raad van Toezicht) members.
                         Each list contains the name of the person, the associated 'rvt' position,
                         and the count of 'rvt' positions held by that person.
-        b_position (np.ndarray): An array in which each element has the form 'name - main position - sub position'.
+        b_position (np.array): An array in which each element has the form 'name - main position - sub position'.
         p_position (list of lists): A list of sublists, each of which contains a main job category and 
         names of people for that job if any.
 
@@ -300,7 +305,7 @@ def check_rvt(pot_rvt, b_position, p_position):
     return b_position, p_position
 
 
-def check_bestuur(pot_bestuur, b_position, p_position):
+def check_bestuur(pot_bestuur: np.array, b_position: np.array, p_position: list):
     """Determine whether potential bestuur memebers can be considered true bestuur memebers.
 
     This function determines whether potential bestuur members ('pot_bestuur') can be considered true bestuur members,
@@ -358,7 +363,7 @@ def array_p_position(p_position: list, position: str):
     return np.array([i[1:] for i in p_position if i[0] == position][0])
 
 
-def append_p_position(p_position, main, name):
+def append_p_position(p_position: list, main: str, name: str):
     """Append a person's name to their main position in the list of positions.
 
     Args:

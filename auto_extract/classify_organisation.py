@@ -76,16 +76,20 @@ def train(data: pd.DataFrame, train_size: float, alpha: float, save: bool = Fals
     """
     # Factorize the categories
     sector_f, label = data['Sector'].factorize()
+
     # Split data in train and test set
     x_train, x_test, y_train, y_test = train_test_split(data['text'],
                                                         sector_f,
                                                         train_size=train_size, random_state=1)
     # Term frequency, normalized for total terms in document
     tf_idf = TfidfVectorizer()
+
     # Apply tf idf to training data
     x_train_tf = tf_idf.fit_transform(x_train)
+
     # Transform test data tinto tf-vectorized matrix
     x_test_tf = tf_idf.transform(x_test)
+
     # Train a Naive Bayes classifier on the training data
     clf = MultinomialNB(alpha=alpha)
     clf.fit(x_train_tf, y_train)
@@ -111,8 +115,7 @@ def train(data: pd.DataFrame, train_size: float, alpha: float, save: bool = Fals
 
 
 def predict_main_sector(saved_clf: str, saved_labels: str, saved_vector: str, text: str):
-    """
-    Predict the main sector category for a given text using a trained classifier.
+    """Predict the main sector category for a given text using a trained classifier.
 
     This function predicts the main sector category for a given text using a pre-trained
     Multinomial Naive Bayes classifier (which can be created using the function 'train').
