@@ -61,15 +61,21 @@ def collect_orgs(infile: str, nlp: stanza.Pipeline):
 
     # steps to dertermine 'true' orgs
     for org in org_all:
+        extraction.org = org
         if any(kw in org.lower() for kw in Org_Keywords.search_strip):
-            n_org = extraction(org=org).strip_function_of_entity()
+            n_org = extraction.strip_function_of_entity()
         else:
             n_org = org
         if n_org != org and len(n_org) >= 3:
             single_orgs.append(n_org)
         else:
-            pco = extraction(doc = doc_c, org=org, orgs=org_c[0], counts=org_c[1]).percentage_considered_org(),
-            extraction(doc = doc_p, org = org, orgs=org_p[0], counts=org_p[1]).percentage_considered_org()
+            extraction.doc = doc_c
+            extraction.orgs = org_c
+            pco_c = extraction.percentage_considered_org()
+            extraction.doc = doc_p
+            extraction.orgs = org_p
+            pco_p = extraction.percentage_considered_org()
+            pco = pco_c, pco_p
             decision = decide_org(org, pco, org_pp, org_c, nlp)
             # process conclusion
             if decision is True:
@@ -77,7 +83,10 @@ def collect_orgs(infile: str, nlp: stanza.Pipeline):
             elif decision == 'maybe':
                 single_orgs.append(org)
     for org in single_orgs:
-        true_orgs = extraction(org = org, true_orgs=true_orgs, doc=doc_c).check_single_orgs()
+        extraction.org = org
+        extraction.true_orgs = true_orgs
+        extraction.doc = doc_c
+        true_orgs = extraction.check_single_orgs()
     return sorted(list(set(true_orgs)))
 
 
@@ -105,7 +114,7 @@ def decide_org(org: str, pco: tuple, org_pp: np.array, org_c:np.array, nlp: stan
     extraction = OrganisationExtraction(org=org, nlp=nlp)
     final = False
 
-    is_org = extraction().individual_org_check()
+    is_org = extraction.individual_org_check()
     per_c, n_c, per_p, n_p = pco[0][0], pco[0][1], pco[1][0], pco[1][1]
 
     # decision tree
