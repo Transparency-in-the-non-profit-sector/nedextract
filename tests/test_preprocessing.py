@@ -26,7 +26,7 @@ class UnitTestsPreprocessing(unittest.TestCase):
         text = preprocess_pdf(infile, ' ')
         text = preprocess_pdf(infile, '. ')
         text = preprocess_pdf(infile, ', ')
-        assert(isinstance(text, str))
+        self.assertIsInstance(text, str)
 
 
     def test_download_pdf(self):
@@ -37,7 +37,7 @@ class UnitTestsPreprocessing(unittest.TestCase):
         url = ("https://github.com/Transparency-in-the-non-profit-sector/" +
             "np-transparency/blob/main/tests/test_report.pdf")
         filename = download_pdf(url)
-        assert(os.path.exists(filename))
+        self.assertTrue(os.path.exists(filename))
 
 
     def test_delete_downloaded_pdf(self):
@@ -48,4 +48,4 @@ class UnitTestsPreprocessing(unittest.TestCase):
         """
         delete_downloaded_pdf()
         filename = os.path.join(os.getcwd(), "downloaded.pdf")
-        assert(os.path.exists(filename) is False)
+        self.assertFalse(os.path.exists(filename))

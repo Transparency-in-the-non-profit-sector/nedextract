@@ -9,8 +9,8 @@ Functions:
 - test_strip_function_of_entity
 - test_count_number_of_mentions
 """
-import unittest
 import os
+import unittest
 import numpy as np
 import stanza
 from classes.orgs_checks import OrganisationExtraction
@@ -89,7 +89,7 @@ class TestsOrgs_Checks(unittest.TestCase):
         doc_c = 'Hij werkt bij Stichting Huppeldepup'
         to = OrganisationExtraction(org=org, true_orgs=true_orgs, doc=doc_c).check_single_orgs()
         e_to = ['Stichting Huppeldepup']
-        assert(to == e_to)
+        self.assertEqual(to, e_to)
 
 
     def test_part_of_other(self):
@@ -104,7 +104,7 @@ class TestsOrgs_Checks(unittest.TestCase):
         orgs = ['Bedrijf']
         org = 'Bedrijf bla'
         is_part = OrganisationExtraction().part_of_other(orgs=[orgs], org=org, doc=doc)
-        assert(is_part)
+        self.assertTrue(is_part)
 
 
     def test_individual_org_check(self):
@@ -118,7 +118,7 @@ class TestsOrgs_Checks(unittest.TestCase):
         """
         org = 'Stichting Huppeldepup'
         is_org = OrganisationExtraction(org=org, nlp=nlp).individual_org_check()
-        assert(is_org)
+        self.assertTrue(is_org)
 
 
     def test_pco(self):
@@ -137,21 +137,21 @@ class TestsOrgs_Checks(unittest.TestCase):
         extraction.org = 'Bedrijf'
         extraction.orgs = (np.array(['Bedrijf']), np.array([7]))
         pco = extraction.percentage_considered_org()
-        assert(pco[0] == 100.)
-        assert(pco[1] == 7)
+        self.assertEqual(pco[0], 100.)
+        self.assertEqual(pco[1], 7)
 
         # Test case 2
         extraction.orgs = (np.array(['Bedrij']), np.array([7]))
         pco = extraction.percentage_considered_org()
-        assert(pco[0] == 0.)
-        assert(pco[1] == 7)
+        self.assertEqual(pco[0], 0.)
+        self.assertEqual(pco[1], 7)
 
         # Test case 3
         extraction.org = 'Bedrijfsk'
         extraction.orgs = (np.array(['Bedrijfsk']), np.array([0]))
         pco = extraction.percentage_considered_org()
-        assert(pco[0] == -10.)
-        assert(pco[1] == 0)
+        self.assertEqual(pco[0], -10.)
+        self.assertEqual(pco[1], 0)
 
 
     def test_strip_function_of_entity(self):
@@ -166,7 +166,7 @@ class TestsOrgs_Checks(unittest.TestCase):
         org = "Lid van de Raad van Advies bij Bedrijfsnaam b.v."
         e_org = "Bedrijfsnaam b.v."
         o_org = OrganisationExtraction(org = org).strip_function_of_entity()
-        assert(e_org == o_org)
+        self.assertEqual(e_org, o_org)
 
 
     def test_count_number_of_mentions(self):
@@ -182,7 +182,7 @@ class TestsOrgs_Checks(unittest.TestCase):
         extraction = OrganisationExtraction(doc=doc)
         extraction.org = 'Bedrijf'
         n = extraction.count_number_of_mentions()
-        assert(n == 7)
+        self.assertEqual(n, 7)
         extraction.org = 'Bedrijf-'
         n = extraction.count_number_of_mentions()
-        assert(n == 0)
+        self.assertEqual(n, 0)

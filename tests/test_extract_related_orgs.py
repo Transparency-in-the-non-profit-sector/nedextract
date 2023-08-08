@@ -161,11 +161,11 @@ class TestExtractRelatedOrgas(unittest.TestCase):
         e_m = 'Bedrijf2'
 
         # Test case 2
-        assert(o_m == e_m)
+        self.assertEqual(o_m, e_m)
         m = 'Bedrijf'
         o_m = apply_matching(df, m, 'currentStatutoryName', 'shortBusinessName')
         e_m = None
-        assert(o_m == e_m)
+        self.assertEqual(o_m, e_m)
         
         # Test case 3
         df = pd.DataFrame({'currentStatutoryName': ['Bedrijf1', 'Bedrijf2'],
@@ -173,4 +173,4 @@ class TestExtractRelatedOrgas(unittest.TestCase):
         m = 'B1 b.v.'
         o_m = apply_matching(df, m, 'currentStatutoryName', 'shortBusinessName')
         e_m = 'Stichting B1 b.v.'
-        assert(o_m == e_m)
+        self.assertEqual(o_m, e_m)

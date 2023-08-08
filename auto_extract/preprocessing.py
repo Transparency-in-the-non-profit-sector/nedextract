@@ -8,7 +8,7 @@ Functions:
 
 import os
 import urllib.request
-import pdftotext
+import pdftotext  # pylint: disable=import-error
 
 
 def preprocess_pdf(infile: str, r_blankline: str = ', ', r_eol: str = ' ', r_par: str = ''):
@@ -46,14 +46,14 @@ def preprocess_pdf(infile: str, r_blankline: str = ', ', r_eol: str = ' ', r_par
         text = text.replace(', ,', ',')
     while ',,' in text:
         text = text.replace(',,', ',')
-    while(' ,') in text:
+    while ' ,'  in text:
         text = text.replace(' ,', ',')
     text = text.replace('.,', '.')
     while '. .' in text:
         text = text.replace('. .', '.')
     while '..' in text:
         text = text.replace('..', '.')
-    while(' .') in text:
+    while ' .' in text:
         text = text.replace(' .', '.')
     return text
 
