@@ -58,21 +58,21 @@ class TestsOrgs_Checks(unittest.TestCase):
         extraction = OrganisationExtraction()
 
         # Test case 1
-        org = 'Huppeldepup B.V'
-        final = False
-        kwc = extraction(final=final, org=org).keyword_check()
+        extraction.org = 'Huppeldepup B.V'
+        extraction.final = False
+        kwc = extraction.keyword_check()
         self.assertTrue(kwc)
 
         # Test case 2
-        org = 'Ministerie'
-        final = False
-        kwc = extraction(final=final, org=org).keyword_check()
+        extraction.org = 'Ministerie'
+        extraction.final = False
+        kwc = extraction.keyword_check()
         self.assertFalse(kwc)
 
         # Test case 3
-        org = 'Hogeschool'
-        final = False
-        kwc = extraction(final=final, org=org).keyword_check()
+        extraction.org = 'Hogeschool'
+        extraction.final = False
+        kwc = extraction.keyword_check()
         self.assertFalse(kwc)
 
     def test_check_single_orgs(self):
@@ -132,26 +132,24 @@ class TestsOrgs_Checks(unittest.TestCase):
         Raises:
             AssertionError: If any of the assertion statements fails, indicating an incorrect return value.
         """
-        extraction = OrganisationExtraction()
+        extraction = OrganisationExtraction(doc = doc)
         # Test case 1
-        org = 'Bedrijf'
-        orgs = np.array(['Bedrijf'])
-        counts = np.array([7])
-        pco = extraction(doc = doc, org=org, (orgs, counts)).percentage_considered_org()
+        extraction.org = 'Bedrijf'
+        extraction.orgs = (np.array(['Bedrijf']), np.array([7]))
+        pco = extraction.percentage_considered_org()
         assert(pco[0] == 100.)
         assert(pco[1] == 7)
 
         # Test case 2
-        orgs = np.array(['Bedrij'])
-        pco = percentage_considered_org(doc, org, orgs, counts)
+        extraction.orgs = (np.array(['Bedrij']), np.array([7]))
+        pco = extraction.percentage_considered_org()
         assert(pco[0] == 0.)
         assert(pco[1] == 7)
 
         # Test case 3
-        counts = np.array([0])
-        org = 'Bedrijfsk'
-        orgs = np.array(['Bedrijfsk'])
-        pco = percentage_considered_org(doc, org, orgs, counts)
+        extraction.org = 'Bedrijfsk'
+        extraction.orgs = (np.array(['Bedrijfsk']), np.array([0]))
+        pco = extraction.percentage_considered_org()
         assert(pco[0] == -10.)
         assert(pco[1] == 0)
 
@@ -165,10 +163,9 @@ class TestsOrgs_Checks(unittest.TestCase):
         Raises:
             AssertionError: If the assert statement fails, indicating an incorrect return value.
         """
-        extraction = OrganisationExtraction()
         org = "Lid van de Raad van Advies bij Bedrijfsnaam b.v."
         e_org = "Bedrijfsnaam b.v."
-        o_org = strip_function_of_entity(org)
+        o_org = OrganisationExtraction(org = org).strip_function_of_entity()
         assert(e_org == o_org)
 
 
@@ -182,10 +179,10 @@ class TestsOrgs_Checks(unittest.TestCase):
         Raises:
             AssertionError: If any of the assert statements fails, indicating an incorrect return value.
         """
-        extraction = OrganisationExtraction()
-        org = 'Bedrijf'
-        n = count_number_of_mentions(doc, org)
+        extraction = OrganisationExtraction(doc=doc)
+        extraction.org = 'Bedrijf'
+        n = extraction.count_number_of_mentions()
         assert(n == 7)
-        org = 'Bedrijf-'
-        n = count_number_of_mentions(doc, org)
+        extraction.org = 'Bedrijf-'
+        n = extraction.count_number_of_mentions()
         assert(n == 0)
