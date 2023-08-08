@@ -10,9 +10,8 @@ import urllib.request
 import pdftotext
 
 
-def preprocess_pdf(infile, r_blankline=', ', r_eol=' ', r_par=''):
-    """
-    Preprocesses the text extracted from a PDF file.
+def preprocess_pdf(infile: str, r_blankline: str =', ', r_eol: str =' ', r_par: str=''):
+    """Preprocesses the text extracted from a PDF file.
 
     This function takes the path of a PDF file, reads the text content, and performs several text
     preprocessing steps to clean and format the text.
@@ -28,6 +27,8 @@ def preprocess_pdf(infile, r_blankline=', ', r_eol=' ', r_par=''):
     """
     with open(infile, 'rb') as f:
         pdf = pdftotext.PDF(f)
+    
+    # preprocessing steps
     text = "\n".join(pdf)
     text = text.replace('\n\n', r_blankline).replace('\r\n\r\n', r_blankline).replace('\n', r_eol)
     text = text.replace('\r', ' ').replace('\t', ' ')
