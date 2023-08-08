@@ -38,7 +38,7 @@ def main(testarg=None):
     start_time = f"{datetime.now():%Y-%m-%d %H:%M:%S}"
 
     # Parse command line arguments
-    parser = argparse.ArgumentParser(description=desc, formatter_class=RawTextHelpFormatter)
+    parser = argparse.ArgumentParser(formatter_class=RawTextHelpFormatter)
     parser.add_argument('-d', '--directory',
                         help='Directory containing annual reports to be processed.')
     parser.add_argument('-f', '--file', help='Specific pdf file to be processed.')
