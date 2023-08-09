@@ -1,4 +1,4 @@
-"""Documentation about auto_extract"""
+"""Basic info about auto_extract."""
 import logging
 
 

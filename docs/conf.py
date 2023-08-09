@@ -1,25 +1,26 @@
-# Configuration file for the Sphinx documentation builder.
-#
-# This file only contains a selection of the most common options. For a full
-# list see the documentation:
-# https://www.sphinx-doc.org/en/master/usage/configuration.html
-#
+"""Configuration file for the Sphinx documentation builder.
 
-# -- Path setup --------------------------------------------------------------
+This file only contains a selection of the most common options. For a full
+list see the documentation:
+https://www.sphinx-doc.org/en/master/usage/configuration.html
 
-# If extensions (or modules to document with autodoc) are in another directory,
-# add these directories to sys.path here. If the directory is relative to the
-# documentation root, use os.path.abspath to make it absolute, like shown here.
-#
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
+
+-- Path setup --------------------------------------------------------------
+
+If extensions (or modules to document with autodoc) are in another directory,
+add these directories to sys.path here. If the directory is relative to the
+documentation root, use os.path.abspath to make it absolute, like shown here.
+
+import os
+import sys
+sys.path.insert(0, os.path.abspath('.'))
+"""
 
 # -- Project information -----------------------------------------------------
 
-project = u"auto_extract"
-copyright = u"2022, Netherlands eScience Center"
-author = u"Laura Ootes"
+project = "auto_extract"
+copyright = "2022, Netherlands eScience Center"  # pylint: disable=redefined-builtin
+author = "Laura Ootes"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

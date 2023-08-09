@@ -4,7 +4,6 @@ on:
   push:
     branches: [ "main"]
   pull_request:
-    branches: [ "main" ]
 
 jobs:
 
@@ -46,10 +45,14 @@ jobs:
       - name: Install Poppler
         run: |
           if [ "$RUNNER_OS" == "Linux" ]; then
-            conda update openssl ca-certificates certifi
+            conda install -c anaconda certifi openssl
+            conda update openssl certifi
             conda install -c conda-forge/label/gcc7 poppler
             sudo apt-get update -y
-            sudo apt-get install build-essential libpoppler-cpp-dev pkg-config python-dev
+            sudo apt-get install -y build-essential libpoppler-cpp-dev pkg-config python3-dev
+          elif [ "$RUNNER_OS" == "macOS" ]; then
+            brew install pkg-config poppler python
+            conda install -c conda-forge poppler
           else
             conda install -c conda-forge poppler
           fi

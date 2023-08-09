@@ -1,14 +1,35 @@
-# Copyright 2022 Netherlands eScience Center and Vrije Universiteit Amsterdam
-# Licensed under the Apache License, version 2.0. See LICENSE for details.
+"""This file contains functions used to download pdf files from an url and preprocess the text in pdf files.
+
+Functions:
+- preprocess_pdf
+- download_pdf
+- delete_downloaded_pdf
+"""
 
 import os
 import urllib.request
 import pdftotext
 
 
-def preprocess_pdf(infile, r_blankline=', ', r_eol=' ', r_par=''):
+def preprocess_pdf(infile: str, r_blankline: str = ', ', r_eol: str = ' ', r_par: str = ''):
+    """Preprocesses the text extracted from a PDF file.
+
+    This function takes the path of a PDF file, reads the text content, and performs several text
+    preprocessing steps to clean and format the text.
+
+    Args:
+        infile (str): The path to the PDF file.
+        r_blankline (str, optional): The replacement for consecutive blank lines. Defaults to ', '.
+        r_eol (str, optional): The replacement for end-of-line characters. Defaults to ' '.
+        r_par (str, optional): The replacement for parentheses. Defaults to ''.
+
+    Returns:
+        str: The preprocessed text extracted from the PDF file.
+    """
     with open(infile, 'rb') as f:
         pdf = pdftotext.PDF(f)
+
+    # preprocessing steps
     text = "\n".join(pdf)
     text = text.replace('\n\n', r_blankline).replace('\r\n\r\n', r_blankline).replace('\n', r_eol)
     text = text.replace('\r', ' ').replace('\t', ' ')
@@ -25,20 +46,20 @@ def preprocess_pdf(infile, r_blankline=', ', r_eol=' ', r_par=''):
         text = text.replace(', ,', ',')
     while ',,' in text:
         text = text.replace(',,', ',')
-    while(' ,') in text:
+    while ' ,' in text:
         text = text.replace(' ,', ',')
     text = text.replace('.,', '.')
     while '. .' in text:
         text = text.replace('. .', '.')
     while '..' in text:
         text = text.replace('..', '.')
-    while(' .') in text:
+    while ' .' in text:
         text = text.replace(' .', '.')
     return text
 
 
 def download_pdf(url):
-    """ Download a pdf file from a url and safe it in the cwd """
+    """Download a pdf file from an url and safe it in the cwd."""
     with urllib.request.urlopen(url) as urlfile:
         filename = os.path.join(os.getcwd(), "downloaded.pdf")
         with open(filename, 'wb') as file:
@@ -47,6 +68,9 @@ def download_pdf(url):
 
 
 def delete_downloaded_pdf():
-    """ Delete the file that is downloaded with the function download_pdf and saved as
-    downloaded.pdf from the cwd."""
+    """Delete downloaded file.
+
+    Delete the file that is downloaded with the function download_pdf and saved as
+    downloaded.pdf from the cwd.
+    """
     os.remove(os.path.join(os.getcwd(), "downloaded.pdf"))
