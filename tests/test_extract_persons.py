@@ -1,30 +1,47 @@
+"""This module contains unit tests for the functions in extract_persons."""
 import os
+import unittest
 import numpy as np
 import stanza
-from auto_extract.extract_persons import abbreviate
 from auto_extract.extract_persons import append_p_position
 from auto_extract.extract_persons import array_p_position
 from auto_extract.extract_persons import check_bestuur
 from auto_extract.extract_persons import check_rvt
-from auto_extract.extract_persons import count_occurrence
-from auto_extract.extract_persons import determine_main_job
-from auto_extract.extract_persons import determine_sub_job
 from auto_extract.extract_persons import director_check
 from auto_extract.extract_persons import extract_persons
-from auto_extract.extract_persons import find_duplicate_persons
-from auto_extract.extract_persons import get_tsr
 from auto_extract.extract_persons import identify_potential_people
-from auto_extract.extract_persons import relevant_sentences
-from auto_extract.extract_persons import strip_names_from_title
-from auto_extract.extract_persons import surrounding_words
 from auto_extract.preprocessing import preprocess_pdf
 
 
+# Download stanza
 stanza.download('nl')
+
+# Definitions for test case 1
 indir = os.path.join(os.getcwd(), 'tests')
 infile = os.path.join(indir, 'test_report.pdf')
 text = preprocess_pdf(infile, ' ')
 doc = stanza.Pipeline(lang='nl', processors='tokenize,ner')(text)
+
+# expected value for test_extract_persons test case 1
+e_bp = np.array(['Anna de Wit - rvt - vice-voorzitter',
+                 'Dirkje Rooden - bestuur - lid',
+                 'Eduard van Grijs - bestuur - ',
+                 'Ferdinand de Blauw - bestuur - ',
+                 'Gerard Roze - kascommissie - voorzitter',
+                 'Hendrik Doe - rvt - voorzitter',
+                 'Hendrik Groen - kascommissie - ',
+                 'Jane Doe - directeur - directeur',
+                 'Cornelis Geel - rvt - lid',
+                 'Isaak Paars - ledenraad - voorzitter',
+                 'Jan van Oranje - ledenraad - penningmeester',
+                 'Karel - ledenraad - lid',
+                 'Lodewijk - ledenraad - ',
+                 'Maria - ledenraad - ',
+                 'Mohammed El Idrissi - controlecommissie - ',
+                 'Saïda Benali - controlecommissie - ',
+                 'Bernard Zwartjes - rvt - '])
+
+# Definitions for test case 2
 all_persons = np.unique([f'{ent.text}' for ent in doc.ents if ent.type == "PER"])
 infile2 = os.path.join(indir, 'test_report2.pdf')
 text2 = preprocess_pdf(infile2, ' ')
@@ -32,322 +49,271 @@ doc2 = stanza.Pipeline(lang='nl', processors='tokenize,ner')(text2)
 all_persons2 = np.unique([f'{ent.text}' for ent in doc2.ents if ent.type == "PER"])
 
 
-def test_abbreviate():
-    name = 'Jane Doe'
-    name2 = 'Jan de Wit'
-    name3 = 'Jan Piet de Wit'
-    name4 = 'Jan Piet van der Wit'
-    assert(abbreviate(name, 2) == 'J Doe ')
-    assert(abbreviate(name2, 2) == 'J de Wit ')
-    assert(abbreviate(name3, 2) == 'J P de Wit ')
-    assert(abbreviate(name4, 2) == 'J P van der Wit ')
-    assert(abbreviate(name4, 3) == 'J P van der Wit ')
+class TestExtractPersons(unittest.TestCase):
+    """Unit test class for functions used to extract names and functions of people mentioned in a pdf file.
 
+    Test methods:
+        - test_identify_potential_people: tests the 'identify_potential_people' function that analyses text to find names of
+          people that may have one of the predifined jobs.
+        - test_extract_persons: tests the 'extract_persons' function that extracts ambassadors and board members from a text
+          using a rule-based method.
+        - test_director_check: tests the director_check function that performs checks for potential directors and update their
+          positions if necessary
+        - test_check_rvt: tests the check_rvt function that determines whether potential rvt members can be considered
+          try=ue rvt memebers.
+        - test_check_bestuur: tests the check_bestuur function that determines whether potential bestuur members can be
+          considered true bestuur memebers.
+        - test_append_p_position: tests the 'append_p_position' function that append a person's name to their main position in
+          the list of positions.
+        - test_array_p_position: tests the 'array_p_position' function that returns an array of names taken from a sublist of
+          the list p_position.
+    """
 
-def test_get_tsr():
-    tsr1, rs1 = get_tsr('Jane Doe', 'Jane Doe')
-    assert(tsr1 == 100)
-    assert(rs1 == 90)
-    tsr2, rs2 = get_tsr('Jane Doe', 'Jane')
-    assert(tsr2 == 100)
-    assert(rs2 == 100)
-    tsr3, rs3 = get_tsr('J. Doe', 'J.P. Doe')
-    assert(tsr3 == 100)
-    assert(rs3 == 90)
-    tsr4, rs4 = get_tsr('J. Doe', 'Jane Doe')
-    assert(tsr4 == 100)
-    assert(rs4 == 95)
-    tsr5, rs5 = get_tsr('Jane Doe', 'J. Doe')
-    assert(tsr5 == 100)
-    assert(rs5 == 95)
+    def test_identify_potential_people(self):
+        """Unit test for the function 'identify_potential_people'.
 
+        This function tests the 'identify_potential_people' function hat analyses text to find names of
+        people that may have one of the predifined jobs.
 
-def test_strip_names_from_title():
-    inp = ['Prof. Dr. Jane Doe', 'John Doe, PhD', 'Dr. J.']
-    expected, expected_removed = ['  jane doe', 'john doe, '], ['Dr. J.']
-    out, out_r = strip_names_from_title(inp)
-    assert(out == expected)
-    assert(out_r == expected_removed)
+        Raises:
+            AssertionError: if the returned parameter is not a list, or if it does not match the expected value
 
+        """
+        people = identify_potential_people(doc, all_persons)
+        expected = [['Anna de Wit', 'A.B. de Wit'], ['Bernard Zwartjes'],
+                    ['Cornelis Geel'], ['Dirkje Rood'], ['E. van Grijs', 'Eduard van Grijs'],
+                    ['F. de Blauw', 'Ferdinand de Blauw'], ['G. Roze', 'Gerard Roze'],
+                    ['H. Doe', 'Hendrik Doe'], ['Hendrik Groen', 'Mr. H. Groen'],
+                    ['J. Doe', 'Jane Doe'], ['Isaak Paars'], ['Jan van Oranje'], ['Karel'],
+                    ['Lodewijk'], ['Maria']]
+        self.assertTrue(isinstance(people, list))
+        self.assertEqual(people.sort(), expected.sort())
 
-def test_find_duplicate_persons():
-    persons = ['Dr. Jane Doe', 'Jane Doe', 'J. Doe', 'Jane Elaine Doe',
-               'J.E. Doe', 'Jane White', 'William Doe', 'Jane']
-    outnames = find_duplicate_persons(persons)
-    expected = [['Jane Elaine Doe', 'Dr. Jane Doe', 'Jane Doe', 'J.E. Doe', 'J. Doe'],
-                ['Jane White'], ['William Doe']]
-    assert(isinstance(outnames, list))
-    assert(outnames == expected)
+    def test_extract_persons(self):
+        """Unit test for the function 'extract_persons'.
 
+        This function tests the 'extract_persons' function that extracts ambassadors and board members from a text
+        using a rule-based method.
 
-def test_surrounding_words():
-    text = np.array(['Jane vice voorzitter', 'vice-voorzitter Jane', 'Jane, algemeen directeur.',
-                     'Jane is de directeur', 'penningmeester Jane Doe Voorzitter Jane'])
-    expected = np.array(['vicevoorzitter', 'vicevoorzitter', 'search4term', 'search4term',
-                         'directeur', 'directeur', 'is', 'penningmeester', 'voorzitter',
-                         'voorzitter'])
-    search_names = ['Jane', 'Jane Doe']
-    outp = surrounding_words(text, search_names)
-    assert(isinstance(outp, np.ndarray))
-    assert(np.array_equal(outp, expected))
+        There are 2 tests. The first test uses the first test pdf document, and each of the eight checks asserts if
+        one of the 8 returned function categories, contain the expected names.
+        The second test uses a test docuemnt 2 to check if the additonal director conditions work as expected
+        """
+        # Test case 1
+        e_a = np.array(['Sarah', 'Thomas'])
+        e_r = np.array(['Anna de Wit', 'Hendrik Doe', 'Cornelis Geel', 'Bernard Zwartjes'])
+        e_b = np.array(['Dirkje Rooden', 'Eduard van Grijs', 'Ferdinand de Blauw'])
+        e_l = np.array(['Isaak Paars', 'Jan van Oranje', 'Karel', 'Lodewijk', 'Maria'])
+        e_k = np.array(['Gerard Roze', 'Hendrik Groen'])
+        e_c = np.array(['Mohammed El Idrissi', 'Saïda Benali'])
+        a, b_p, d, r, b, l, k, c = extract_persons(doc, all_persons)
+        self.assertTrue(np.array_equal(e_a, a))
+        self.assertTrue(np.array_equal(e_bp, b_p))
+        self.assertTrue(np.array_equal(np.array(['Jane Doe']), d))
+        self.assertTrue(np.array_equal(e_r, r))
+        self.assertTrue(np.array_equal(e_b, b))
+        self.assertTrue(np.array_equal(e_l, l))
+        self.assertTrue(np.array_equal(e_k, k))
+        self.assertTrue(np.array_equal(e_c, c))
 
+        # Test case 2
+        d = extract_persons(doc2, all_persons2)[2]
+        self.assertTrue(np.array_equal(np.array(['Jane Doe']), d))
 
-def test_count_occurrence():
-    text = np.array(['bedrijfsstructuur directeur jane doe, directeur van bedrijf.',
-                     'dr. j. doe werkt bij bedrijf.'])
-    search_words = ['directeur', 'directrice']
-    totalcount, totalcount_sentence = count_occurrence(text, search_words)
-    assert(totalcount == 2)
-    assert(totalcount_sentence == 1)
-    text = np.array(['vice-voorzitter Jane'])
-    search_words = ['voorzitter']
-    totalcount, totalcount_sentence = count_occurrence(text, search_words)
-    assert(totalcount == 0)
-    assert(totalcount_sentence == 0)
-    search_words = ['vice-voorzitter', 'vicevoorzitter', 'vice voorzitter']
-    totalcount, totalcount_sentence = count_occurrence(text, search_words)
-    assert(totalcount == 1)
-    assert(totalcount_sentence == 1)
+    def test_director_check(self):
+        """Unit test for the function 'director_check'.
 
+        This function tests the director_check function that performs checks for potential directors and update their
+        positions if necessary.
 
-def test_determine_main_job():
-    sentences = np.array(['bedrijfsstructuur directeur jane doe, directeur van bedrijf.',
-                          'dr. j. doe werkt bij bedrijf.'])
-    surroundings = np.array(['deze tekst dient enkel om te testen rvt.',
-                             'bedrijfsstructuur directeur jane doe, directeur van bedrijf.',
-                             'dr. j. doe werkt bij bedrijf.',
-                             'bedrijf heeft een rvt, raad van toezicht rvt, absoluut, ab, absurt.'
-                             ])
-    directeur = ['directeur', 'directrice', 'directie', 'bestuurder']
-    rvt = ['rvt', 'raad van toezicht', 'raad v. toezicht', 'auditcommissie', 'audit commissie']
-    bestuur = ['bestuur', 'db', 'ab', 'rvb', 'bestuurslid', 'bestuursleden', 'hoofdbestuur',
-               'bestuursvoorzitter']
-    jobs = [directeur, rvt, bestuur]
-    check = determine_main_job(jobs, sentences, surroundings)
-    assert(check[0] == 'directeur')
-    assert(check[1] == 2)
-    assert(check[2] == 1)
-    sentences = np.array(['rvt, directeur'])
-    check = determine_main_job(jobs, sentences, surroundings)
-    assert(check[0] == 'rvt')
-    surroundings = np.array(['deze tekst dient enkel om te testen.',
-                             'bedrijfsstructuur directeur jane doe, van bedrijf.',
-                             'dr. j. doe werkt bij bedrijf.',
-                             'bedrijf heeft een, raad van toezicht, absoluut, ab, absurt.'])
-    check = determine_main_job(jobs, sentences, surroundings)
-    assert(check[0] == 'directeur')
-    sentences = np.array(['directeur rvt directeur'])
-    surroundings = np.array(['directeur', 'rvt'])
-    check = determine_main_job(jobs, sentences, surroundings)
-    assert(check[0] == 'directeur')
-    sentences = np.array(['directeur rvt'])
-    surroundings = np.array(['directeur rvt directeur'])
-    check = determine_main_job(jobs, sentences, surroundings)
-    assert(check[0] == 'directeur')
-    check = determine_main_job(jobs, sentences, sentences)
-    assert(check[0] == 'directeur')
-    sentences = np.array([' '])
-    surroundings = np.array(['directeur rvt'])
-    check = determine_main_job(jobs, sentences, surroundings)
-    assert(check[0] == 'directeur')
-    sentences = np.array(['niets'])
-    check = determine_main_job(jobs, sentences, sentences)
-    assert(check[0] is None)
+        There are 8 test cases:
+        1-6. 6 pot_director
+            - ft=2, max ft pot_director = 6, backup main is rvt, subf is voorzitter.
+            - ft=3, backup main = ambassador, sub = penningmeester
+            - ft=3, backup main = bestuur, sub = directeur
+            - ft=6, backup main = rvt, sub=''
+            - ft=5, backup main = ledenraad, sub=lid
+            - ft=6, backup main = rvt, subf = directeur
+        7-8. 2 pot_director
+            - ft=1, backup main = rvt, subf = directeur
+            - ft=3, backup main = bestuur, subf = voorzitter
 
+        pot_director has the form:
+        pot_director = name, sub_cat, ft_director, backup_main_cat, backup_sub_cat, fts_bestuur, fts_rvt
 
-def test_determine_sub_job():
-    members = ['Jane Doe', 'J. Doe']
-    sentences = np.array(['directeur Jane Doe directeur. J. Doe voorzitter'])
-    main_cat = 'directeur'
-    check = determine_sub_job(members, sentences, main_cat)
-    assert(check[0] == 'directeur')
-    assert(check[1] == '')
-    sentences = np.array(['Jane Doe is niet directeur van bedrijf. J. Doe not voorzitter'])
-    check = determine_sub_job(members, sentences, main_cat)
-    assert(check[0] == '')
-    check = determine_sub_job(members, np.array(['Jane Doe']), main_cat)
-    assert(check[0] == '')
-    check = determine_sub_job(members, np.array(['Jane Doe voorzitter']), main_cat)
-    assert(check[0] == '')
-    check = determine_sub_job(members, np.array(['Jane Doe voorzitter']), 'voorzitter')
-    assert(check[0] == 'voorzitter')
+        """
+        # Test cases 1-4
+        pot_director = np.array([['Jane Doe', 'voorzitter', 2, 'rvt', 'voorzitter', 1, 1],
+                                 ['Pietje de Wit', 'voorzitter', 3, 'ambassadeur', 'voorzitter', 1, 1],
+                                 ['Louwie kats', 'directeur', 3, 'bestuur', '', 5, 8],
+                                 ['Bert de hond', 'lid', 6, 'rvt', 'lid', 3, 5],
+                                 ['Willem Visser', 'lid', 5, 'ledenraad', 'lid', 1, 2],
+                                 ['Dirkje El Morabit', 'directeur', 6, 'rvt', '', 2, 1]
+                                 ], dtype=object)
 
+        b_position = np.array(['Anna Zwart - rvt - vicevoorzitter',
+                               'Hanna Groen - bestuur - penningmeester',
+                               'Jane Doe - directeur - voorzitter',
+                               'Pietje de Wit - directeur - voorzitter',
+                               'Louwie kats - directeur - directeur',
+                               'Bert de hond - directeur - lid',
+                               'Willem Visser - directeur - lid',
+                               'Dirkje El Morabit - directeur - directeur'])
+        pot_rvt = [['Anna Zwart', 'vicevoorzitter', 3]]
+        pot_bestuur = [['Hanna Groen', 'penningmeester', 2]]
+        p_position = [['directeur'], ['bestuur', 'Hanna Groen'], ['rvt', 'Anna Zwart'], ['ledenraad'], ['ambassadeur']]
+        a, b, c, d = director_check(pot_director, b_position, pot_rvt, pot_bestuur, p_position)
 
-def test_identify_potential_people():
-    people = identify_potential_people(doc, all_persons)
-    expected = [['Anna de Wit', 'A.B. de Wit'], ['Bernard Zwartjes'],
-                ['Cornelis Geel'], ['Dirkje Rood'], ['E. van Grijs', 'Eduard van Grijs'],
-                ['F. de Blauw', 'Ferdinand de Blauw'], ['G. Roze', 'Gerard Roze'],
-                ['H. Doe', 'Hendrik Doe'], ['Hendrik Groen', 'Mr. H. Groen'],
-                ['J. Doe', 'Jane Doe'], ['Isaak Paars'], ['Jan van Oranje'], ['Karel'],
-                ['Lodewijk'], ['Maria']]
-    assert(isinstance(people, list))
-    assert(people.sort() == expected.sort())
+        e_b = np.array(['Anna Zwart - rvt - vicevoorzitter',
+                        'Hanna Groen - bestuur - penningmeester',
+                        'Dirkje El Morabit - directeur - directeur',
+                        'Jane Doe - rvt - voorzitter',
+                        'Louwie kats - bestuur - ',
+                        'Bert de hond - rvt - lid',
+                        'Willem Visser - ledenraad - lid'
+                        ])
+        e_pot_rvt = [['Anna Zwart', 'vicevoorzitter', 3], ['Jane Doe', 'voorzitter', 1], ['Bert de hond', 'lid', 5]]
+        e_pot_b = [['Hanna Groen', 'penningmeester', 2], ['Louwie kats', '', 5]]
+        e_p_p = [['directeur', 'Dirkje El Morabit'], ['bestuur', 'Hanna Groen'],
+                 ['rvt', 'Anna Zwart'], ['ledenraad', 'Willem Visser'], ['ambassadeur', 'Pietje de Wit']]
 
+        self.assertTrue(np.array_equal(a, e_b))
+        self.assertEqual(b, e_pot_rvt)
+        self.assertEqual(c, e_pot_b)
+        self.assertEqual(d, e_p_p)
 
-def test_relevant_sentences():
-    sentences, surroundings = relevant_sentences(doc, ['Jane Doe', 'J. Doe'])
-    assert(isinstance(sentences, np.ndarray))
-    assert(isinstance(surroundings, np.ndarray))
-    expected_s = np.array(['bedrijfsstructuur jane doe, directeur van bedrijf.',
-                           'dr. j. doe werkt bij bedrijf.'])
-    expected_sur = np.array(['deze tekst dient enkel om te testen.',
-                             'bedrijfsstructuur jane doe, directeur van bedrijf.',
-                             'dr. j. doe werkt bij bedrijf.',
-                             'bedrijf heeft een raad van toezicht rvt.'])
-    assert(np.array_equal(expected_s, sentences))
-    assert(np.array_equal(expected_sur, surroundings))
+        # Test case 5-8
+        pot_director = np.array([['Jane Doe', 'directeur', 1, 'rvt', '', 1, 1],
+                                 ['Piet de Wit', 'voorzitter', 3, 'bestuur', 'voorzitter', 1, 1]], dtype=object)
+        b_position = np.array(['Anna Zwart - rvt - vicevoorzitter',
+                               'Hanna Groen - bestuur - penningmeester',
+                               'Jane Doe - directeur - directeur',
+                               'Piet de Wit - directeur - voorzitter'])
+        pot_rvt = [['Anna Zwart', 'vicevoorzitter', 3]]
+        pot_bestuur = [['Hanna Groen', 'penningmeester', 2]]
+        p_position = [['directeur'], ['bestuur', 'Hanna Groen'], ['rvt', 'Anna Zwart'], ['ledenraad'], ['ambassadeur']]
+        a, b, c, d = director_check(pot_director, b_position, pot_rvt, pot_bestuur, p_position)
 
+        e_b = np.array(['Anna Zwart - rvt - vicevoorzitter',
+                        'Hanna Groen - bestuur - penningmeester',
+                        'Jane Doe - rvt - ',
+                        'Piet de Wit - bestuur - voorzitter'])
+        e_pot_rvt = [['Anna Zwart', 'vicevoorzitter', 3], ['Jane Doe', '', 1]]
+        e_pot_b = [['Hanna Groen', 'penningmeester', 2], ['Piet de Wit', 'voorzitter', 1]]
+        e_p_p = [['directeur'], ['bestuur', 'Hanna Groen'], ['rvt', 'Anna Zwart'], ['ledenraad'], ['ambassadeur']]
 
-def test_append_p_position():
-    p_position = [['directeur'], ['bestuur'], ['rvt'], ['ledenraad'], ['kascommissie'],
-                  ['controlecommissie'], ['ambassadeur']]
-    main = 'rvt'
-    name = 'Jane Doe'
-    expected = [['directeur'], ['bestuur'], ['rvt', 'Jane Doe'], ['ledenraad'], ['kascommissie'],
-                ['controlecommissie'], ['ambassadeur']]
-    result = append_p_position(p_position, main, name)
-    assert(result == expected)
+        self.assertTrue(np.array_equal(a, e_b))
+        self.assertEqual(b, e_pot_rvt)
+        self.assertEqual(c, e_pot_b)
+        self.assertEqual(d, e_p_p)
 
+    def test_check_rvt(self):
+        """Unit testfor the function 'check_rvt'.
 
-def test_extract_persons():
-    e_a = np.array(['Sarah', 'Thomas'])
-    e_bp = np.array(['Anna de Wit - rvt - vice-voorzitter',
-                     'Dirkje Rooden - bestuur - lid',
-                     'Eduard van Grijs - bestuur - ',
-                     'Ferdinand de Blauw - bestuur - ',
-                     'Gerard Roze - kascommissie - voorzitter',
-                     'Hendrik Doe - rvt - voorzitter',
-                     'Hendrik Groen - kascommissie - ',
-                     'Jane Doe - directeur - directeur',
-                     'Cornelis Geel - rvt - lid',
-                     'Isaak Paars - ledenraad - voorzitter',
-                     'Jan van Oranje - ledenraad - penningmeester',
-                     'Karel - ledenraad - lid',
-                     'Lodewijk - ledenraad - ',
-                     'Maria - ledenraad - ',
-                     'Mohammed El Idrissi - controlecommissie - ',
-                     'Saïda Benali - controlecommissie - ',
-                     'Bernard Zwartjes - rvt - '])
-    e_r = np.array(['Anna de Wit', 'Hendrik Doe', 'Cornelis Geel', 'Bernard Zwartjes'])
-    e_b = np.array(['Dirkje Rooden', 'Eduard van Grijs', 'Ferdinand de Blauw'])
-    e_l = np.array(['Isaak Paars', 'Jan van Oranje', 'Karel', 'Lodewijk', 'Maria'])
-    e_k = np.array(['Gerard Roze', 'Hendrik Groen'])
-    e_c = np.array(['Mohammed El Idrissi', 'Saïda Benali'])
-    a, b_p, d, r, b, l, k, c = extract_persons(doc, all_persons)
-    assert(np.array_equal(e_a, a))
-    assert(np.array_equal(e_bp, b_p))
-    assert(np.array_equal(np.array(['Jane Doe']), d))
-    assert(np.array_equal(e_r, r))
-    assert(np.array_equal(e_b, b))
-    assert(np.array_equal(e_l, l))
-    assert(np.array_equal(e_k, k))
-    assert(np.array_equal(e_c, c))
-    d = extract_persons(doc2, all_persons2)[2]
-    assert(np.array_equal(np.array(['Jane Doe']), d))
+        Tests the function 'check_rvt' that determines whether potential rvt memebers can be considered true rvt memebers.
 
+        There are two test cases, one in which no function conditions should be encountered, and one in which various
+        function conditions should be encountered.
 
-def test_array_p_position():
-    p_position = [['directeur'], ['bestuur'], ['rvt', 'Jane Doe', 'J. Doe'], ['ledenraad']]
-    expected = np.array(['Jane Doe', 'J. Doe'])
-    result = array_p_position(p_position, 'rvt')
-    assert(np.array_equal(expected, result))
+        Raises:
+            AssertionError: If the returned values doe not match the expected return value.
+        """
+        # Test case 1
+        pot_rvt = np.array([['Piet de Wit', 'voorzitter', 4]], dtype=object)
+        b_position = np.array(['Jane Doe - directeur - directeur', 'Piet de Wit - rvt - voorzitter'])
+        p_position = [['directeur', 'Jane Doe'], ['rvt']]
+        check_b, check_p = check_rvt(pot_rvt, b_position, p_position)
+        exp_p = [['directeur', 'Jane Doe'], ['rvt', 'Piet de Wit']]
+        self.assertTrue(np.array_equal(check_b, b_position))
+        self.assertEqual(check_p, exp_p)
 
-
-def test_director_check():
-    # pot_director = name, sub_cat, ft_director, main_cat, backup_sub_cat, fts_bestuur, fts_rvt
-    pot_director = np.array([['Jane Doe', 'directeur', 3, 'rvt', 3, 1, 1],
-                            ['Piet de Wit', 'voorzitter', 3, 'rvt', 1, 1, 1]], dtype=object)
-    b_position = np.array(['Jane Doe - directeur - directeur',
-                           'Piet de Wit - directeur - voorzitter'])
-    pot_rvt = [['Anna Zwart', 'vicevoorzitter', 3]]
-    pot_bestuur = [['Hanna Groen', 'penningmeester', 2]]
-    p_position = [['directeur'], ['bestuur'], ['rvt'], ['ledenraad']]
-    a, b, c, d = director_check(pot_director, b_position, pot_rvt, pot_bestuur, p_position)
-    e_b = np.array(['Jane Doe - directeur - directeur', 'Piet de Wit - rvt - voorzitter'])
-    e_pot_rvt = [['Anna Zwart', 'vicevoorzitter', 3], ['Piet de Wit', 'voorzitter', 1]]
-    e_pot_b = pot_bestuur
-    e_p_p = [['directeur', 'Jane Doe'], ['bestuur'], ['rvt'], ['ledenraad']]
-    assert(np.array_equal(a, e_b))
-    assert(b == e_pot_rvt)
-    assert(c == e_pot_b)
-    assert(d == e_p_p)
-    pot_director = np.array([['Jane Doe', 'directeur', 3, 'rvt', 3, 1, 1],
-                            ['Piet de Wit', 'voorzitter', 3, 'bestuur', 1, 1, 1]], dtype=object)
-    a, b, c, d = director_check(pot_director, b_position, pot_rvt, pot_bestuur, p_position)
-    assert(c == [['Hanna Groen', 'penningmeester', 2], ['Piet de Wit', 'voorzitter', 1]])
-    assert(np.array_equal(a, np.array(['Jane Doe - directeur - directeur',
-                                       'Piet de Wit - bestuur - voorzitter'])))
-    p_position = [['directeur'], ['bestuur'], ['rvt'], ['ledenraad']]
-    pot_director = np.array([['Jane Doe', 'directeur', 3, 'rvt', 3, 1, 1],
-                            ['Piet de Wit', 'voorzitter', 3, 'ledenraad', 1, 1, 1]], dtype=object)
-    a, b, c, d = director_check(pot_director, b_position, pot_rvt, pot_bestuur, p_position)
-    assert(d == [['directeur', 'Jane Doe'], ['bestuur'], ['rvt'], ['ledenraad', 'Piet de Wit']])
-    assert(np.array_equal(a, np.array(['Jane Doe - directeur - directeur',
-                                       'Piet de Wit - ledenraad - voorzitter'])))
-    b_position = np.array(['Jane Doe - directeur - directeur',
-                           'Piet de Wit - directeur - '])
-    p_position = [['directeur'], ['bestuur'], ['rvt'], ['ledenraad'], ['ambassadeur']]
-    pot_director = np.array([['Jane Doe', 'directeur', 3, 'rvt', 3, 1, 1],
-                            ['Piet de Wit', '', 3, 'ambassadeur', 1, 1, 1]], dtype=object)
-    a, b, c, d = director_check(pot_director, b_position, pot_rvt, pot_bestuur, p_position)
-    assert(np.array_equal(a, np.array(['Jane Doe - directeur - directeur'])))
-    assert(d == [['directeur', 'Jane Doe'], ['bestuur'], ['rvt'], ['ledenraad'],
-                 ['ambassadeur', 'Piet de Wit']])
-    p_position = [['directeur'], ['bestuur'], ['rvt'], ['ledenraad'], ['ambassadeur']]
-    pot_director = np.array([['Jane Doe', 'directeur', 3, 'rvt', 3, 1, 1],
-                            ['Piet de Wit', '', 3, '', 1, 1, 1]], dtype=object)
-    a, b, c, d = director_check(pot_director, b_position, pot_rvt, pot_bestuur, p_position)
-    assert(d == p_position)
-
-
-def test_check_rvt():
-    pot_rvt = [['Piet de Wit', 'voorzitter', 4]]
-    b_position = np.array(['Jane Doe - directeur - directeur', 'Piet de Wit - rvt - voorzitter'])
-    p_position = [['directeur', 'Jane Doe'], ['rvt']]
-    check_b, check_p = check_rvt(pot_rvt, b_position, p_position)
-    exp_p = [['directeur', 'Jane Doe'], ['rvt', 'Piet de Wit']]
-    assert(np.array_equal(check_b, b_position))
-    assert(check_p == exp_p)
-    pot_rvt = [['Piet de Wit', 'voorzitter', 4], ['Ab', 'vicevoorzitter', 2], ['Co', '', 3],
-               ['Bo', '', 4], ['Do', '', 5], ['Ed', '', 2], ['Jo', '', 3], ['Fi', '', 2],
-               ['Lo', '', 5], ['Mo', '', 2], ['Ap', '', 5], ['Ab', '', 1], ['Ma', '', 1]]
-    b_position = np.array(['Jane Doe - directeur - directeur', 'Piet de Wit - rvt - voorzitter',
-                           'Ab - rvt - vicevoorzitter', 'Co - rvt - ', 'Bo - rvt - ',
-                           'Do - rvt - ', 'Ed - rvt - ', 'Jo - rvt - ', 'Fi - rvt - ',
-                           'Lo - rvt - ', 'Mo - rvt - ', 'Ap - rvt - ', 'Ab - rvt - ',
-                           'Ma - rvt - '])
-    p_position = [['directeur', 'Jane Doe'], ['rvt']]
-    exp_b = np.array(['Jane Doe - directeur - directeur', 'Piet de Wit - rvt - voorzitter',
-                      'Bo - rvt - ', 'Do - rvt - ', 'Lo - rvt - ', 'Ap - rvt - '])
-    exp_p = [['directeur', 'Jane Doe'], ['rvt', 'Piet de Wit', 'Bo', 'Do', 'Lo', 'Ap']]
-    check_b, check_p = check_rvt(pot_rvt, b_position, p_position)
-    assert(check_p == exp_p)
-    assert(np.array_equal(check_b, exp_b))
-
-
-def test_check_bestuur():
-    pot_bestuur = [['Piet de Wit', 'voorzitter', 4]]
-    b_position = np.array(['Jane Doe - directeur - directeur',
-                           'Piet de Wit - bestuur - voorzitter'])
-    p_position = [['directeur', 'Jane Doe'], ['bestuur']]
-    check_b, check_p = check_bestuur(pot_bestuur, b_position, p_position)
-    exp_p = [['directeur', 'Jane Doe'], ['bestuur', 'Piet de Wit']]
-    assert(np.array_equal(check_b, b_position))
-    assert(check_p == exp_p)
-    pot_bestuur = [['Piet de Wit', 'voorzitter', 4], ['Ab', 'vicevoorzitter', 2], ['Co', '', 3],
+        # Test case 2
+        pot_rvt = [['Piet de Wit', 'voorzitter', 4], ['Ab', 'vicevoorzitter', 2], ['Co', '', 3],
                    ['Bo', '', 4], ['Do', '', 5], ['Ed', '', 2], ['Jo', '', 3], ['Fi', '', 2],
                    ['Lo', '', 5], ['Mo', '', 2], ['Ap', '', 5], ['Ab', '', 1], ['Ma', '', 1]]
-    b_position = np.array(['Jane Doe - directeur - directeur',
-                           'Piet de Wit - bestuur - voorzitter',
-                           'Ab - bestuur - vicevoorzitter', 'Co - bestuur - ', 'Bo - bestuur - ',
-                           'Do - bestuur - ', 'Ed - bestuur - ', 'Jo - bestuur - ',
-                           'Fi - bestuur - ', 'Lo - bestuur - ', 'Mo - bestuur - ',
-                           'Ap - bestuur - ', 'Ab - bestuur - ', 'Ma - bestuur - '])
-    p_position = [['directeur', 'Jane Doe'], ['bestuur']]
-    exp_b = np.array(['Jane Doe - directeur - directeur', 'Piet de Wit - bestuur - voorzitter',
-                      'Bo - bestuur - ', 'Do - bestuur - ', 'Lo - bestuur - ', 'Ap - bestuur - '])
-    exp_p = [['directeur', 'Jane Doe'], ['bestuur', 'Piet de Wit', 'Bo', 'Do', 'Lo', 'Ap']]
-    check_b, check_p = check_bestuur(pot_bestuur, b_position, p_position)
-    assert(check_p == exp_p)
-    assert(np.array_equal(check_b, exp_b))
+        b_position = np.array(['Jane Doe - directeur - directeur', 'Piet de Wit - rvt - voorzitter',
+                               'Ab - rvt - vicevoorzitter', 'Co - rvt - ', 'Bo - rvt - ',
+                               'Do - rvt - ', 'Ed - rvt - ', 'Jo - rvt - ', 'Fi - rvt - ',
+                               'Lo - rvt - ', 'Mo - rvt - ', 'Ap - rvt - ', 'Ab - rvt - ',
+                               'Ma - rvt - '])
+        p_position = [['directeur', 'Jane Doe'], ['rvt']]
+        exp_b = np.array(['Jane Doe - directeur - directeur', 'Piet de Wit - rvt - voorzitter',
+                          'Bo - rvt - ', 'Do - rvt - ', 'Lo - rvt - ', 'Ap - rvt - '])
+        exp_p = [['directeur', 'Jane Doe'], ['rvt', 'Piet de Wit', 'Bo', 'Do', 'Lo', 'Ap']]
+        check_b, check_p = check_rvt(pot_rvt, b_position, p_position)
+        self.assertEqual(check_p, exp_p)
+        self.assertTrue(np.array_equal(check_b, exp_b))
+
+    def test_check_bestuur(self):
+        """Unit testfor the function 'check_bestuur'.
+
+        Tests the function 'check_bestuur' that determines whether potential bestuur memebers can be considered true bestuur
+        memebers.
+
+        There are two test cases, one in which no function conditions should be encountered, and one in which various
+        function conditions should be encountered.
+
+        Raises:
+            AssertionError: If the returned values doe not match the expected return value.
+        """
+        # Test case 1
+        pot_bestuur = [['Piet de Wit', 'voorzitter', 4]]
+        b_position = np.array(['Jane Doe - directeur - directeur',
+                               'Piet de Wit - bestuur - voorzitter'])
+        p_position = [['directeur', 'Jane Doe'], ['bestuur']]
+        check_b, check_p = check_bestuur(pot_bestuur, b_position, p_position)
+        exp_p = [['directeur', 'Jane Doe'], ['bestuur', 'Piet de Wit']]
+        self.assertTrue(np.array_equal(check_b, b_position))
+        self.assertEqual(check_p, exp_p)
+
+        # Test case 2
+        pot_bestuur = [['Piet de Wit', 'voorzitter', 4], ['Ab', 'vicevoorzitter', 2], ['Co', '', 3],
+                       ['Bo', '', 4], ['Do', '', 5], ['Ed', '', 2], ['Jo', '', 3], ['Fi', '', 2],
+                       ['Lo', '', 5], ['Mo', '', 2], ['Ap', '', 5], ['Ab', '', 1], ['Ma', '', 1]]
+        b_position = np.array(['Jane Doe - directeur - directeur',
+                               'Piet de Wit - bestuur - voorzitter',
+                               'Ab - bestuur - vicevoorzitter', 'Co - bestuur - ', 'Bo - bestuur - ',
+                               'Do - bestuur - ', 'Ed - bestuur - ', 'Jo - bestuur - ',
+                               'Fi - bestuur - ', 'Lo - bestuur - ', 'Mo - bestuur - ',
+                               'Ap - bestuur - ', 'Ab - bestuur - ', 'Ma - bestuur - '])
+        p_position = [['directeur', 'Jane Doe'], ['bestuur']]
+        exp_b = np.array(['Jane Doe - directeur - directeur', 'Piet de Wit - bestuur - voorzitter',
+                          'Bo - bestuur - ', 'Do - bestuur - ', 'Lo - bestuur - ', 'Ap - bestuur - '])
+        exp_p = [['directeur', 'Jane Doe'], ['bestuur', 'Piet de Wit', 'Bo', 'Do', 'Lo', 'Ap']]
+        check_b, check_p = check_bestuur(pot_bestuur, b_position, p_position)
+        self.assertEqual(check_p, exp_p)
+        self.assertTrue(np.array_equal(check_b, exp_b))
+
+    def test_append_p_position(self):
+        """Unit test for the 'append_p_position' function.
+
+        This function tests the 'append_p_position' function that append a person's name to their main position in
+          the list of positions.
+
+        There is one test case
+
+        Raises:
+            AssertionError: If the returned parameter does not match the expected return value.
+        """
+        p_position = [['directeur'], ['bestuur'], ['rvt'], ['ledenraad'], ['kascommissie'],
+                      ['controlecommissie'], ['ambassadeur']]
+        main = 'rvt'
+        name = 'Jane Doe'
+        expected = [['directeur'], ['bestuur'], ['rvt', 'Jane Doe'], ['ledenraad'], ['kascommissie'],
+                    ['controlecommissie'], ['ambassadeur']]
+        result = append_p_position(p_position, main, name)
+        self.assertEqual(result, expected)
+
+    def test_array_p_position(self):
+        """Unit test for the function 'array_p_position'.
+
+        This function tests the 'array_p_position' function that returns an array of names taken from a sublist of
+        the list p_position.
+
+        Raises:
+            AssertionError: If the returned parameter does not match the expected return value.
+        """
+        p_position = [['directeur'], ['bestuur'], ['rvt', 'Jane Doe', 'J. Doe'], ['ledenraad']]
+        expected = np.array(['Jane Doe', 'J. Doe'])
+        result = array_p_position(p_position, 'rvt')
+        self.assertTrue(np.array_equal(expected, result))

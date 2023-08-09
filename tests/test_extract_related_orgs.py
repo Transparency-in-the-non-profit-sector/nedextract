@@ -1,21 +1,25 @@
+"""The file contains functions used to test the functions in exract_related orgs.
+
+Functions:
+- test_collect_orgs
+- test_decide_org
+- test_match_anbis
+- test_apply_matching
+"""
+
 import os
+import unittest
 import numpy as np
 import pandas as pd
 import stanza
 from auto_extract.extract_related_orgs import apply_matching
-from auto_extract.extract_related_orgs import check_single_orgs
 from auto_extract.extract_related_orgs import collect_orgs
-from auto_extract.extract_related_orgs import count_number_of_mentions
 from auto_extract.extract_related_orgs import decide_org
-from auto_extract.extract_related_orgs import keyword_check
 from auto_extract.extract_related_orgs import match_anbis
-from auto_extract.extract_related_orgs import part_of_other
-from auto_extract.extract_related_orgs import percentage_considered_org
-from auto_extract.extract_related_orgs import single_org_check
-from auto_extract.extract_related_orgs import strip_function_of_entity
 from auto_extract.preprocessing import preprocess_pdf
 
 
+# Define test text
 stanza.download('nl')
 indir = os.path.join(os.getcwd(), 'tests')
 infile = os.path.join(indir, 'test_report.pdf')
@@ -24,149 +28,149 @@ nlp = stanza.Pipeline(lang='nl', processors='tokenize,ner')
 doc = nlp(text)
 
 
-def test_collect_orgs():
-    orgs = collect_orgs(infile, nlp)
-    assert(orgs == ['Bedrijf2', 'Bedrijf3'])
+class TestExtractRelatedOrgas(unittest.TestCase):
+    """Unit test class for functions used to extract orgaisations mentioned in a pdf file.
 
+    Test methods:
+    - test_collect_orgs: tests the function collect organisations that collects organisations that are mentioned in text
+    - test_decide_org: tests the function decide_orgs that defines a decision tree to determine if a mentioned organisations
+      is likely a true organisation
+    - test_match_anbis: Tests the match anbis function that tries to match found organisations with info about known anbis
+    - test_apply_matching: tests the apply_matching function that tries to match a name with values in
+      one of two provided columns in a dataframe
+    """
 
-def test_decide_org():
-    org = 'Bedrijf'
-    pco = ((50, 6), (50, 6))
-    org_pp = np.array(['Bedrijf'])
-    org_c = np.array(['Bedrijf'])
-    final = decide_org(org, pco, org_pp, org_c, nlp)
-    assert(final)
-    pco = ((50, 3), (50, 3))
-    final = decide_org(org, pco, org_pp, org_c, nlp)
-    assert(final is False)
-    pco = ((70, 3), (70, 3))
-    final = decide_org(org, pco, org_pp, org_c, nlp)
-    assert(True)
-    pco = ((100, 1), (100, 1))
-    final = decide_org(org, pco, org_pp, org_c, nlp)
-    assert(final == 'maybe')
-    pco = ((0, 1), (100, 1))
-    final = decide_org(org, pco, org_pp, org_c, nlp)
-    assert(final == 'maybe')
-    pco = ((100, 1), (0, 1))
-    final = decide_org(org, pco, org_pp, org_c, nlp)
-    assert(final == 'no')
-    pco = ((0, 0), (0, 0))
-    final = decide_org(org, pco, org_pp, org_c, nlp)
-    assert(final is False)
-    pco = ((0, 1), (0, 1))
-    org = 'Stichting Huppeldepup'
-    org_pp = ['Stichting Huppeldepup']
-    final = decide_org(org, pco, org_pp, org_c, nlp)
-    assert(final == 'maybe')
-    pco = ((0, 0), (0, 0))
-    org = 'Stichting Huppeldepup'
-    org_pp = ['Stichting Huppeldepup']
-    final = decide_org(org, pco, org_pp, org_c, nlp)
-    assert(final == 'maybe')
+    def test_collect_orgs(self):
+        """Unit test for the collect_orgs function.
 
+        Function that tests the collect_orgs function that collects organisations that are mentioned in a text using stanza NER
+        with a number of postprocessing steps. One test case is applied, that tests if the expected organisations are
+        returned from a test file.
 
-def test_keyword_check():
-    org = 'Huppeldepup B.V'
-    final = False
-    kwc = keyword_check(final, org)
-    assert(kwc)
-    org = 'Ministerie'
-    final = False
-    kwc = keyword_check(final, org)
-    assert(kwc is False)
-    org = 'Hogeschool'
-    final = False
-    kwc = keyword_check(final, org)
-    assert(kwc is False)
+        Raises:
+            AssertionError: If any of the assert statement fails, indicating incorrect return values.
+        """
+        orgs = collect_orgs(infile, nlp)
+        self.assertEqual(orgs, ['Bedrijf2', 'Bedrijf3'])
 
+    def test_decide_org(self):
+        """Unit test for the function decide_org.
 
-def test_check_single_orgs():
-    org = 'Stichting Huppeldepup'
-    true_orgs = []
-    doc_c = 'Hij werkt bij Stichting Huppeldepup'
-    to = check_single_orgs(org, true_orgs, doc_c)
-    e_to = ['Stichting Huppeldepup']
-    assert(to == e_to)
+        Function that tests the function decide_orgs that defines a decision tree to determine if a mentioned organisations
+        is likely a true organisation.
 
+        Nine assertion tests are defined that test for various test names, if the expected result is returned
+        for different percentage the organisation was found as org, and the total number of times the organisaiont was
+        found in the text.
 
-def test_part_of_other():
-    orgs = ['Bedrijf']
-    org = 'Bedrijf bla'
-    is_part = part_of_other(orgs, org, doc)
-    assert(is_part)
+        Returns:
+            AssertionError: If any of tests does not returns the expected retult.
+        """
+        # initalisations
+        org = 'Bedrijf'
+        org_pp = np.array(['Bedrijf'])
+        org_c = np.array(['Bedrijf'])
 
+        # Test case 1
+        pco = ((50, 6), (50, 6))
+        final = decide_org(org, pco, org_pp, org_c, nlp)
+        self.assertTrue(final)
 
-def test_single_org_check():
-    org = 'Stichting Huppeldepup'
-    is_org = single_org_check(org, nlp)
-    assert(is_org)
+        # Test case 2
+        pco = ((50, 3), (50, 3))
+        final = decide_org(org, pco, org_pp, org_c, nlp)
+        self.assertFalse(final)
 
+        # Test case 3
+        pco = ((70, 3), (70, 3))
+        final = decide_org(org, pco, org_pp, org_c, nlp)
+        self.assertTrue(final)
 
-def test_pco():
-    org = 'Bedrijf'
-    orgs = np.array(['Bedrijf'])
-    counts = np.array([7])
-    pco = percentage_considered_org(doc, org, orgs, counts)
-    assert(pco[0] == 100.)
-    assert(pco[1] == 7)
-    orgs = np.array(['Bedrij'])
-    pco = percentage_considered_org(doc, org, orgs, counts)
-    assert(pco[0] == 0.)
-    assert(pco[1] == 7)
-    counts = np.array([0])
-    org = 'Bedrijfsk'
-    orgs = np.array(['Bedrijfsk'])
-    pco = percentage_considered_org(doc, org, orgs, counts)
-    assert(pco[0] == -10.)
-    assert(pco[1] == 0)
+        # Test case 4
+        pco = ((100, 1), (100, 1))
+        final = decide_org(org, pco, org_pp, org_c, nlp)
+        self.assertEqual(final, 'maybe')
 
+        # Test case 5
+        pco = ((0, 1), (100, 1))
+        final = decide_org(org, pco, org_pp, org_c, nlp)
+        self.assertEqual(final, 'maybe')
 
-def test_strip_function_of_entity():
-    org = "Lid van de Raad van Advies bij Bedrijfsnaam b.v."
-    e_org = "Bedrijfsnaam b.v."
-    o_org = strip_function_of_entity(org)
-    assert(e_org == o_org)
+        # Test case 6
+        pco = ((100, 1), (0, 1))
+        final = decide_org(org, pco, org_pp, org_c, nlp)
+        self.assertEqual(final, 'no')
 
+        # Test case 7
+        pco = ((0, 0), (0, 0))
+        final = decide_org(org, pco, org_pp, org_c, nlp)
+        self.assertFalse(final)
 
-def test_count_number_of_mentions():
-    org = 'Bedrijf'
-    n = count_number_of_mentions(doc, org)
-    assert(n == 7)
-    org = 'Bedrijf-'
-    n = count_number_of_mentions(doc, org)
-    assert(n == 0)
+        # Test case 8
+        pco = ((0, 1), (0, 1))
+        org = 'Stichting Huppeldepup'
+        org_pp = ['Stichting Huppeldepup']
+        final = decide_org(org, pco, org_pp, org_c, nlp)
+        self.assertEqual(final, 'maybe')
 
+        # Test case 9
+        pco = ((0, 0), (0, 0))
+        org = 'Stichting Huppeldepup'
+        org_pp = ['Stichting Huppeldepup']
+        final = decide_org(org, pco, org_pp, org_c, nlp)
+        self.assertEqual(final, 'maybe')
 
-def test_apply_matching():
-    df = pd.DataFrame({'currentStatutoryName': ['Bedrijf1', 'Bedrijf2'],
-                       'shortBusinessName': ['B1 b.v.', 'B2 b.v.']})
-    m = 'Bedrijf2'
-    o_m = apply_matching(df, m, 'currentStatutoryName', 'shortBusinessName')
-    e_m = 'Bedrijf2'
-    assert(o_m == e_m)
-    m = 'Bedrijf'
-    o_m = apply_matching(df, m, 'currentStatutoryName', 'shortBusinessName')
-    e_m = None
-    assert(o_m == e_m)
-    df = pd.DataFrame({'currentStatutoryName': ['Bedrijf1', 'Bedrijf2'],
-                       'shortBusinessName': ['Stichting B1 b.v.', 'B2 b.v.']})
-    m = 'B1 b.v.'
-    o_m = apply_matching(df, m, 'currentStatutoryName', 'shortBusinessName')
-    e_m = 'Stichting B1 b.v.'
-    assert(o_m == e_m)
+    def test_match_anbis(self):
+        """Unit test for the match_anbis function.
 
-def test_match_anbis():
-    anbis_file = os.path.join(os.path.join(os.getcwd(), 'tests'), 'test_anbis.csv')
-    df_in = pd.DataFrame({'Input_file': ['test.pdf'],
-                          'mentioned_organization': ['B1 b.v.'],
-                          'n_mentions': [1]})
-    df_out = match_anbis(df_in, anbis_file)
-    e_out = pd.DataFrame({'Input_file': ['test.pdf'],
-                          'mentioned_organization': ['B1 b.v.'],
-                          'n_mentions': [1],
-                          'matched_anbi': ['Stichting B1 b.v.'],
-                          'rsin': ['11'],
-                          'currentStatutoryName':['Bedrijf1'],
-                          'shortBusinessName':['Stichting B1 b.v.']})
-    pd.testing.assert_frame_equal(df_out, e_out)
+        Tests the match_anbis function that tries to match found organisations with info about known anbis.
+        There is one test case that uses a test_anbis.csv file and a test.pdf file (from which a pd dataframe is created)
+        and asserts whether the returned DataFrame matches the expected df.
+
+        Returns:
+            AssertionError: If the returned df does not match the expected df.
+        """
+        anbis_file = os.path.join(os.path.join(os.getcwd(), 'tests'), 'test_anbis.csv')
+        df_in = pd.DataFrame({'Input_file': ['test.pdf'],
+                              'mentioned_organization': ['B1 b.v.'],
+                              'n_mentions': [1]})
+        df_out = match_anbis(df_in, anbis_file)
+        e_out = pd.DataFrame({'Input_file': ['test.pdf'],
+                              'mentioned_organization': ['B1 b.v.'],
+                              'n_mentions': [1],
+                              'matched_anbi': ['Stichting B1 b.v.'],
+                              'rsin': ['11'],
+                              'currentStatutoryName': ['Bedrijf1'],
+                              'shortBusinessName': ['Stichting B1 b.v.']})
+        pd.testing.assert_frame_equal(df_out, e_out)
+
+    def test_apply_matching(self):
+        """Unit test for the apply_matching function.
+
+        This function tests the apply_matching function that tries to match a name with values in
+        one of two provided columns in a dataframe.
+
+        There are three test cases using two different dataframes, expecting tree outcomes; a direct match,
+        a False match, and a match requirering 'stichting' to be added to the name.
+        """
+        # Test case 1
+        df = pd.DataFrame({'currentStatutoryName': ['Bedrijf1', 'Bedrijf2'],
+                           'shortBusinessName': ['B1 b.v.', 'B2 b.v.']})
+        m = 'Bedrijf2'
+        o_m = apply_matching(df, m, 'currentStatutoryName', 'shortBusinessName')
+        e_m = 'Bedrijf2'
+
+        # Test case 2
+        self.assertEqual(o_m, e_m)
+        m = 'Bedrijf'
+        o_m = apply_matching(df, m, 'currentStatutoryName', 'shortBusinessName')
+        e_m = None
+        self.assertEqual(o_m, e_m)
+
+        # Test case 3
+        df = pd.DataFrame({'currentStatutoryName': ['Bedrijf1', 'Bedrijf2'],
+                           'shortBusinessName': ['Stichting B1 b.v.', 'B2 b.v.']})
+        m = 'B1 b.v.'
+        o_m = apply_matching(df, m, 'currentStatutoryName', 'shortBusinessName')
+        e_m = 'Stichting B1 b.v.'
+        self.assertEqual(o_m, e_m)

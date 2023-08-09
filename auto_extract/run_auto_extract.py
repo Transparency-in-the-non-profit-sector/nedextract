@@ -1,5 +1,12 @@
-# Copyright 2022 Netherlands eScience Center and Vrije Universiteit Amsterdam
-# Licensed under the Apache License, version 2.0. See LICENSE for details.
+"""Run auto extract program.
+
+Functions:
+- main
+- write_output
+
+Copyright 2022 Netherlands eScience Center and Vrije Universiteit Amsterdam
+Licensed under the Apache License, version 2.0. See LICENSE for details.
+"""
 
 import argparse
 import os
@@ -11,34 +18,29 @@ import pandas as pd
 from auto_extract.extract_related_orgs import match_anbis
 from auto_extract.preprocessing import delete_downloaded_pdf
 from auto_extract.preprocessing import download_pdf
-from auto_extract.read_pdf import extract_pdf
+from auto_extract.read_pdf import PDFInformationExtractor
 
 
 def main(testarg=None):
-    desc = """This script can read annual report pdf files and extract relevant information about:
-    - Board members (directors, bestuur, raad van toezicht, kascommissie, controlecommissie,
-      ledenraad)
-    - Ambassadors
-    - Other organizations mentioned in the text
-    - Classify the sector of the organisation
+    """Annual report information extraction.
 
-    To do:
-    - Classify the subsector
-    - Determine mission statements
-    - Determine activities
-    - Determine the type of related organizations (use kvk data/wiki data?)
-    - Determine the type of relationship with related organizations
-    - Determine financial information
+    This program is designed to read Dutch annual report pdf files from non-profit organisation.
+    and extract relevant information.
 
-    The information is converted into structured output in the form of an Excel file.
-
-    Run with either -d, -f, -u or -uf. """
-
+    The following general steps are taken:
+    - Read in the pdf files(s) and preprocess the text.
+    - (optional) Extract mentioned people from the text and identify their position within the organisation.
+      Which of the people named in the text can be found to likely hold any of the positions of board members (directors,
+      bestuur, raad van toezicht, kascommissie, controlecommissie, edenraad), or ambassadors
+    - (optional) Extract mentioned organisations in the text
+    - (optional) Classify the sector in which the organisation is active.
+    - The gathered information is converted into structured output in the form of an Excel file.
+    """
     # start time
     start_time = f"{datetime.now():%Y-%m-%d %H:%M:%S}"
 
     # Parse command line arguments
-    parser = argparse.ArgumentParser(description=desc, formatter_class=RawTextHelpFormatter)
+    parser = argparse.ArgumentParser(formatter_class=RawTextHelpFormatter)
     parser.add_argument('-d', '--directory',
                         help='Directory containing annual reports to be processed.')
     parser.add_argument('-f', '--file', help='Specific pdf file to be processed.')
@@ -49,6 +51,15 @@ def main(testarg=None):
     parser.add_argument('-af', '--anbis_file',
                         default=os.path.join(os.path.join(os.getcwd(), 'Data'), 'anbis_clean.csv'),
                         help='CSV file to be used for org matching,conly used for task org')
+    parser.add_argument('-pf_m', '--file_model',
+                        default=os.path.join(os.path.join(os.getcwd(), 'Pretrained'), 'trained_sector_classifier.joblib'),
+                        help='file containing pretrained model for sector classification')
+    parser.add_argument('-pf_l', '--file_labels',
+                        default=os.path.join(os.path.join(os.getcwd(), 'Pretrained'), 'labels_sector_classifier.joblib'),
+                        help='file containing labels for pretrained sector classification')
+    parser.add_argument('-pf_v', '--file_vectors',
+                        default=os.path.join(os.path.join(os.getcwd(), 'Pretrained'), 'tf_idf_vectorizer.joblib'),
+                        help='file containing tf_idf vectors')
 
     if testarg:
         args = parser.parse_args(testarg)
@@ -56,23 +67,26 @@ def main(testarg=None):
         args = parser.parse_args()
 
     if not (args.directory or args.file or args.url or args.url_file):
-        raise Exception('No input provided. Run with -h for help on arguments to be provided.')
+        raise FileNotFoundError('No input provided. Run with -h for help on arguments to be provided.')
 
     # Create the output directory if it does not exist already
     if not os.path.exists(os.path.join(os.getcwd(), 'Output')):
         os.makedirs(os.path.join(os.getcwd(), 'Output'))
-    opd_p = np.array([]).reshape(0,91)
-    opd_g = np.array([]).reshape(0,3)
-    opd_o = np.array([]).reshape(0,3)
+    opd_p = np.array([]).reshape(0, 91)
+    opd_g = np.array([]).reshape(0, 3)
+    opd_o = np.array([]).reshape(0, 3)
 
     # convert tasks to list
     args.tasks = [args.tasks] if isinstance(args.tasks, str) else args.tasks
+
+    # Create an instance of the PDFInformationExtractor class
+    pdf_extractor = PDFInformationExtractor(args.tasks, args.file_model, args.file_labels, args.file_vectors)
 
     # Read all files
     countfiles = 0
     if args.file:
         infile = os.path.join(os.getcwd(), args.file)
-        opd_p, opd_g, opd_o = extract_pdf(infile, opd_p, opd_g, opd_o, args.tasks)
+        opd_p, opd_g, opd_o = pdf_extractor.extract_pdf(infile, opd_p, opd_g, opd_o)
     elif args.directory:
         totalfiles = len([name for name in os.listdir(os.path.join(os.getcwd(), args.directory))
                          if name.lower().endswith('.pdf')])
@@ -81,10 +95,10 @@ def main(testarg=None):
                 countfiles += 1
                 print('Working on file:', countfiles, 'out of', totalfiles)
                 infile = os.path.join(os.getcwd(), args.directory, filename)
-                opd_p, opd_g, opd_o = extract_pdf(infile, opd_p, opd_g, opd_o, args.tasks)
+                opd_p, opd_g, opd_o = pdf_extractor.extract_pdf(infile, opd_p, opd_g, opd_o)
     elif args.url:
         infile = download_pdf(args.url)
-        opd_p, opd_g, opd_o = extract_pdf(infile, opd_p, opd_g, opd_o, args.tasks)
+        opd_p, opd_g, opd_o = pdf_extractor.extract_pdf(infile, opd_p, opd_g, opd_o)
         delete_downloaded_pdf()
     elif args.url_file:
         with open(args.url_file, mode='r', encoding='UTF-8') as u:
@@ -92,26 +106,42 @@ def main(testarg=None):
         for url in urls:
             print(url)
             infile = download_pdf(url)
-            opd_p, opd_g, opd_o = extract_pdf(infile, opd_p, opd_g, opd_o, args.tasks)
+            opd_p, opd_g, opd_o = pdf_extractor.extract_pdf(infile, opd_p, opd_g, opd_o)
             delete_downloaded_pdf()
 
+    # Write output to files
     write_output(args.tasks, opd_p, opd_g, opd_o, args.anbis_file)
 
     # end time
     print('The start time was: ', start_time)
     print('The end time is: ', f"{datetime.now():%Y-%m-%d %H:%M:%S}")
-    return(args)
+    return args
 
 
-def write_output(tasks, opd_p, opd_g, opd_o, anbis_file):
-    '''Return extracted information to output'''
+def write_output(tasks: list, opd_p: np.array, opd_g: np.array, opd_o: np.array, anbis_file: str):
+    """Write extracted information to output files.
+
+    Create three output files for people, sectors, and organisations.
+
+    Args:
+        tasks (list): list of arguments used to define which tasks had to be executed
+        opd_p (np.array): output results for people task
+        opd_g (np.array): output results for sectors tasks
+        opd_o (np.array): output results for organisations task
+        anbis_file (str): name of the anbis file used to match organisations with info of known organisations
+    Returns:
+    """
     outtime = time.strftime("%Y%m%d_%H%M%S", time.localtime())
+
+    # Define outputfiles
     opf_p = os.path.join(os.path.join(os.getcwd(), 'Output'),
                          'output' + str(outtime) + '_people.xlsx')
     opf_g = os.path.join(os.path.join(os.getcwd(), 'Output'),
                          'output' + str(outtime) + '_general.xlsx')
     opf_o = os.path.join(os.path.join(os.getcwd(), 'Output'),
                          'output' + str(outtime) + '_related_organizations.xlsx')
+
+    # Write extracted people to output file
     if 'all' in tasks or 'people' in tasks:
         cols_p = ['Input_file', 'Organization', 'Persons', 'Ambassadors',
                   'Board_members', 'Job_description']
@@ -125,12 +155,14 @@ def write_output(tasks, opd_p, opd_g, opd_o, anbis_file):
         df1.to_excel(opf_p, engine='xlsxwriter')
         print('Output people written to:', opf_p)
 
+    # Write sectors to output file
     if 'all' in tasks or 'sectors' in tasks:
         cols_g = ['Input_file', 'Organization', 'Main_sector']
         df2 = pd.DataFrame(opd_g, columns=cols_g)
         df2.to_excel(opf_g, engine='xlsxwriter')
         print('Output sectors written to:', opf_g)
 
+    # Write extracted organisations to output file
     if 'all' in tasks or 'orgs' in tasks:
         cols_o = ['Input_file', 'mentioned_organization', 'n_mentions']
         df3 = pd.DataFrame(opd_o, columns=cols_o)

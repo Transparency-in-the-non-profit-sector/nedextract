@@ -10,14 +10,23 @@ test-warnings: true
 member-warnings: false
 
 ignore-paths:
-  - docs
-  - build
+  - ./docs
+  - ./build
+  - ./Data
+  - ./Pretrained
 
 pyroma:
     run: true
 
 pycodestyle:
     full: true
+    options:
+        max-line-length: 130
+        exclude:
+            - ./build
+            - ./docs
+            - ./Data
+            - ./Pretrained
 
 pydocstyle:
     run: true
@@ -28,9 +37,15 @@ pydocstyle:
         D212,  # Multi-line docstring summary should start at the first line
         D213,  # Multi-line docstring summary should start at the second line
         D404,  # First word of the docstring should not be This
+        D406, # Section name should end with a newline
+        D407, # Missing dashed underline after section
+        D413 # Missing blank line after last section
     ]
 
 pylint:
   options:
+    max-line-length: 130
+    ignore: docs
+    disable: E0401
     extension-pkg-allow-list:
         - pdftotext
