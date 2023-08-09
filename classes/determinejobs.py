@@ -17,8 +17,8 @@ class DetermineJobs:
     - relevant_sentences
     """
 
-    def __init__(self, main_jobs=None, main_job=None, members=None, doc=None,
-                 p_position=None, position=None): #pylint: disable=too-many-arguments'
+    def __init__(self, main_jobs=None, main_job=None, members=None, doc=None, # pylint: disable=too-many-arguments'
+                 p_position=None, position=None):
         """Define class variables."""
         self.main_job = main_job
         self.main_jobs = main_jobs
