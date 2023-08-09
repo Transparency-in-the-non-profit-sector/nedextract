@@ -45,6 +45,6 @@ pydocstyle:
 pylint:
   options:
     max-line-length: 130
+    ignore: docs
     extension-pkg-allow-list:
         - pdftotext
-    ignore: docs
