@@ -25,7 +25,7 @@ class NameAnalysis:
 
     @staticmethod
     def abbreviate(name: str, n_ab: int):
-        """Function to abbreviate names.
+        """Abbreviate names.
         
         This function abbreviates the first 'n_ab' terms in a 'name', except if they are tussenvoegsels, and as long
         as it is not the last term in a name. 
@@ -218,7 +218,7 @@ class NameAnalysis:
 
 
     def find_duplicate_persons(self):
-        """Function to find duplicate names.
+        """Find duplicate names.
 
         From a list of names, find which names represent different writings of the same name,
         e.g. James Brown and J. Brown. Returns a list consisting of sublists, in which each sublist
