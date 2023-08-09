@@ -45,7 +45,8 @@ jobs:
       - name: Install Poppler
         run: |
           if [ "$RUNNER_OS" == "Linux" ]; then
-            conda install -c openssl ca-certificates certifi
+            conda install -c ca-certificates certifi
+            conda install -c anaconda openssl 
             conda update openssl ca-certificates certifi
             conda install -c conda-forge/label/gcc7 poppler
             sudo apt-get update -y
