@@ -106,7 +106,8 @@ def extract_persons(doc, all_persons: list):
     Returns:
         tuple: A tuple containing the following arrays:
                - Array of potential ambassadors (ambassadeur).
-               - Array of strings of people with significant positions and their main and sub positions, of the form (['name - main pos - sub_ pot'])
+               - Array of strings of people with significant positions and their main and sub positions, of the form
+                 (['name - main pos - sub_ pot'])
                - Array of potential directors and their sub positions (directeur).
                - Array of potential 'Raad van Toezicht' (rvt) members and their sub positions.
                - Array of potential board members and their sub positions (bestuur).
@@ -277,7 +278,8 @@ def check_rvt(pot_rvt: np.array, b_position: np.array, p_position: list):
     Loop through the pot_rvt array and make the following decisions:
     1. if there are more than 12 memebers in the array of potential rvt memebrs, remove the member from b_position 
        if it has a frequency count <= 3.
-    2. if there are more than 8 members in the array of potential rvt members, remove the member from if it has a frequency count of 1.
+    2. if there are more than 8 members in the array of potential rvt members, remove the member from if it has a frequency
+       count of 1.
     3. Otherwise, add the pot_rvt member to p_position
     
     Args:
@@ -315,7 +317,8 @@ def check_bestuur(pot_bestuur: np.array, b_position: np.array, p_position: list)
     Loop through the pot_bestuur array and make the following decisions:
     1. if there are more than 12 members in the array of potential bestuur memebrs, remove the member from b_position 
        if it has a frequency count <= 3.
-    2. if there are more than 8 members in the array of potential bestuur members, remove the member from if it has a frequency count of 1.
+    2. if there are more than 8 members in the array of potential bestuur members, remove the member from if it has a
+       frequency count of 1.
     3. Otherwise, add the pot_bestuur member to p_position
     
     Args:

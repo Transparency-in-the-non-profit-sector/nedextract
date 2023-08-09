@@ -55,11 +55,14 @@ class TestExtractPersons(unittest.TestCase):
     Test methods:
         - test_identify_potential_people: tests the 'identify_potential_people' function that analyses text to find names of
           people that may have one of the predifined jobs.
-        - test_extract_persons: tests the 'extract_persons' function that extracts ambassadors and board members from a text using a rule-based method.
-        - test_director_check: tests the director_check function that performs checks for potential directors and update their 
+        - test_extract_persons: tests the 'extract_persons' function that extracts ambassadors and board members from a text 
+          using a rule-based method.
+        - test_director_check: tests the director_check function that performs checks for potential directors and update their
           positions if necessary
-        - test_check_rvt: tests the check_rvt function that determines whether potential rvt members can be considered try=ue rvt memebers.
-        - test_check_bestuur: tests the check_bestuur function that determines whether potential bestuur members can be considered true bestuur memebers.
+        - test_check_rvt: tests the check_rvt function that determines whether potential rvt members can be considered
+          try=ue rvt memebers.
+        - test_check_bestuur: tests the check_bestuur function that determines whether potential bestuur members can be
+          considered true bestuur memebers.
         - test_append_p_position: tests the 'append_p_position' function that append a person's name to their main position in
           the list of positions.
         - test_array_p_position: tests the 'array_p_position' function that returns an array of names taken from a sublist of
@@ -249,7 +252,8 @@ class TestExtractPersons(unittest.TestCase):
     def test_check_bestuur(self):
         """Unit testfor the function 'check_bestuur'.
         
-        Tests the function 'check_bestuur' that determines whether potential bestuur memebers can be considered true bestuur memebers.
+        Tests the function 'check_bestuur' that determines whether potential bestuur memebers can be considered true bestuur
+        memebers.
         
         There are two test cases, one in which no function conditions should be encountered, and one in which various
         function conditions should be encountered.

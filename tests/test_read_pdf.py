@@ -100,8 +100,10 @@ class TestReadPDF(unittest.TestCase):
     """Unit test class for the PDFInformationExtractor.
 
     Test Methods:
-        - test_extract_pdf: Tests the 'extract_pdf' function for information extraction from PDF files using the stanza pipeline.
-        - test_output_people: Tests the 'output_people' function for gathering information about people and structuring the output.
+        - test_extract_pdf: Tests the 'extract_pdf' function for information extraction from PDF files using the stanza
+          pipeline.
+        - test_output_people: Tests the 'output_people' function for gathering information about people and structuring the
+          output.
         - test_ots: Tests the 'ots' function to convert a NumPy array of strings into a backspace-separated string.
         - test_atc: Tests the 'atc' function to split an array into specified columns for output.
         - test_stanza_NL: Tests the 'download_stanza_NL' function to download the Stanza data for the Dutch language.
