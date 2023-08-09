@@ -117,6 +117,7 @@ class TestExtractRelatedOrgas(unittest.TestCase):
         pco = ((0, 0), (0, 0))
         org = 'Stichting Huppeldepup'
         org_pp = ['Stichting Huppeldepup']
+        org_c = np.array(['Bedrijf'])
         final = decide_org(org, pco, org_pp, org_c, nlp)
         self.assertEqual(final, 'maybe')
 

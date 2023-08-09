@@ -121,8 +121,10 @@ def decide_org(org: str, pco: tuple, org_pp: np.array, org_c: np.array, nlp: sta
     final = False
 
     is_org = extraction.individual_org_check()
+    print('is org', is_org)
+    print('org pp', org_pp)
     per_c, n_c, per_p, n_p = pco[0][0], pco[0][1], pco[1][0], pco[1][1]
-
+    print('pers', per_c, n_c, per_p, n_p)
     # decision tree
     if n_p >= 5 or n_c >= 5:
         if per_p >= 50. and per_c >= 50.:
@@ -137,23 +139,32 @@ def decide_org(org: str, pco: tuple, org_pp: np.array, org_c: np.array, nlp: sta
         kw_check = extraction.keyword_check(final=final)
         if per_p == per_c == 100. and ((org in org_pp) or (is_org is True) or (kw_check is True)):
             final = 'maybe'
+            print('decided maybe')
         elif per_p == 100. and (org in o for o in org_c) and ((org in org_pp) or
                                                               (is_org is True) or
                                                               (kw_check is True)):
             final = 'maybe'
+            print('decided second maybe')
         elif (org in org_pp) and (kw_check is True):
             final = 'maybe'
+            print('decided final maybe')
         else:
             final = 'no'
+            print('decided no')
     elif (is_org and org in org_pp):
+        print('in elif')
         if per_p == -10 or per_c == -10:
             final = 'no'
+            print('self no')
         else:
             final = 'maybe'
+            print('elif maybe')
 
     # check for hits and misses
     if final not in ('maybe', 'no') and n_p >= 1:
+        print('final now', final)
         final = extraction.keyword_check(final=final)
+        print('did keywodscheck', final)
     return final
 
 
