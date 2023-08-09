@@ -20,6 +20,13 @@ pyroma:
 
 pycodestyle:
     full: true
+    options:
+        max-line-length: 130
+        exclude:
+            - ./build
+            - ./docs
+            - ./Data
+            - ./Pretrained
 
 pydocstyle:
     run: true
