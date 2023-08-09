@@ -46,5 +46,6 @@ pylint:
   options:
     max-line-length: 130
     ignore: docs
+    disable: E0401
     extension-pkg-allow-list:
         - pdftotext

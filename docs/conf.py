@@ -19,7 +19,7 @@ sys.path.insert(0, os.path.abspath('.'))
 # -- Project information -----------------------------------------------------
 
 project = "auto_extract"
-copyright = "2022, Netherlands eScience Center"  # pylint: disable=redefined-builtin
+copyright = "2022, Netherlands eScience Center"
 author = "Laura Ootes"
 
 # The version info for the project you're documenting, acts as replacement for
