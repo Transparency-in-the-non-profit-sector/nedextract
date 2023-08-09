@@ -12,6 +12,8 @@ member-warnings: false
 ignore-paths:
   - docs
   - build
+  - Data
+  - Pretrained
 
 pyroma:
     run: true
@@ -35,5 +37,6 @@ pydocstyle:
 
 pylint:
   options:
+    max-line-length: 130
     extension-pkg-allow-list:
         - pdftotext
