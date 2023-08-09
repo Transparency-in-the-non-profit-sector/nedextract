@@ -28,7 +28,7 @@ def preprocess_pdf(infile: str, r_blankline: str = ', ', r_eol: str = ' ', r_par
     """
     with open(infile, 'rb') as f:
         pdf = pdftotext.PDF(f)
-    
+
     # preprocessing steps
     text = "\n".join(pdf)
     text = text.replace('\n\n', r_blankline).replace('\r\n\r\n', r_blankline).replace('\n', r_eol)
@@ -46,7 +46,7 @@ def preprocess_pdf(infile: str, r_blankline: str = ', ', r_eol: str = ' ', r_par
         text = text.replace(', ,', ',')
     while ',,' in text:
         text = text.replace(',,', ',')
-    while ' ,'  in text:
+    while ' ,' in text:
         text = text.replace(' ,', ',')
     text = text.replace('.,', '.')
     while '. .' in text:
@@ -69,7 +69,7 @@ def download_pdf(url):
 
 def delete_downloaded_pdf():
     """Delete downloaded file.
-    
+
     Delete the file that is downloaded with the function download_pdf and saved as
     downloaded.pdf from the cwd.
     """

@@ -1,6 +1,6 @@
 """This file contains the lass PDFInformationExtractor wiht functions to extract information from pdf files.
 
-The different functions use the stanza Dutch pipeline to extract 
+The different functions use the stanza Dutch pipeline to extract
 information on persons and organisations from pdf files and structure the output.
 """
 
@@ -19,7 +19,7 @@ class PDFInformationExtractor:
     """Class for extracting information from PDF files using the stanza pipeline.
 
     This class provides functionality to extract information from PDF files using the stanza pipeline.
-    It encapsulates various methods for preprocessing PDFs, predicting main sectors, extracting 
+    It encapsulates various methods for preprocessing PDFs, predicting main sectors, extracting
     unique persons and organizations, and structuring the output. The class uses pretrained models
     for sector classification and named entity recognition.
 
@@ -33,7 +33,7 @@ class PDFInformationExtractor:
     Methods:
         extract_pdf(infile: str, opd_p: np.array, opd_g: np.array, opd_o: np.array):
             Extract information from a PDF file using the stanza pipeline
-        output_people(infile: str, doc, organization: str): Gathers information about people 
+        output_people(infile: str, doc, organization: str): Gathers information about people
                                                             and structures the output.
         output_related_orgs(infile: str, doc: stanza.doc, nlp: stanza.Pipeline):
             Gathers information about mentioned organizations and structures the output.
@@ -41,7 +41,7 @@ class PDFInformationExtractor:
         atc(inp: np.array, length: int): Splits an array into [length] variables for output columns.
         download_stanza_NL(): Downloads the stanza Dutch library if not already present.
     """
-    
+
     def __init__(self, tasks, pf_m: str = None, pf_l: str = None, pf_v: str = None):
         """Initialize the PDFInformationExtractor class with pretrained model file paths.
 
@@ -58,7 +58,6 @@ class PDFInformationExtractor:
         self.pf_v = pf_v or os.path.join(os.getcwd(), 'Pretrained', 'tf_idf_vectorizer.joblib')
         self.nlp = None
 
-
     def extract_pdf(self, infile: str, opd_p: np.array, opd_g: np.array, opd_o: np.array):
         """Extract information from a PDF file using the stanza pipeline.
 
@@ -67,11 +66,11 @@ class PDFInformationExtractor:
 
         1. Preprocesses the PDF file using the 'preprocess_pdf' function.
         2. Based on the specified 'tasks', different extraction processes are performed:
-        - If the only 'task' specified is 'sectors', it predicts the main sector using a 
+        - If the only 'task' specified is 'sectors', it predicts the main sector using a
             pretrained classifier (given by the files pf_m, pf_l, pf_v) and updates the output 'opd_g'.
         - Otherwise, it applies the pretrained Dutch stanza pipeline to the text
             and extracts unique persons and organizations. Next, depending on the specified 'tasks',
-            the functions output_people ('task' 'people'), output_related_orgs ('task' 'orgs'), 
+            the functions output_people ('task' 'people'), output_related_orgs ('task' 'orgs'),
             and predict_main_sector ('task', 'sectors') are appied. Results are used to update opd_p,
             opd_o, and opd_g respectively.
 
@@ -91,7 +90,7 @@ class PDFInformationExtractor:
             main_sector = predict_main_sector(self.pf_m, self.pf_l, self.pf_v, text)
             opd_g = np.concatenate((opd_g,
                                     np.array([[os.path.basename(infile), '', main_sector]])),
-                                    axis=0)
+                                   axis=0)
         else:
             # Apply pre-trained Dutch stanza pipeline to text
             self.download_stanza_NL()
@@ -115,22 +114,21 @@ class PDFInformationExtractor:
                 if 'sectors' in self.tasks or 'all' in self.tasks:
                     main_sector = predict_main_sector(self.pf_m, self.pf_l, self.pf_v, text)
                     opd_g = np.concatenate((opd_g,
-                            np.array([[os.path.basename(infile), organization, main_sector]])),
-                            axis=0)
+                                            np.array([[os.path.basename(infile), organization, main_sector]])),
+                                           axis=0)
             except ValueError:
                 organization = ''
                 outp_people = self.atc([os.path.basename(infile)], 91)
                 opd_p = np.concatenate((opd_p, np.array([outp_people])), axis=0)
                 opd_g = np.concatenate((opd_g,
-                            np.array([[os.path.basename(infile), organization, '']])),
-                            axis=0)
+                                        np.array([[os.path.basename(infile), organization, '']])),
+                                       axis=0)
                 opd_o = np.concatenate((opd_o, np.array([['', '', '']])), axis=0)
 
         print(f"{datetime.now():%Y-%m-%d %H:%M:%S}", 'Finished file:', infile)
         return opd_p, opd_g, opd_o
 
-
-    def output_people(self, infile: str, doc, organization:str):
+    def output_people(self, infile: str, doc, organization: str):
         """Gather information about people and structure the output.
 
         This function gathers information about people (persons) mentioned in the provided 'doc'
@@ -166,7 +164,7 @@ class PDFInformationExtractor:
 
         # call extract_persons function
         (ambassadors, board_positions, p_directeur, p_rvt, p_bestuur, p_ledenraad,
-        p_kasc, p_controlec) = extract_persons(doc, persons)
+         p_kasc, p_controlec) = extract_persons(doc, persons)
 
         # Combine results
         board = np.concatenate([p_directeur, p_bestuur, p_rvt, p_ledenraad, p_kasc, p_controlec])
@@ -177,12 +175,12 @@ class PDFInformationExtractor:
             doc = stanza.Pipeline(lang='nl', processors='tokenize,ner')(preprocess_pdf(infile, '. '))
             persons = np.unique([f'{ent.text}' for ent in doc.ents if ent.type == "PER"])
             (ambassadors, board_positions, p_directeur, p_rvt, p_bestuur,
-            p_ledenraad, p_kasc, p_controlec) = extract_persons(doc, persons)
+             p_ledenraad, p_kasc, p_controlec) = extract_persons(doc, persons)
             board = np.concatenate([p_directeur, p_bestuur, p_rvt, p_ledenraad, p_kasc, p_controlec])
-        
+
         # Structure output
         output = [os.path.basename(infile), organization, self.ots(persons), self.ots(ambassadors), self.ots(board),
-                self.ots(board_positions)]
+                  self.ots(board_positions)]
         output.extend(self.atc(p_directeur, 5))
         output.extend(self.atc(p_rvt, 20))
         output.extend(self.atc(p_bestuur, 20))
@@ -191,11 +189,10 @@ class PDFInformationExtractor:
         output.extend(self.atc(p_controlec, 5))
         return output
 
-
     @staticmethod
     def output_related_orgs(infile: str, doc, nlp):
         """Gather information about all mentioned orgnaizations in the text and structure the output.
-        
+
         Args:
             infile (str): The path to the input PDF file for information extraction.
             doc (stanza.Document): A stanza-processed document containing information about named entities.
@@ -216,20 +213,19 @@ class PDFInformationExtractor:
                 output.append(op)
         return output
 
-
     @staticmethod
     def ots(inp: np.array):
         r"""Output to string: Convert array output to a backspace-seperated string.
-        
+
         Steps:
         - define an empty string 'out_string'
         - for each element in 'inp', add the element to 'out_string', followed by the string '\n'
 
         Args:
             inp (np.array): array to be converted to string
-        
+
         Returns:
-            out_string: a string containing the elements of the of the 'inp' array, 
+            out_string: a string containing the elements of the of the 'inp' array,
             converted into a backspace-separed string
         """
         out_string = ""
@@ -237,10 +233,9 @@ class PDFInformationExtractor:
             out_string += str(element) + "\n"
         return out_string
 
-
     def atc(self, inp, length: int):
         """Array to columns: Split array into [length] list variables which will be converted into columns in the final output.
-        
+
         This function takes the following steps:
 
         - Initializes an output list ('outlist') with [length] empty strings.
@@ -263,17 +258,16 @@ class PDFInformationExtractor:
             for i, c_inp in enumerate(inp):
                 if i == length - 1 and len(inp) > length:
                     print("Problem: there are more persons in one of the categories than allocated "
-                        "columns.")
+                          "columns.")
                     outlist[i] = self.ots(inp[i:])
                     break
                 outlist[i] = c_inp
         return outlist
 
-
     @staticmethod
     def download_stanza_NL():
         """Download stanza Dutch library if not already present.
-        
+
         This function checks if the stanza Dutch library is already downloaded. If not, it downloads
         the necessary files for Dutch language processing and saves them to the 'stanza_resources'
         directory within the current working directory. The function performs the following steps:

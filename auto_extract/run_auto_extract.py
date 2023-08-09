@@ -23,14 +23,14 @@ from auto_extract.read_pdf import PDFInformationExtractor
 
 def main(testarg=None):
     """Annual report information extraction.
-    
+
     This program is designed to read Dutch annual report pdf files from non-profit organisation.
     and extract relevant information.
 
     The following general steps are taken:
     - Read in the pdf files(s) and preprocess the text.
     - (optional) Extract mentioned people from the text and identify their position within the organisation.
-      Which of the people named in the text can be found to likely hold any of the positions of board members (directors, 
+      Which of the people named in the text can be found to likely hold any of the positions of board members (directors,
       bestuur, raad van toezicht, kascommissie, controlecommissie, edenraad), or ambassadors
     - (optional) Extract mentioned organisations in the text
     - (optional) Classify the sector in which the organisation is active.
@@ -53,14 +53,13 @@ def main(testarg=None):
                         help='CSV file to be used for org matching,conly used for task org')
     parser.add_argument('-pf_m', '--file_model',
                         default=os.path.join(os.path.join(os.getcwd(), 'Pretrained'), 'trained_sector_classifier.joblib'),
-                        help = 'file containing pretrained model for sector classification')
+                        help='file containing pretrained model for sector classification')
     parser.add_argument('-pf_l', '--file_labels',
                         default=os.path.join(os.path.join(os.getcwd(), 'Pretrained'), 'labels_sector_classifier.joblib'),
-                        help = 'file containing labels for pretrained sector classification')
+                        help='file containing labels for pretrained sector classification')
     parser.add_argument('-pf_v', '--file_vectors',
                         default=os.path.join(os.path.join(os.getcwd(), 'Pretrained'), 'tf_idf_vectorizer.joblib'),
-                        help = 'file containing tf_idf vectors')
-    
+                        help='file containing tf_idf vectors')
 
     if testarg:
         args = parser.parse_args(testarg)
@@ -73,9 +72,9 @@ def main(testarg=None):
     # Create the output directory if it does not exist already
     if not os.path.exists(os.path.join(os.getcwd(), 'Output')):
         os.makedirs(os.path.join(os.getcwd(), 'Output'))
-    opd_p = np.array([]).reshape(0,91)
-    opd_g = np.array([]).reshape(0,3)
-    opd_o = np.array([]).reshape(0,3)
+    opd_p = np.array([]).reshape(0, 91)
+    opd_g = np.array([]).reshape(0, 3)
+    opd_o = np.array([]).reshape(0, 3)
 
     # convert tasks to list
     args.tasks = [args.tasks] if isinstance(args.tasks, str) else args.tasks
@@ -121,7 +120,7 @@ def main(testarg=None):
 
 def write_output(tasks: list, opd_p: np.array, opd_g: np.array, opd_o: np.array, anbis_file: str):
     """Write extracted information to output files.
-    
+
     Create three output files for people, sectors, and organisations.
 
     Args:
@@ -141,7 +140,7 @@ def write_output(tasks: list, opd_p: np.array, opd_g: np.array, opd_o: np.array,
                          'output' + str(outtime) + '_general.xlsx')
     opf_o = os.path.join(os.path.join(os.getcwd(), 'Output'),
                          'output' + str(outtime) + '_related_organizations.xlsx')
-    
+
     # Write extracted people to output file
     if 'all' in tasks or 'people' in tasks:
         cols_p = ['Input_file', 'Organization', 'Persons', 'Ambassadors',

@@ -15,17 +15,17 @@ from classes.orgs_checks import OrganisationExtraction
 from auto_extract.preprocessing import preprocess_pdf
 
 
-def collect_orgs(infile: str, nlp: stanza.Pipeline): #pylint: disable=too-many-locals'
+def collect_orgs(infile: str, nlp: stanza.Pipeline):  # pylint: disable=too-many-locals'
     """Extract mentioned organisations from a PDF document.
-    
-    This function is used to extract mentioned organisations (ORGs) in a text using Stanza NER. 
-    Candidates are select candidates by applying NER to different preprocessing choices. 
+
+    This function is used to extract mentioned organisations (ORGs) in a text using Stanza NER.
+    Candidates are select candidates by applying NER to different preprocessing choices.
     Additional checks are performed to determine which candidates are most likely true orgs.
     It returns a list of filtered entities.
-    
+
     Steps:
     1. preprocess the text in three different ways, as it is often unclear what the best way of 'reading'
-       consequetive blacks lines, replacesent of end-of-line characters, or parentheses is, and gather for each way 
+       consequetive blacks lines, replacesent of end-of-line characters, or parentheses is, and gather for each way
        NER entities defined as ORG.
     2. determine the unique entities mentioned as candidates.
     3. Determine which candidates are considered 'true' organisations based on:
@@ -48,13 +48,13 @@ def collect_orgs(infile: str, nlp: stanza.Pipeline): #pylint: disable=too-many-l
     # preprocessing method 1
     doc_c = nlp(preprocess_pdf(infile, r_blankline=', ', r_par=', '))
     org_c = np.unique([ent.text.rstrip('.') for ent in doc_c.ents if ent.type == "ORG"],
-                        return_counts=True)
-    
+                      return_counts=True)
+
     # Preprocessing method 2
     doc_p = nlp(preprocess_pdf(infile, r_blankline='. ', r_par=', '))
     org_p = np.unique([ent.text.rstrip('.') for ent in doc_p.ents if ent.type == "ORG"],
-                        return_counts=True)
-    
+                      return_counts=True)
+
     # Preprocessing method 3
     doc_pp = nlp(preprocess_pdf(infile, r_blankline='. ', r_eol='. ', r_par=', '))
     org_pp = np.unique([ent.text.rstrip('.') for ent in doc_pp.ents if ent.type == "ORG"])
@@ -96,7 +96,7 @@ def collect_orgs(infile: str, nlp: stanza.Pipeline): #pylint: disable=too-many-l
     return sorted(list(set(true_orgs)))
 
 
-def decide_org(org: str, pco: tuple, org_pp: np.array, org_c: np.array, nlp: stanza.Pipeline): 
+def decide_org(org: str, pco: tuple, org_pp: np.array, org_c: np.array, nlp: stanza.Pipeline):
     """Decision tree to determine if an potential ORG is likely to be a true org.
 
     Decisions are based on: the overall number of mentions of the pot. org in the text,
@@ -104,7 +104,7 @@ def decide_org(org: str, pco: tuple, org_pp: np.array, org_c: np.array, nlp: sta
     whether a standalone pot. org is considered an ORG by Stanza,
     the precense of keywords that make it likely that the pot. org is an org,
     the precense of keywords that make it likely that the pot. org is NOT an org.
-    
+
     Args:
         infile (str): Path to the input PDF file.
         pco (tuple): tuple of percentage (float), percentage of mentioned at which the organisation was found as org,
@@ -114,7 +114,7 @@ def decide_org(org: str, pco: tuple, org_pp: np.array, org_c: np.array, nlp: sta
         nlp (stanza.Pipeline): The stanza language model used for text processing.
 
     Returns:
-        list: final True, False no or maybe indication the decision on whether the organistion candidate 
+        list: final True, False no or maybe indication the decision on whether the organistion candidate
         is likely a true organisation
     """
     extraction = OrganisationExtraction(org=org, nlp=nlp)
@@ -150,7 +150,7 @@ def decide_org(org: str, pco: tuple, org_pp: np.array, org_c: np.array, nlp: sta
             final = 'no'
         else:
             final = 'maybe'
-    
+
     # check for hits and misses
     if final not in ('maybe', 'no') and n_p >= 1:
         final = extraction.keyword_check(final=final)
@@ -172,30 +172,30 @@ def match_anbis(df_in: pd.DataFrame, anbis_file: str):
         pd.DataFrame: A DataFrame containing the matched organisations and ANBI information.
     """
     df = pd.read_csv(anbis_file, usecols=["rsin", "currentStatutoryName", "shortBusinessName"],
-                    dtype=str)
+                     dtype=str)
     df_match = df_in
     df_match['matched_anbi'] = df_match['mentioned_organization'].apply(lambda x: apply_matching(
                                                                         df,
                                                                         x, 'currentStatutoryName',
                                                                         'shortBusinessName'))
-    
+
     # perform join between df_match and df based on matched_anbi and currentStatutoryName
     df1 = df_match.merge(df[df['currentStatutoryName'].notnull()], how='left',
                          left_on='matched_anbi', right_on='currentStatutoryName')
-    
+
     # select data from d1 with unknown rsin
     df2 = df1[df1['rsin'].isna()][['Input_file', 'mentioned_organization', 'n_mentions',
                                    'matched_anbi']]
-    
+
     # select df1s with rsin
     df1_out = df1[df1['rsin'].notnull()]
 
     # match df with df2 using shortBusinessName
     df2_out = df2.merge(df[df['shortBusinessName'].notnull()], how='left',
                         left_on='matched_anbi', right_on='shortBusinessName')
-    
+
     # combine df1 and df2 output
-    df_out = pd.concat([df1_out, df2_out]) 
+    df_out = pd.concat([df1_out, df2_out])
     return df_out.sort_values(by=['Input_file', 'mentioned_organization'])
 
 

@@ -27,8 +27,8 @@ def file_to_pd(inputfile: str):
     """Read data from an Excel file and preprocess the text data.
 
     1. Read data from the specified Excel file ('inputfile') using pandas.
-    2. Drop rows with missing values in the 'Sector' and 'Problem' columns. 
-    3. Assign the content of the 'Bestand' column to a new 'text' column in the DataFrame. 
+    2. Drop rows with missing values in the 'Sector' and 'Problem' columns.
+    3. Assign the content of the 'Bestand' column to a new 'text' column in the DataFrame.
     4. Preprocess the text column using the 'preprocess_pdf' function.
 
     Args:
@@ -47,7 +47,7 @@ def file_to_pd(inputfile: str):
 
 def train(data: pd.DataFrame, train_size: float, alpha: float, save: bool = False):
     """Train a MultinomialNB classifier to classify texts into the main sector categories.
-    
+
     This function trains a Multinomial Naive Bayes classifier to classify text data into
     main sector categories. It uses the given dataset ('data') containing 'text' and 'Sector'
     columns. The 'text' column contains the textual data, and the 'Sector' column represents
@@ -93,7 +93,7 @@ def train(data: pd.DataFrame, train_size: float, alpha: float, save: bool = Fals
     # Train a Naive Bayes classifier on the training data
     clf = MultinomialNB(alpha=alpha)
     clf.fit(x_train_tf, y_train)
-    
+
     # Predict sector of test data
     predicted = clf.predict(x_test_tf)
 
@@ -102,7 +102,7 @@ def train(data: pd.DataFrame, train_size: float, alpha: float, save: bool = Fals
     print('Confusion matrix for the following labels:')
     print(label)
     print(metrics.confusion_matrix(y_test, predicted))
-    
+
     # save the model
     if save:
         dump(clf, os.path.join(os.path.join(os.getcwd(), 'Pretrained'),
