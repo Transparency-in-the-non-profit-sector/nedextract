@@ -10,10 +10,10 @@ test-warnings: true
 member-warnings: false
 
 ignore-paths:
-  - docs
-  - build
-  - Data
-  - Pretrained
+  - ./docs
+  - ./build
+  - ./Data
+  - ./Pretrained
 
 pyroma:
     run: true
