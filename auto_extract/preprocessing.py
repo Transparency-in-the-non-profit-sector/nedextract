@@ -8,7 +8,7 @@ Functions:
 
 import os
 import urllib.request
-import pdftotext
+import pdftotext  # # pylint: disable=import-error
 
 
 def preprocess_pdf(infile: str, r_blankline: str = ', ', r_eol: str = ' ', r_par: str = ''):
