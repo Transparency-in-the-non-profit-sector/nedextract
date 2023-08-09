@@ -24,22 +24,22 @@ doc = stanza.Pipeline(lang='nl', processors='tokenize,ner')(text)
 
 # expected value for test_extract_persons test case 1
 e_bp = np.array(['Anna de Wit - rvt - vice-voorzitter',
-                'Dirkje Rooden - bestuur - lid',
-                'Eduard van Grijs - bestuur - ',
-                'Ferdinand de Blauw - bestuur - ',
-                'Gerard Roze - kascommissie - voorzitter',
-                'Hendrik Doe - rvt - voorzitter',
-                'Hendrik Groen - kascommissie - ',
-                'Jane Doe - directeur - directeur',
-                'Cornelis Geel - rvt - lid',
-                'Isaak Paars - ledenraad - voorzitter',
-                'Jan van Oranje - ledenraad - penningmeester',
-                'Karel - ledenraad - lid',
-                'Lodewijk - ledenraad - ',
-                'Maria - ledenraad - ',
-                'Mohammed El Idrissi - controlecommissie - ',
-                'Saïda Benali - controlecommissie - ',
-                'Bernard Zwartjes - rvt - '])
+                 'Dirkje Rooden - bestuur - lid',
+                 'Eduard van Grijs - bestuur - ',
+                 'Ferdinand de Blauw - bestuur - ',
+                 'Gerard Roze - kascommissie - voorzitter',
+                 'Hendrik Doe - rvt - voorzitter',
+                 'Hendrik Groen - kascommissie - ',
+                 'Jane Doe - directeur - directeur',
+                 'Cornelis Geel - rvt - lid',
+                 'Isaak Paars - ledenraad - voorzitter',
+                 'Jan van Oranje - ledenraad - penningmeester',
+                 'Karel - ledenraad - lid',
+                 'Lodewijk - ledenraad - ',
+                 'Maria - ledenraad - ',
+                 'Mohammed El Idrissi - controlecommissie - ',
+                 'Saïda Benali - controlecommissie - ',
+                 'Bernard Zwartjes - rvt - '])
 
 # Definitions for test case 2
 all_persons = np.unique([f'{ent.text}' for ent in doc.ents if ent.type == "PER"])
@@ -51,11 +51,11 @@ all_persons2 = np.unique([f'{ent.text}' for ent in doc2.ents if ent.type == "PER
 
 class TestExtractPersons(unittest.TestCase):
     """Unit test class for functions used to extract names and functions of people mentioned in a pdf file.
-    
+
     Test methods:
         - test_identify_potential_people: tests the 'identify_potential_people' function that analyses text to find names of
           people that may have one of the predifined jobs.
-        - test_extract_persons: tests the 'extract_persons' function that extracts ambassadors and board members from a text 
+        - test_extract_persons: tests the 'extract_persons' function that extracts ambassadors and board members from a text
           using a rule-based method.
         - test_director_check: tests the director_check function that performs checks for potential directors and update their
           positions if necessary
@@ -71,7 +71,7 @@ class TestExtractPersons(unittest.TestCase):
 
     def test_identify_potential_people(self):
         """Unit test for the function 'identify_potential_people'.
-        
+
         This function tests the 'identify_potential_people' function hat analyses text to find names of
         people that may have one of the predifined jobs.
 
@@ -91,11 +91,11 @@ class TestExtractPersons(unittest.TestCase):
 
     def test_extract_persons(self):
         """Unit test for the function 'extract_persons'.
-        
+
         This function tests the 'extract_persons' function that extracts ambassadors and board members from a text
         using a rule-based method.
 
-        There are 2 tests. The first test uses the first test pdf document, and each of the eight checks asserts if 
+        There are 2 tests. The first test uses the first test pdf document, and each of the eight checks asserts if
         one of the 8 returned function categories, contain the expected names.
         The second test uses a test docuemnt 2 to check if the additonal director conditions work as expected
         """
@@ -120,11 +120,10 @@ class TestExtractPersons(unittest.TestCase):
         d = extract_persons(doc2, all_persons2)[2]
         self.assertTrue(np.array_equal(np.array(['Jane Doe']), d))
 
-
     def test_director_check(self):
         """Unit test for the function 'director_check'.
-        
-        This function tests the director_check function that performs checks for potential directors and update their 
+
+        This function tests the director_check function that performs checks for potential directors and update their
         positions if necessary.
 
         There are 8 test cases:
@@ -139,30 +138,27 @@ class TestExtractPersons(unittest.TestCase):
             - ft=1, backup main = rvt, subf = directeur
             - ft=3, backup main = bestuur, subf = voorzitter
 
-            
-
         pot_director has the form:
         pot_director = name, sub_cat, ft_director, backup_main_cat, backup_sub_cat, fts_bestuur, fts_rvt
 
         """
         # Test cases 1-4
-        pot_director = np.array([['Jane Doe', 'voorzitter', 2 , 'rvt', 'voorzitter', 1, 1],
+        pot_director = np.array([['Jane Doe', 'voorzitter', 2, 'rvt', 'voorzitter', 1, 1],
                                  ['Pietje de Wit', 'voorzitter', 3, 'ambassadeur', 'voorzitter', 1, 1],
                                  ['Louwie kats', 'directeur', 3, 'bestuur', '', 5, 8],
                                  ['Bert de hond', 'lid', 6, 'rvt', 'lid', 3, 5],
-                                 ['Willem Visser', 'lid', 5, 'ledenraad', 'lid', 1, 2,],
+                                 ['Willem Visser', 'lid', 5, 'ledenraad', 'lid', 1, 2],
                                  ['Dirkje El Morabit', 'directeur', 6, 'rvt', '', 2, 1]
                                  ], dtype=object)
-        
+
         b_position = np.array(['Anna Zwart - rvt - vicevoorzitter',
-                                'Hanna Groen - bestuur - penningmeester',
-                                'Jane Doe - directeur - voorzitter',
-                                'Pietje de Wit - directeur - voorzitter',
-                                'Louwie kats - directeur - directeur',
-                                'Bert de hond - directeur - lid',
-                                'Willem Visser - directeur - lid',
-                                'Dirkje El Morabit - directeur - directeur'
-                               ])
+                               'Hanna Groen - bestuur - penningmeester',
+                               'Jane Doe - directeur - voorzitter',
+                               'Pietje de Wit - directeur - voorzitter',
+                               'Louwie kats - directeur - directeur',
+                               'Bert de hond - directeur - lid',
+                               'Willem Visser - directeur - lid',
+                               'Dirkje El Morabit - directeur - directeur'])
         pot_rvt = [['Anna Zwart', 'vicevoorzitter', 3]]
         pot_bestuur = [['Hanna Groen', 'penningmeester', 2]]
         p_position = [['directeur'], ['bestuur', 'Hanna Groen'], ['rvt', 'Anna Zwart'], ['ledenraad'], ['ambassadeur']]
@@ -190,9 +186,9 @@ class TestExtractPersons(unittest.TestCase):
         pot_director = np.array([['Jane Doe', 'directeur', 1, 'rvt', '', 1, 1],
                                  ['Piet de Wit', 'voorzitter', 3, 'bestuur', 'voorzitter', 1, 1]], dtype=object)
         b_position = np.array(['Anna Zwart - rvt - vicevoorzitter',
-                                'Hanna Groen - bestuur - penningmeester',
-                                'Jane Doe - directeur - directeur',
-                                'Piet de Wit - directeur - voorzitter'])
+                               'Hanna Groen - bestuur - penningmeester',
+                               'Jane Doe - directeur - directeur',
+                               'Piet de Wit - directeur - voorzitter'])
         pot_rvt = [['Anna Zwart', 'vicevoorzitter', 3]]
         pot_bestuur = [['Hanna Groen', 'penningmeester', 2]]
         p_position = [['directeur'], ['bestuur', 'Hanna Groen'], ['rvt', 'Anna Zwart'], ['ledenraad'], ['ambassadeur']]
@@ -213,9 +209,9 @@ class TestExtractPersons(unittest.TestCase):
 
     def test_check_rvt(self):
         """Unit testfor the function 'check_rvt'.
-        
+
         Tests the function 'check_rvt' that determines whether potential rvt memebers can be considered true rvt memebers.
-        
+
         There are two test cases, one in which no function conditions should be encountered, and one in which various
         function conditions should be encountered.
 
@@ -233,28 +229,27 @@ class TestExtractPersons(unittest.TestCase):
 
         # Test case 2
         pot_rvt = [['Piet de Wit', 'voorzitter', 4], ['Ab', 'vicevoorzitter', 2], ['Co', '', 3],
-                ['Bo', '', 4], ['Do', '', 5], ['Ed', '', 2], ['Jo', '', 3], ['Fi', '', 2],
-                ['Lo', '', 5], ['Mo', '', 2], ['Ap', '', 5], ['Ab', '', 1], ['Ma', '', 1]]
+                   ['Bo', '', 4], ['Do', '', 5], ['Ed', '', 2], ['Jo', '', 3], ['Fi', '', 2],
+                   ['Lo', '', 5], ['Mo', '', 2], ['Ap', '', 5], ['Ab', '', 1], ['Ma', '', 1]]
         b_position = np.array(['Jane Doe - directeur - directeur', 'Piet de Wit - rvt - voorzitter',
-                            'Ab - rvt - vicevoorzitter', 'Co - rvt - ', 'Bo - rvt - ',
-                            'Do - rvt - ', 'Ed - rvt - ', 'Jo - rvt - ', 'Fi - rvt - ',
-                            'Lo - rvt - ', 'Mo - rvt - ', 'Ap - rvt - ', 'Ab - rvt - ',
-                            'Ma - rvt - '])
+                               'Ab - rvt - vicevoorzitter', 'Co - rvt - ', 'Bo - rvt - ',
+                               'Do - rvt - ', 'Ed - rvt - ', 'Jo - rvt - ', 'Fi - rvt - ',
+                               'Lo - rvt - ', 'Mo - rvt - ', 'Ap - rvt - ', 'Ab - rvt - ',
+                               'Ma - rvt - '])
         p_position = [['directeur', 'Jane Doe'], ['rvt']]
         exp_b = np.array(['Jane Doe - directeur - directeur', 'Piet de Wit - rvt - voorzitter',
-                        'Bo - rvt - ', 'Do - rvt - ', 'Lo - rvt - ', 'Ap - rvt - '])
+                          'Bo - rvt - ', 'Do - rvt - ', 'Lo - rvt - ', 'Ap - rvt - '])
         exp_p = [['directeur', 'Jane Doe'], ['rvt', 'Piet de Wit', 'Bo', 'Do', 'Lo', 'Ap']]
         check_b, check_p = check_rvt(pot_rvt, b_position, p_position)
         self.assertEqual(check_p, exp_p)
         self.assertTrue(np.array_equal(check_b, exp_b))
 
-
     def test_check_bestuur(self):
         """Unit testfor the function 'check_bestuur'.
-        
+
         Tests the function 'check_bestuur' that determines whether potential bestuur memebers can be considered true bestuur
         memebers.
-        
+
         There are two test cases, one in which no function conditions should be encountered, and one in which various
         function conditions should be encountered.
 
@@ -264,7 +259,7 @@ class TestExtractPersons(unittest.TestCase):
         # Test case 1
         pot_bestuur = [['Piet de Wit', 'voorzitter', 4]]
         b_position = np.array(['Jane Doe - directeur - directeur',
-                            'Piet de Wit - bestuur - voorzitter'])
+                               'Piet de Wit - bestuur - voorzitter'])
         p_position = [['directeur', 'Jane Doe'], ['bestuur']]
         check_b, check_p = check_bestuur(pot_bestuur, b_position, p_position)
         exp_p = [['directeur', 'Jane Doe'], ['bestuur', 'Piet de Wit']]
@@ -273,17 +268,17 @@ class TestExtractPersons(unittest.TestCase):
 
         # Test case 2
         pot_bestuur = [['Piet de Wit', 'voorzitter', 4], ['Ab', 'vicevoorzitter', 2], ['Co', '', 3],
-                    ['Bo', '', 4], ['Do', '', 5], ['Ed', '', 2], ['Jo', '', 3], ['Fi', '', 2],
-                    ['Lo', '', 5], ['Mo', '', 2], ['Ap', '', 5], ['Ab', '', 1], ['Ma', '', 1]]
+                       ['Bo', '', 4], ['Do', '', 5], ['Ed', '', 2], ['Jo', '', 3], ['Fi', '', 2],
+                       ['Lo', '', 5], ['Mo', '', 2], ['Ap', '', 5], ['Ab', '', 1], ['Ma', '', 1]]
         b_position = np.array(['Jane Doe - directeur - directeur',
-                            'Piet de Wit - bestuur - voorzitter',
-                            'Ab - bestuur - vicevoorzitter', 'Co - bestuur - ', 'Bo - bestuur - ',
-                            'Do - bestuur - ', 'Ed - bestuur - ', 'Jo - bestuur - ',
-                            'Fi - bestuur - ', 'Lo - bestuur - ', 'Mo - bestuur - ',
-                            'Ap - bestuur - ', 'Ab - bestuur - ', 'Ma - bestuur - '])
+                               'Piet de Wit - bestuur - voorzitter',
+                               'Ab - bestuur - vicevoorzitter', 'Co - bestuur - ', 'Bo - bestuur - ',
+                               'Do - bestuur - ', 'Ed - bestuur - ', 'Jo - bestuur - ',
+                               'Fi - bestuur - ', 'Lo - bestuur - ', 'Mo - bestuur - ',
+                               'Ap - bestuur - ', 'Ab - bestuur - ', 'Ma - bestuur - '])
         p_position = [['directeur', 'Jane Doe'], ['bestuur']]
         exp_b = np.array(['Jane Doe - directeur - directeur', 'Piet de Wit - bestuur - voorzitter',
-                        'Bo - bestuur - ', 'Do - bestuur - ', 'Lo - bestuur - ', 'Ap - bestuur - '])
+                          'Bo - bestuur - ', 'Do - bestuur - ', 'Lo - bestuur - ', 'Ap - bestuur - '])
         exp_p = [['directeur', 'Jane Doe'], ['bestuur', 'Piet de Wit', 'Bo', 'Do', 'Lo', 'Ap']]
         check_b, check_p = check_bestuur(pot_bestuur, b_position, p_position)
         self.assertEqual(check_p, exp_p)
@@ -291,17 +286,17 @@ class TestExtractPersons(unittest.TestCase):
 
     def test_append_p_position(self):
         """Unit test for the 'append_p_position' function.
-        
+
         This function tests the 'append_p_position' function that append a person's name to their main position in
           the list of positions.
-        
+
         There is one test case
 
         Raises:
             AssertionError: If the returned parameter does not match the expected return value.
         """
         p_position = [['directeur'], ['bestuur'], ['rvt'], ['ledenraad'], ['kascommissie'],
-                    ['controlecommissie'], ['ambassadeur']]
+                      ['controlecommissie'], ['ambassadeur']]
         main = 'rvt'
         name = 'Jane Doe'
         expected = [['directeur'], ['bestuur'], ['rvt', 'Jane Doe'], ['ledenraad'], ['kascommissie'],
@@ -309,10 +304,9 @@ class TestExtractPersons(unittest.TestCase):
         result = append_p_position(p_position, main, name)
         self.assertEqual(result, expected)
 
-
     def test_array_p_position(self):
         """Unit test for the function 'array_p_position'.
-        
+
         This function tests the 'array_p_position' function that returns an array of names taken from a sublist of
         the list p_position.
 

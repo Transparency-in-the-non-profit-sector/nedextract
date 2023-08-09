@@ -27,9 +27,10 @@ text = preprocess_pdf(infile, ' ')
 nlp = stanza.Pipeline(lang='nl', processors='tokenize,ner')
 doc = nlp(text)
 
+
 class TestExtractRelatedOrgas(unittest.TestCase):
     """Unit test class for functions used to extract orgaisations mentioned in a pdf file.
-    
+
     Test methods:
     - test_collect_orgs: tests the function collect organisations that collects organisations that are mentioned in text
     - test_decide_org: tests the function decide_orgs that defines a decision tree to determine if a mentioned organisations
@@ -38,27 +39,26 @@ class TestExtractRelatedOrgas(unittest.TestCase):
     - test_apply_matching: tests the apply_matching function that tries to match a name with values in
       one of two provided columns in a dataframe
     """
-    
+
     def test_collect_orgs(self):
         """Unit test for the collect_orgs function.
-        
+
         Function that tests the collect_orgs function that collects organisations that are mentioned in a text using stanza NER
-        with a number of postprocessing steps. One test case is applied, that tests if the expected organisations are 
+        with a number of postprocessing steps. One test case is applied, that tests if the expected organisations are
         returned from a test file.
-        
+
         Raises:
             AssertionError: If any of the assert statement fails, indicating incorrect return values.
         """
         orgs = collect_orgs(infile, nlp)
         self.assertEqual(orgs, ['Bedrijf2', 'Bedrijf3'])
 
-
     def test_decide_org(self):
         """Unit test for the function decide_org.
-        
+
         Function that tests the function decide_orgs that defines a decision tree to determine if a mentioned organisations
         is likely a true organisation.
-        
+
         Nine assertion tests are defined that test for various test names, if the expected result is returned
         for different percentage the organisation was found as org, and the total number of times the organisaiont was
         found in the text.
@@ -122,26 +122,26 @@ class TestExtractRelatedOrgas(unittest.TestCase):
 
     def test_match_anbis(self):
         """Unit test for the match_anbis function.
-        
+
         Tests the match_anbis function that tries to match found organisations with info about known anbis.
         There is one test case that uses a test_anbis.csv file and a test.pdf file (from which a pd dataframe is created)
         and asserts whether the returned DataFrame matches the expected df.
-        
+
         Returns:
             AssertionError: If the returned df does not match the expected df.
         """
         anbis_file = os.path.join(os.path.join(os.getcwd(), 'tests'), 'test_anbis.csv')
         df_in = pd.DataFrame({'Input_file': ['test.pdf'],
-                            'mentioned_organization': ['B1 b.v.'],
-                            'n_mentions': [1]})
+                              'mentioned_organization': ['B1 b.v.'],
+                              'n_mentions': [1]})
         df_out = match_anbis(df_in, anbis_file)
         e_out = pd.DataFrame({'Input_file': ['test.pdf'],
-                            'mentioned_organization': ['B1 b.v.'],
-                            'n_mentions': [1],
-                            'matched_anbi': ['Stichting B1 b.v.'],
-                            'rsin': ['11'],
-                            'currentStatutoryName':['Bedrijf1'],
-                            'shortBusinessName':['Stichting B1 b.v.']})
+                              'mentioned_organization': ['B1 b.v.'],
+                              'n_mentions': [1],
+                              'matched_anbi': ['Stichting B1 b.v.'],
+                              'rsin': ['11'],
+                              'currentStatutoryName': ['Bedrijf1'],
+                              'shortBusinessName': ['Stichting B1 b.v.']})
         pd.testing.assert_frame_equal(df_out, e_out)
 
     def test_apply_matching(self):
@@ -155,7 +155,7 @@ class TestExtractRelatedOrgas(unittest.TestCase):
         """
         # Test case 1
         df = pd.DataFrame({'currentStatutoryName': ['Bedrijf1', 'Bedrijf2'],
-                        'shortBusinessName': ['B1 b.v.', 'B2 b.v.']})
+                           'shortBusinessName': ['B1 b.v.', 'B2 b.v.']})
         m = 'Bedrijf2'
         o_m = apply_matching(df, m, 'currentStatutoryName', 'shortBusinessName')
         e_m = 'Bedrijf2'
@@ -166,10 +166,10 @@ class TestExtractRelatedOrgas(unittest.TestCase):
         o_m = apply_matching(df, m, 'currentStatutoryName', 'shortBusinessName')
         e_m = None
         self.assertEqual(o_m, e_m)
-        
+
         # Test case 3
         df = pd.DataFrame({'currentStatutoryName': ['Bedrijf1', 'Bedrijf2'],
-                        'shortBusinessName': ['Stichting B1 b.v.', 'B2 b.v.']})
+                           'shortBusinessName': ['Stichting B1 b.v.', 'B2 b.v.']})
         m = 'B1 b.v.'
         o_m = apply_matching(df, m, 'currentStatutoryName', 'shortBusinessName')
         e_m = 'Stichting B1 b.v.'

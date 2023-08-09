@@ -14,87 +14,88 @@ infile2 = os.path.join(indir, 'test_report3.pdf')
 
 # Inout for test cases
 people = ('A.B. de Wit\nAnna de Wit\nBernard Zwartjes\nCornelis Geel\nD.A. Rooden\n' +
-              'Dirkje Rooden\nE. van Grijs\nEduard van Grijs\nF. de Blauw\nFerdinand de Blauw\n' +
-              'G. Roze\nGerard Roze\nH. Doe\nHendrik Doe\nHendrik Groen\nIsaak Paars\nJ. Doe\n' +
-              'Jan van Oranje\nJane Doe\nKarel\nLodewijk\nMaria\nMohammed El Idrissi\n' +
-              'Mr. H. Hendrik Groen\nNico\nOtto\nPieter\nSarah\nSaïda Benali\nThomas\n')
+          'Dirkje Rooden\nE. van Grijs\nEduard van Grijs\nF. de Blauw\nFerdinand de Blauw\n' +
+          'G. Roze\nGerard Roze\nH. Doe\nHendrik Doe\nHendrik Groen\nIsaak Paars\nJ. Doe\n' +
+          'Jan van Oranje\nJane Doe\nKarel\nLodewijk\nMaria\nMohammed El Idrissi\n' +
+          'Mr. H. Hendrik Groen\nNico\nOtto\nPieter\nSarah\nSaïda Benali\nThomas\n')
 bestuursmensen = ('Jane Doe\nDirkje Rooden\nEduard van Grijs\nFerdinand de Blauw\n' +
-                      'Anna de Wit\nHendrik Doe\nCornelis Geel\nBernard Zwartjes\nIsaak Paars\n' +
-                      'Jan van Oranje\nKarel\nLodewijk\nMaria\nGerard Roze\n' +
-                      'Hendrik Groen\nMohammed El Idrissi\nSaïda Benali\n')
+                  'Anna de Wit\nHendrik Doe\nCornelis Geel\nBernard Zwartjes\nIsaak Paars\n' +
+                  'Jan van Oranje\nKarel\nLodewijk\nMaria\nGerard Roze\n' +
+                  'Hendrik Groen\nMohammed El Idrissi\nSaïda Benali\n')
 posities = ('Anna de Wit - rvt - vice-voorzitter\nDirkje Rooden - bestuur - lid\n' +
-                'Eduard van Grijs - bestuur - \nFerdinand de Blauw - bestuur - \n' +
-                'Gerard Roze - kascommissie - voorzitter\nHendrik Doe - rvt - voorzitter\n' +
-                'Hendrik Groen - kascommissie - \nJane Doe - directeur - directeur\n' +
-                'Cornelis Geel - rvt - lid\nIsaak Paars - ledenraad - voorzitter\n' +
-                'Jan van Oranje - ledenraad - penningmeester\nKarel - ledenraad - lid\n' +
-                'Lodewijk - ledenraad - \nMaria - ledenraad - \n' +
-                'Mohammed El Idrissi - controlecommissie - \n' +
-                'Saïda Benali - controlecommissie - \nBernard Zwartjes - rvt - \n')
+            'Eduard van Grijs - bestuur - \nFerdinand de Blauw - bestuur - \n' +
+            'Gerard Roze - kascommissie - voorzitter\nHendrik Doe - rvt - voorzitter\n' +
+            'Hendrik Groen - kascommissie - \nJane Doe - directeur - directeur\n' +
+            'Cornelis Geel - rvt - lid\nIsaak Paars - ledenraad - voorzitter\n' +
+            'Jan van Oranje - ledenraad - penningmeester\nKarel - ledenraad - lid\n' +
+            'Lodewijk - ledenraad - \nMaria - ledenraad - \n' +
+            'Mohammed El Idrissi - controlecommissie - \n' +
+            'Saïda Benali - controlecommissie - \nBernard Zwartjes - rvt - \n')
 
 # Expected output for test cases
 expected_output_people = ([os.path.basename(infile1),
-                       'Bedrijf',
-                        people,
-                        'Sarah\nThomas\n',
-                        bestuursmensen,
-                        posities,
-                        'Jane Doe', '', '', '', '',
-                        'Anna de Wit', 'Hendrik Doe', 'Cornelis Geel', 'Bernard Zwartjes', '', '',
-                        '', '', '', '', '', '', '', '', '', '', '', '', '', '',
-                        'Dirkje Rooden', 'Eduard van Grijs', 'Ferdinand de Blauw', '', '', '', '',
-                        '', '', '', '', '', '', '', '', '', '', '', '', '',
-                        'Isaak Paars', 'Jan van Oranje', 'Karel', 'Lodewijk', 'Maria', '', '', '',
-                        '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
-                        '', '', '',
-                        'Gerard Roze', 'Hendrik Groen', '', '', '',
-                        'Mohammed El Idrissi', 'Saïda Benali', '', '', ''])
+                           'Bedrijf',
+                           people,
+                           'Sarah\nThomas\n',
+                           bestuursmensen,
+                           posities,
+                           'Jane Doe', '', '', '', '',
+                           'Anna de Wit', 'Hendrik Doe', 'Cornelis Geel', 'Bernard Zwartjes', '', '',
+                           '', '', '', '', '', '', '', '', '', '', '', '', '', '',
+                           'Dirkje Rooden', 'Eduard van Grijs', 'Ferdinand de Blauw', '', '', '', '',
+                           '', '', '', '', '', '', '', '', '', '', '', '', '',
+                           'Isaak Paars', 'Jan van Oranje', 'Karel', 'Lodewijk', 'Maria', '', '', '',
+                           '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
+                           '', '', '',
+                           'Gerard Roze', 'Hendrik Groen', '', '', '',
+                           'Mohammed El Idrissi', 'Saïda Benali', '', '', ''])
 
 e_op1 = np.array([[os.path.basename(infile1), 'Bedrijf',
-              'A.B. de Wit\nAnna de Wit\nBernard Zwartjes\nCornelis Geel\nD.A. Rooden\n' +
-              'Dirkje Rooden\nE. van Grijs\nEduard van Grijs\nF. de Blauw\nFerdinand de Blauw\n' +
-              'G. Roze\nGerard Roze\nH. Doe\nHendrik Doe\nHendrik Groen\nIsaak Paars\nJ. Doe\n' +
-              'Jan van Oranje\nJane Doe\nKarel\nLodewijk\nMaria\nMohammed El Idrissi\n' +
-              'Mr. H. Hendrik Groen\nNico\nOtto\nPieter\nSarah\nSaïda Benali\nThomas\n',
-              'Sarah\nThomas\n',
-              'Jane Doe\nDirkje Rooden\nEduard van Grijs\nFerdinand de Blauw\nAnna de Wit\n' +
-              'Hendrik Doe\nCornelis Geel\nBernard Zwartjes\nIsaak Paars\nJan van Oranje\n' +
-              'Karel\nLodewijk\nMaria\nGerard Roze\nHendrik Groen\nMohammed El Idrissi\n' +
-              'Saïda Benali\n',
-              'Anna de Wit - rvt - vice-voorzitter\nDirkje Rooden - bestuur - lid\n' +
-              'Eduard van Grijs - bestuur - \nFerdinand de Blauw - bestuur - \n' +
-              'Gerard Roze - kascommissie - voorzitter\nHendrik Doe - rvt - voorzitter\n' +
-              'Hendrik Groen - kascommissie - \nJane Doe - directeur - directeur\n' +
-              'Cornelis Geel - rvt - lid\nIsaak Paars - ledenraad - voorzitter\n' +
-              'Jan van Oranje - ledenraad - penningmeester\nKarel - ledenraad - lid\n' +
-              'Lodewijk - ledenraad - \nMaria - ledenraad - \n' +
-              'Mohammed El Idrissi - controlecommissie - \nSaïda Benali - controlecommissie - \n' +
-              'Bernard Zwartjes - rvt - \n',
-              'Jane Doe', '', '', '', '',
-              'Anna de Wit', 'Hendrik Doe', 'Cornelis Geel', 'Bernard Zwartjes', '', '', '', '',
-              '', '', '', '', '', '', '', '', '', '', '', '',
-              'Dirkje Rooden', 'Eduard van Grijs', 'Ferdinand de Blauw', '', '', '', '', '', '',
-              '', '', '', '', '', '', '', '', '', '', '',
-              'Isaak Paars', 'Jan van Oranje', 'Karel', 'Lodewijk', 'Maria', '', '', '', '', '',
-              '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
-              'Gerard Roze', 'Hendrik Groen', '', '', '',
-              'Mohammed El Idrissi', 'Saïda Benali', '', '', '']])
+                   'A.B. de Wit\nAnna de Wit\nBernard Zwartjes\nCornelis Geel\nD.A. Rooden\n' +
+                   'Dirkje Rooden\nE. van Grijs\nEduard van Grijs\nF. de Blauw\nFerdinand de Blauw\n' +
+                   'G. Roze\nGerard Roze\nH. Doe\nHendrik Doe\nHendrik Groen\nIsaak Paars\nJ. Doe\n' +
+                   'Jan van Oranje\nJane Doe\nKarel\nLodewijk\nMaria\nMohammed El Idrissi\n' +
+                   'Mr. H. Hendrik Groen\nNico\nOtto\nPieter\nSarah\nSaïda Benali\nThomas\n',
+                   'Sarah\nThomas\n',
+                   'Jane Doe\nDirkje Rooden\nEduard van Grijs\nFerdinand de Blauw\nAnna de Wit\n' +
+                   'Hendrik Doe\nCornelis Geel\nBernard Zwartjes\nIsaak Paars\nJan van Oranje\n' +
+                   'Karel\nLodewijk\nMaria\nGerard Roze\nHendrik Groen\nMohammed El Idrissi\n' +
+                   'Saïda Benali\n',
+                   'Anna de Wit - rvt - vice-voorzitter\nDirkje Rooden - bestuur - lid\n' +
+                   'Eduard van Grijs - bestuur - \nFerdinand de Blauw - bestuur - \n' +
+                   'Gerard Roze - kascommissie - voorzitter\nHendrik Doe - rvt - voorzitter\n' +
+                   'Hendrik Groen - kascommissie - \nJane Doe - directeur - directeur\n' +
+                   'Cornelis Geel - rvt - lid\nIsaak Paars - ledenraad - voorzitter\n' +
+                   'Jan van Oranje - ledenraad - penningmeester\nKarel - ledenraad - lid\n' +
+                   'Lodewijk - ledenraad - \nMaria - ledenraad - \n' +
+                   'Mohammed El Idrissi - controlecommissie - \nSaïda Benali - controlecommissie - \n' +
+                   'Bernard Zwartjes - rvt - \n',
+                   'Jane Doe', '', '', '', '',
+                   'Anna de Wit', 'Hendrik Doe', 'Cornelis Geel', 'Bernard Zwartjes', '', '', '', '',
+                   '', '', '', '', '', '', '', '', '', '', '', '',
+                   'Dirkje Rooden', 'Eduard van Grijs', 'Ferdinand de Blauw', '', '', '', '', '', '',
+                   '', '', '', '', '', '', '', '', '', '', '',
+                   'Isaak Paars', 'Jan van Oranje', 'Karel', 'Lodewijk', 'Maria', '', '', '', '', '',
+                   '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
+                   'Gerard Roze', 'Hendrik Groen', '', '', '',
+                   'Mohammed El Idrissi', 'Saïda Benali', '', '', '']])
 
 e_op2 = np.array(([[os.path.basename(infile2), 'Bedrijf',
-              'A.B. de Wit\nAnna de Wit\nBernard Zwartjes\nCornelis Geel\nH. Doe\nHendrik Doe\n' +
-              'J. Doe\nJane Doe\nQuirine de Bruin\nRudolph de Bruin\nSimon de Zwart\n' +
-              'Tinus de Zwart\nVictor Wit\nWillem Wit\nXantippe de Bruin\nYolanda\nZander\n',
-              '',
-              'Jane Doe\nAnna de Wit\nHendrik Doe\nBernard Zwartjes\nCornelis Geel\n',
-              'Anna de Wit - rvt - vice-voorzitter\nHendrik Doe - rvt - voorzitter\n' +
-              'Jane Doe - directeur - directeur\nBernard Zwartjes - rvt - \n' +
-              'Cornelis Geel - rvt - lid\n',
-              'Jane Doe', '', '', '', '',
-              'Anna de Wit', 'Hendrik Doe', 'Bernard Zwartjes', 'Cornelis Geel',
-              '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
-              '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
-              '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
-              '', '', '', '', '', '', '', '', '', '', '', '', '']]))
+                    'A.B. de Wit\nAnna de Wit\nBernard Zwartjes\nCornelis Geel\nH. Doe\nHendrik Doe\n' +
+                    'J. Doe\nJane Doe\nQuirine de Bruin\nRudolph de Bruin\nSimon de Zwart\n' +
+                    'Tinus de Zwart\nVictor Wit\nWillem Wit\nXantippe de Bruin\nYolanda\nZander\n',
+                    '',
+                    'Jane Doe\nAnna de Wit\nHendrik Doe\nBernard Zwartjes\nCornelis Geel\n',
+                    'Anna de Wit - rvt - vice-voorzitter\nHendrik Doe - rvt - voorzitter\n' +
+                    'Jane Doe - directeur - directeur\nBernard Zwartjes - rvt - \n' +
+                    'Cornelis Geel - rvt - lid\n',
+                    'Jane Doe', '', '', '', '',
+                    'Anna de Wit', 'Hendrik Doe', 'Bernard Zwartjes', 'Cornelis Geel',
+                    '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
+                    '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
+                   '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
+                    '', '', '', '', '', '', '', '', '', '', '', '', '']]))
+
 
 class TestReadPDF(unittest.TestCase):
     """Unit test class for the PDFInformationExtractor.
@@ -114,7 +115,7 @@ class TestReadPDF(unittest.TestCase):
 
     def test_extract_pdf(self):
         """Unit test function for the 'extract_pdf' method using multiple test cases.
-        
+
         The tests use two predefined test pdf files.
 
         Test Cases:
@@ -130,21 +131,21 @@ class TestReadPDF(unittest.TestCase):
         # Test case 1
         tasks = ['all']
         extractor = PDFInformationExtractor(tasks, None, None, None)
-        opd_p = np.array([]).reshape(0,91)
-        opd_g = np.array([]).reshape(0,3)
-        opd_o = np.array([]).reshape(0,3)
+        opd_p = np.array([]).reshape(0, 91)
+        opd_g = np.array([]).reshape(0, 3)
+        opd_o = np.array([]).reshape(0, 3)
         op, og, oo = extractor.extract_pdf(infile1, opd_p, opd_g, opd_o)
         e_og = np.array([[os.path.basename(infile1), 'Bedrijf', 'Natuur en milieu']])
         e_oo = np.array([[os.path.basename(infile1), 'Bedrijf2', '1'],
-                [os.path.basename(infile1), 'Bedrijf3', '1']])
+                         [os.path.basename(infile1), 'Bedrijf3', '1']])
         self.assertTrue(np.alltrue(e_op1 == op))
         self.assertTrue(np.alltrue(e_og == og))
         self.assertTrue(np.alltrue(e_oo == oo))
 
         # Test case 2
-        opd_p = np.array([]).reshape(0,91)
-        opd_g = np.array([]).reshape(0,3)
-        opd_o = np.array([]).reshape(0,3)
+        opd_p = np.array([]).reshape(0, 91)
+        opd_g = np.array([]).reshape(0, 3)
+        opd_o = np.array([]).reshape(0, 3)
         tasks = ['sectors']
         extractor = PDFInformationExtractor(tasks, None, None, None)
         op, og, oo = extractor.extract_pdf(infile1, opd_p, opd_g, opd_o)
@@ -153,9 +154,9 @@ class TestReadPDF(unittest.TestCase):
         self.assertTrue(np.alltrue(oo == opd_o))
 
         # Test case 3
-        opd_p = np.array([]).reshape(0,91)
-        opd_g = np.array([]).reshape(0,3)
-        opd_o = np.array([]).reshape(0,3)
+        opd_p = np.array([]).reshape(0, 91)
+        opd_g = np.array([]).reshape(0, 3)
+        opd_o = np.array([]).reshape(0, 3)
         tasks = ['people']
         extractor = PDFInformationExtractor(tasks, None, None, None)
         op, og, oo = extractor.extract_pdf(infile1, opd_p, opd_g, opd_o)
@@ -164,9 +165,9 @@ class TestReadPDF(unittest.TestCase):
         self.assertTrue(np.alltrue(oo == opd_o))
 
         # Test case 4
-        opd_p = np.array([]).reshape(0,91)
-        opd_g = np.array([]).reshape(0,3)
-        opd_o = np.array([]).reshape(0,3)
+        opd_p = np.array([]).reshape(0, 91)
+        opd_g = np.array([]).reshape(0, 3)
+        opd_o = np.array([]).reshape(0, 3)
         tasks = ['orgs']
         extractor = PDFInformationExtractor(tasks, None, None, None)
         op, og, oo = extractor.extract_pdf(infile1, opd_p, opd_g, opd_o)
@@ -175,18 +176,17 @@ class TestReadPDF(unittest.TestCase):
         self.assertTrue(np.alltrue(oo == e_oo))
 
         # Test case 5
-        opd_p = np.array([]).reshape(0,91)
-        opd_g = np.array([]).reshape(0,3)
-        opd_o = np.array([]).reshape(0,3)
+        opd_p = np.array([]).reshape(0, 91)
+        opd_g = np.array([]).reshape(0, 3)
+        opd_o = np.array([]).reshape(0, 3)
         tasks = ['people']
         extractor = PDFInformationExtractor(tasks, None, None, None)
         op, og, oo = extractor.extract_pdf(infile2, opd_p, opd_g, opd_o)
         self.assertTrue(np.alltrue(op == e_op2))
 
-
     def test_ouput_people(self):
         """Unit test function for the output_people method.
-        
+
         This method tests the function which gathers information about people mentioned in a text (name and funciton)
         and structures the output. The tests use the predefined test pdf file 'infile1'.
 
@@ -200,7 +200,6 @@ class TestReadPDF(unittest.TestCase):
         text = preprocess_pdf(infile1, ' ')
         doc = stanza.Pipeline(lang='nl', processors='tokenize,ner')(text)
         self.assertEqual(extractor.output_people(infile1, doc, 'Bedrijf'), expected_output_people)
-
 
     def test_ots(self):
         r"""Unit test function for the 'ots' method.
@@ -218,7 +217,6 @@ class TestReadPDF(unittest.TestCase):
         test = np.array(['test', 'test2'])
         self.assertEqual(PDFInformationExtractor.ots(test), str('test\ntest2\n'))
 
-
     def test_atc(self):
         """Unit test function for the 'atc' method.
 
@@ -234,14 +232,13 @@ class TestReadPDF(unittest.TestCase):
         test = np.array(['Jane', 'Doe', 'John Doe'])
         self.assertEqual(extractor.atc(test, 2), ['Jane', 'Doe\nJohn Doe\n'])
 
-
     def test_stanza_NL(self):
         """Unit test function for the 'download_stanza_NL' function.
 
         This function tests the 'download_stanza_NL' function by checking if the downloaded
         stanza data file exists. The function downloads the required Stanza
         (NLP library) data for the Dutch language.
-        
+
         Raises:
             AssertionError: If the 'download_stanza_NL' function fails to download the data
                             or if the downloaded file does not exist.

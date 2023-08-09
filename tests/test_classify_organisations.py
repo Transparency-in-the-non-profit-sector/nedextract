@@ -13,20 +13,20 @@ inputfile = os.path.join(infolder, 'test_excel.xlsx')
 
 class TestClassifyOrganisations(unittest.TestCase):
     """Unit tests for classify_organisations.
-    
+
     This class contains the following functions:
-    - test_file_to_pd: tests the file_to_pd function that reads an excel file into a pandas dataframe and 
+    - test_file_to_pd: tests the file_to_pd function that reads an excel file into a pandas dataframe and
       performs some preprocssing steps
     - test_train: tests the train function which trains a Multinomial Naive Bayes
       classifier to classify texts into main sector categories.
-    - test_predict_main_sector: tests the predict_main_section function which predicts the main sector 
+    - test_predict_main_sector: tests the predict_main_section function which predicts the main sector
       label of an organisation
     """
-    
+
     def test_file_to_pd(self):
         """Unit test function for the 'file_to_pd' function.
 
-        The 'file_to_pdf' function reads an excel file into a pandas dataframe and 
+        The 'file_to_pdf' function reads an excel file into a pandas dataframe and
         pefrforms some preprocssing steps.
 
         This test asserts for the inputfile 'test_excel.xslx' if the returned value is a pandas dataframe
@@ -36,7 +36,6 @@ class TestClassifyOrganisations(unittest.TestCase):
         """
         result = file_to_pd(inputfile)
         assert isinstance(result, pd.DataFrame)
-
 
     def test_train(self):
         """Unit test function for the 'train' function.
@@ -60,16 +59,15 @@ class TestClassifyOrganisations(unittest.TestCase):
         label = train(df, 0.99, 0.99, False)[1]
         assert label == 'Natuur'
 
-
     def test_predict_main_sector(self):
         """Unit test function for function 'predict_main_sector'.
-        
-        This function tests the 'predict_main_sector' function, which predicts the main sector 
-        label of an organisation based on input text, using a saved pretrained model 
+
+        This function tests the 'predict_main_sector' function, which predicts the main sector
+        label of an organisation based on input text, using a saved pretrained model
         (can be pretrained with the 'train()' function).
 
         The test function performs the following steps:
-        1. read the pretrained files (pretrained classifier, label encoding, 
+        1. read the pretrained files (pretrained classifier, label encoding,
         tf-idf vectorization).
         2. use file_to_pd to read the defined 'inputfile' to a pandas dataframe.
         3. determine the prediction sector for the dataframe using the 'predict_main_sector' function
@@ -81,7 +79,7 @@ class TestClassifyOrganisations(unittest.TestCase):
                             the expected sector label 'Natuur en milieu'.
         """
         saved_clf = os.path.join(os.path.join(os.getcwd(), 'Pretrained'),
-                                'trained_sector_classifier.joblib')
+                                 'trained_sector_classifier.joblib')
         saved_labels = os.path.join(os.path.join(os.getcwd(), 'Pretrained'),
                                     'labels_sector_classifier.joblib')
         saved_vector = os.path.join(os.path.join(os.getcwd(), 'Pretrained'),

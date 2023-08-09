@@ -5,12 +5,13 @@ from classes.nameanalysis import NameAnalysis
 
 # input names for NameAnalysis class
 pnames = ['Dr. Jane Doe', 'Jane Doe', 'J. Doe', 'Jane Elaine Doe',
-                'J.E. Doe', 'Jane White', 'William Doe', 'Jane']
+          'J.E. Doe', 'Jane White', 'William Doe', 'Jane']
 NameAnalysis = NameAnalysis(pnames)
+
 
 class TestExtractPersons(unittest.TestCase):
     """Unit test class for functions used to extract names and functions of people mentioned in a pdf file.
-    
+
     Test methods:
         - test_abbreviate: tests the 'abbreviate' function to abbreviate names
         - test_get_tsr: tests the 'get_tsr' function that determines the token set ratio for two names and the required score
@@ -22,7 +23,7 @@ class TestExtractPersons(unittest.TestCase):
         - test_count_occurrence: tests the 'count_occurrence' function that counts for a list of serach words the occurences in
           a text.
     """
-    
+
     def test_abbreviate(self):
         """Unit test function for the 'abbreviate' function.
 
@@ -49,13 +50,12 @@ class TestExtractPersons(unittest.TestCase):
         self.assertEqual(NameAnalysis.abbreviate(name4, 2), 'J P van der Wit ')
         self.assertEqual(NameAnalysis.abbreviate(name4, 3), 'J P van der Wit ')
 
-
     def test_get_tsr(self):
         """Unit test function for the 'get_tsr' function.
-        
+
         This function tests the get_tsr function that determines the token set ratio
         for two input names and the required score that is determed based on the `form` of the to test names
-        
+
         There are five test cases specified, each expecting a matching tsr score, but different
         required scores.
 
@@ -83,7 +83,6 @@ class TestExtractPersons(unittest.TestCase):
         self.assertEqual(tsr5, 100)
         self.assertEqual(rs5, 95)
 
-
     def test_strip_names_from_title(self):
         """Unit test for the 'strip_names_from_titles' funciton.
 
@@ -102,7 +101,6 @@ class TestExtractPersons(unittest.TestCase):
         out, out_r = NameAnalysis.strip_names_from_title(inp)
         self.assertEqual(out, expected)
         self.assertEqual(out_r, expected_removed)
-
 
     def test_find_duplicate_persons(self):
         """Unit test for the 'find_duplicate_names' function.
