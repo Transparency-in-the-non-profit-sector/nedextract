@@ -119,7 +119,7 @@ class TestExtractRelatedOrgas(unittest.TestCase):
         org_pp = ['Stichting Huppeldepup']
         org_c = np.array(['Bedrijf'])
         final = decide_org(org, pco, org_pp, org_c, nlp)
-        self.assertEqual(final, 'maybe')
+        self.assertFalse(final)
 
     def test_match_anbis(self):
         """Unit test for the match_anbis function.

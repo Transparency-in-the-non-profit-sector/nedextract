@@ -142,10 +142,8 @@ class OrganisationExtraction:
             is_org(bool): true if the test passes
         """
         org = self.org
-        print('org')
         doc_o = self.nlp(org)
         o_t = [f'{ent.text}' for ent in doc_o.ents if ent.type == "ORG"]
-        print('ot', o_t)
         is_org = bool(len(o_t) == 1 and org in o_t)
         return is_org
 
