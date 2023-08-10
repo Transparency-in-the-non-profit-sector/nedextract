@@ -79,13 +79,12 @@ Here YYYYMMDD and HHMMSS refer to the date and time at which the execution start
 
 ## Prerequisites
 1. [Python 3.8, or 3.9](https://www.python.org/downloads/)
-2. If you are using Microsoft Visual Studio Code, the Microsoft Visual C++ Build Tools are required, which can be found under ['Build Tools for Visual Studio'](https://visualstudio.microsoft.com/downloads/). 
-3. [Poppler](https://anaconda.org/conda-forge/poppler)
-4. Auto_extract requires the following Python packages: [FuzzyWuzzy](https://github.com/seatgeek/fuzzywuzzy) (with [python-Levenshtein](https://github.com/ztane/python-Levenshtein)), [NumPy](https://numpy.org), [openpyxl](https://openpyxl.readthedocs.io/en/stable/), [pandas](https://pandas.pydata.org), [pdftotext](https://github.com/jalan/pdftotext), [scikit-learn](https://scikit-learn.org/stable/), [Stanza](https://github.com/stanfordnlp/stanza), and [xlsxwriter](https://github.com/jmcnamara/XlsxWriter).
+2. [miniconda](https://docs.conda.io/en/latest/miniconda.html); miniconda is only required to install the requirements for pdftext, not to run auto_extract itself.
+3. If you are using Microsoft Visual Studio Code, the Microsoft Visual C++ Build Tools are required, which can be found under ['Build Tools for Visual Studio'](https://visualstudio.microsoft.com/downloads/). 
 
 ## Installation
 
-To install auto_extract from the GitHub repository, do:
+To install auto_extract from the GitHub repository, execute the following commands:
 
 ```console
 git clone https://github.com/Transparency-in-the-non-profit-sector/np-transparency.git
@@ -93,7 +92,9 @@ cd np-transparency
 python -m pip install .
 ```
 
-Auto_extract requires the following Python packages: [FuzzyWuzzy](https://github.com/seatgeek/fuzzywuzzy) (with [python-Levenshtein](https://github.com/ztane/python-Levenshtein)), [NumPy](https://numpy.org), [openpyxl](https://openpyxl.readthedocs.io/en/stable/), [pandas](https://pandas.pydata.org), [pdftotext](https://github.com/jalan/pdftotext), [scikit-learn](https://scikit-learn.org/stable/), [Stanza](https://github.com/stanfordnlp/stanza), and [xlsxwriter](https://github.com/jmcnamara/XlsxWriter).
+The last command installs the requirements to run auto_exract. The packages that are installed are: [FuzzyWuzzy](https://github.com/seatgeek/fuzzywuzzy) (with [python-Levenshtein](https://github.com/ztane/python-Levenshtein)), [NumPy](https://numpy.org), [openpyxl](https://openpyxl.readthedocs.io/en/stable/), [pandas](https://pandas.pydata.org), [pdftotext](https://github.com/jalan/pdftotext), [scikit-learn](https://scikit-learn.org/stable/), [Stanza](https://github.com/stanfordnlp/stanza), and [xlsxwriter](https://github.com/jmcnamara/XlsxWriter).[^]
+
+[^1]: If you encounter problems with the installation, these often arise from the installation of poppler or python-poppler, which is a requirement for pdftotext. Help can generally be found on [pdftotext](https://pypi.org/project/pdftotext/), or [python-poppler](https://pypi.org/project/python-poppler/).
 <br/><br/>
 
 ## Contributing
