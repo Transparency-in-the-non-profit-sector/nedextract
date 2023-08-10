@@ -17,7 +17,7 @@ setup(name='run_auto_extract',
       description='automatically extract information from Dutch annual report PDF files',
       author='Laura S. Ootes',
       author_email='l.ootes@esciencecenter.nl',
-      python_requires='>=3.7',
+      python_requires='>=3.8',
       packages=['auto_extract'],
       license='Apache Software License',
       url='https://github.com/Transparency-in-the-non-profit-sector/np-transparency'
