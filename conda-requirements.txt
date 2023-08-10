@@ -3,4 +3,4 @@
 Windows has issues to install python-poppler with pip, therefore install it with conda
 """
 
-python-poppler
+poppler
