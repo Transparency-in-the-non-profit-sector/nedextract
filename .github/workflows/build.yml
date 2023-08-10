@@ -3,8 +3,7 @@ name: Build
 on:
   push:
     branches:
-    - main"
-    - 18-add-code-coverage
+    - main
   pull_request:
 
 jobs:
@@ -68,12 +67,7 @@ jobs:
         run: prospector
       - name: Check import order
         run: isort --recursive --check-only auto_extract
-      - name: Run unit tests with coverage
-        run: pytest --cov --cov-report term --cov-report xml --cov-report html
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - name: Run unit tests
+        run: pytest -v
       - name: Verify that we can build the package
         run: python setup.py sdist bdist_wheel
