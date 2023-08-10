@@ -1,6 +1,1 @@
-""" Conda requirements to install.
-
-Windows has issues to install python-poppler with pip, therefore install it with conda
-"""
-
 poppler
