@@ -7,7 +7,7 @@ Licensed under the Apache License, version 2.0. See LICENSE for details.
 from setuptools import setup
 
 # Read conda requirements from conda-requirements.txt
-with open('conda-requirements.txt', 'r') as f:
+with open('conda-requirements.txt', 'r', encoding="utf-8") as f:
     conda_requirements = [line.strip() for line in f if line.strip()]
 
 
