@@ -6,6 +6,10 @@ Licensed under the Apache License, version 2.0. See LICENSE for details.
 
 from setuptools import setup
 
+# Read conda requirements from conda-requirements.txt
+with open('conda-requirements.txt', 'r') as f:
+    conda_requirements = [line.strip() for line in f if line.strip()]
+
 
 # see setup.cfg
 setup(name='run_auto_extract',
@@ -15,17 +19,6 @@ setup(name='run_auto_extract',
       author_email='l.ootes@esciencecenter.nl',
       python_requires='>=3.7',
       packages=['auto_extract'],
-      install_requires=['fuzzywuzzy==0.18.0',
-                        'numpy>=1.21.5',
-                        'pandas>=1.3.5',
-                        'python-Levenshtein==0.12.2',
-                        'openpyxl==3.0.9',
-                        'scikit-learn==1.0.2',
-                        'stanza>=1.3.0',
-                        'xlsxwriter',
-                        'certifi',
-                        'python-poppler',
-                        'pdftotext==2.2.2'],
       license='Apache Software License',
       url='https://github.com/Transparency-in-the-non-profit-sector/np-transparency'
       )
