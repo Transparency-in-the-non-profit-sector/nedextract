@@ -2,12 +2,10 @@
 [![github license badge](https://img.shields.io/github/license/Transparency-in-the-non-profit-sector/np-transparency)](https://github.com/Transparency-in-the-non-profit-sector/np-transparency)
 [![RSD](https://img.shields.io/badge/rsd-auto_extract-00a3e3.svg)](https://research-software-directory.org/projects/transparency-in-non-profit) 
 [![fair-software badge](https://img.shields.io/badge/fair--software.eu-%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8B-yellow)](https://fair-software.eu) 
-[![workflow scc badge](https://sonarcloud.io/api/project_badges/measure?project=Transparency-in-the-non-profit-sector_np-transparency&metric=coverage)](https://sonarcloud.io/dashboard?id=Transparency-in-the-non-profit-sector_np-transparency)
-[![Documentation Status](https://github.com/Transparency-in-the-non-profit-sector/np-transparency)](https://github.com/Transparency-in-the-non-profit-sector/np-transparency)
 [![build](https://github.com/Transparency-in-the-non-profit-sector/np-transparency/actions/workflows/build.yml/badge.svg)](https://github.com/Transparency-in-the-non-profit-sector/np-transparency/actions/workflows/build.yml)
 [![cffconvert](https://github.com/Transparency-in-the-non-profit-sector/np-transparency/actions/workflows/cffconvert.yml/badge.svg)](https://github.com/Transparency-in-the-non-profit-sector/np-transparency/actions/workflows/cffconvert.yml) 
 [![sonarcloud](https://github.com/Transparency-in-the-non-profit-sector/np-transparency/actions/workflows/sonarcloud.yml/badge.svg)](https://github.com/Transparency-in-the-non-profit-sector/np-transparency/actions/workflows/sonarcloud.yml)
-[![markdown-link-check](https://github.com/Transparency-in-the-non-profit-sector/np-transparency/actions/workflows/markdown-link-check.yml/badge.svg)](https://github.com/Transparency-in-the-non-profit-sector/np-transparency/actions/workflows/markdown-link-check.yml) |
+[![markdown-link-check](https://github.com/Transparency-in-the-non-profit-sector/np-transparency/actions/workflows/markdown-link-check.yml/badge.svg)](https://github.com/Transparency-in-the-non-profit-sector/np-transparency/actions/workflows/markdown-link-check.yml)
 <br/><br/>
 
 ## How to use auto_extract
@@ -92,9 +90,9 @@ cd np-transparency
 python -m pip install .
 ```
 
-The last command installs the requirements to run auto_exract. The packages that are installed are: [FuzzyWuzzy](https://github.com/seatgeek/fuzzywuzzy) (with [python-Levenshtein](https://github.com/ztane/python-Levenshtein)), [NumPy](https://numpy.org), [openpyxl](https://openpyxl.readthedocs.io/en/stable/), [pandas](https://pandas.pydata.org), [pdftotext](https://github.com/jalan/pdftotext), [scikit-learn](https://scikit-learn.org/stable/), [Stanza](https://github.com/stanfordnlp/stanza), and [xlsxwriter](https://github.com/jmcnamara/XlsxWriter).[^]
+The last command installs the requirements to run auto_exract. The packages that are installed are: [FuzzyWuzzy](https://github.com/seatgeek/fuzzywuzzy) (with [python-Levenshtein](https://github.com/ztane/python-Levenshtein)), [NumPy](https://numpy.org), [openpyxl](https://openpyxl.readthedocs.io/en/stable/), [pandas](https://pandas.pydata.org), [pdftotext](https://github.com/jalan/pdftotext), [scikit-learn](https://scikit-learn.org/stable/), [Stanza](https://github.com/stanfordnlp/stanza), and [xlsxwriter](https://github.com/jmcnamara/XlsxWriter).[^1]
 
-[^1]: If you encounter problems with the installation, these often arise from the installation of poppler or python-poppler, which is a requirement for pdftotext. Help can generally be found on [pdftotext](https://pypi.org/project/pdftotext/), or [python-poppler](https://pypi.org/project/python-poppler/).
+[^1]: If you encounter problems with the installation, these often arise from the installation of poppler, which is a requirement for pdftotext. Help can generally be found on [pdftotext](https://pypi.org/project/pdftotext/).
 <br/><br/>
 
 ## Contributing
