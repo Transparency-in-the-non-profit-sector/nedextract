@@ -10,33 +10,11 @@ on:
 jobs:
   sonarcloud:
     name: SonarCloud
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: ['ubuntu-latest', 'macos-latest', 'windows-latest']
-        python-version: ['3.8', '3.9']
-    defaults:
-      run:
-        shell: bash -l {0}
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
-          fetch-depth: 0
-          path: base-npt
-          ref: ${{ github.base_ref }}
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: conda-incubator/setup-miniconda@v2
-        with:
-          auto-update-conda: true
-          python-version: ${{ matrix.python-version }}
-          activate-environment: npt-env
-      - name: Activate conda environment, get python info, and install poppler
-        run: |
-          conda activate npt-env
-          which python
-          python --version
-          conda install --file conda-requirements.txt
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
       - name: Install Poppler
         run: |
           if [ "$RUNNER_OS" == "Linux" ]; then
