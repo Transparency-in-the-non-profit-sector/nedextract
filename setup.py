@@ -6,6 +6,10 @@ Licensed under the Apache License, version 2.0. See LICENSE for details.
 
 from setuptools import setup
 
+# Read conda requirements from conda-requirements.txt
+with open('conda-requirements.txt', 'r', encoding="utf-8") as f:
+    conda_requirements = [line.strip() for line in f if line.strip()]
+
 
 # see setup.cfg
 setup(name='run_auto_extract',
@@ -13,7 +17,7 @@ setup(name='run_auto_extract',
       description='automatically extract information from Dutch annual report PDF files',
       author='Laura S. Ootes',
       author_email='l.ootes@esciencecenter.nl',
-      python_requires='>=3.7',
+      python_requires='>=3.8',
       packages=['auto_extract'],
       install_requires=['fuzzywuzzy==0.18.0',
                         'numpy>=1.21.5',
