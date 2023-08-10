@@ -17,6 +17,7 @@ jobs:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
       - name: Install dependencies
         run: |
+            conda install --file conda-requirements.txt
             python -m pip install --upgrade pip setuptools
             python -m pip install .
       - name: Run unit tests with coverage
