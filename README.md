@@ -41,9 +41,8 @@ Auto_extract is being developed to extract specific information from annual repo
     - Finally, the identified organisations are attempted to be matched on a list of provided organisations, to collect their rsin number for further analysis. See also the optional `-af` argument description. If the `-af` argument is not provided, by default, the empty file `./Data/Anbis_clean.csv` will be used. Matching is attempted both on currentStatutoryName and shortBusinessName. Only full matches (independent of capitals) and full matches with the additional term 'Stichting' at the start of the identified organisation (again independent of capitals) are considered for matching. Fuzzy matching is not used here, because it leads to a significant amount of false positives.
 
 
-- Classify the sector in which the organisation is active. The code uses a pre-trained model to identify one of eight sectors in which the organisation is active. 
+- Classify the sector in which the organisation is active. The code uses a pre-trained model to identify one of eight sectors in which the organisation is active. The model is trained on the 2020 annual report pdf files of CBF certified organisations.
 
-- Determine to which sustainable development goals (SDG) the organisation contributes to. (under development)
 
 <br/><br/>
 <b>How to run</b>  
