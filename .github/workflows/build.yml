@@ -55,6 +55,7 @@ jobs:
             conda install -c conda-forge poppler
           else
             conda install -c conda-forge poppler
+            conda install -c conda-forge python-poppler
             conda install -c conda-forge pdftotext
           fi
       - name: Upgrade pip and install dependencies
