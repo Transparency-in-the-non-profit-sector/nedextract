@@ -24,6 +24,7 @@ setup(name='run_auto_extract',
                         'stanza>=1.3.0',
                         'xlsxwriter',
                         'certifi',
+                        'python-poppler',
                         'pdftotext==2.2.2'],
       license='Apache Software License',
       url='https://github.com/Transparency-in-the-non-profit-sector/np-transparency'
