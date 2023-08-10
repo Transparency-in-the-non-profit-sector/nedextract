@@ -37,11 +37,12 @@ jobs:
           auto-update-conda: true
           python-version: ${{ matrix.python-version }}
           activate-environment: npt-env
-      - name: Activate conda environment and get python info
+      - name: Activate conda environment, get python info, and install poppler
         run: |
           conda activate npt-env
           which python
           python --version
+          conda install --file conda-requirements.txt
       - name: Install Poppler
         run: |
           if [ "$RUNNER_OS" == "Linux" ]; then
@@ -55,6 +56,7 @@ jobs:
             conda install -c conda-forge poppler
           else
             conda install -c conda-forge poppler
+            conda install -c conda-forge pdftotext
           fi
       - name: Upgrade pip and install dependencies
         run: |

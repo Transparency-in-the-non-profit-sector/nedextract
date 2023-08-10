@@ -44,6 +44,9 @@ class UnitTestsPreprocessing(unittest.TestCase):
         This function tests the funciton delete_downloaded pdf that deletes the file that is downloaded with the function
         download_pdf and saved as downloaded.pdf from the cwd.
         """
+        url = ("https://github.com/Transparency-in-the-non-profit-sector/" +
+               "np-transparency/blob/main/tests/test_report.pdf")
+        filename = download_pdf(url)
         delete_downloaded_pdf()
         filename = os.path.join(os.getcwd(), "downloaded.pdf")
         self.assertFalse(os.path.exists(filename))
