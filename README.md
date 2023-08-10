@@ -1,24 +1,11 @@
-## Badges
-
-<!---(Customize these badges with your own links, and check https://shields.io/ or https://badgen.net/ to see which other badges are available.)---->
-
-| fair-software.eu recommendations | |
-| :-- | :--  |
-| (1/5) code repository              | [![github repo badge](https://img.shields.io/badge/github-repo-000.svg?logo=github&labelColor=gray&color=blue)](https://github.com/Transparency-in-the-non-profit-sector/np-transparency) |
-| (2/5) license                      | [![github license badge](https://img.shields.io/github/license/Transparency-in-the-non-profit-sector/np-transparency)](https://github.com/Transparency-in-the-non-profit-sector/np-transparency) |
-| (3/5) community registry           | [![RSD](https://img.shields.io/badge/rsd-auto_extract-00a3e3.svg)](https://www.research-software.nl/software/auto_extract) |
-| (4/5) citation                     | [![DOI](https://zenodo.org/badge/DOI/<replace-with-created-DOI>.svg)](https://doi.org/<replace-with-created-DOI>) |
-| (5/5) checklist                    | [![workflow cii badge](https://bestpractices.coreinfrastructure.org/projects/<replace-with-created-project-identifier>/badge)](https://bestpractices.coreinfrastructure.org/projects/<replace-with-created-project-identifier>) |
-| howfairis                          | [![fair-software badge](https://img.shields.io/badge/fair--software.eu-%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8B-yellow)](https://fair-software.eu) |
-| **Other best practices**           | &nbsp; |
-| Static analysis                    | [![workflow scq badge](https://sonarcloud.io/api/project_badges/measure?project=Transparency-in-the-non-profit-sector_np-transparency&metric=alert_status)](https://sonarcloud.io/dashboard?id=Transparency-in-the-non-profit-sector_np-transparency) |
-| Coverage                           | [![workflow scc badge](https://sonarcloud.io/api/project_badges/measure?project=Transparency-in-the-non-profit-sector_np-transparency&metric=coverage)](https://sonarcloud.io/dashboard?id=Transparency-in-the-non-profit-sector_np-transparency) |
-| Documentation                      | [![Documentation Status](https://github.com/Transparency-in-the-non-profit-sector/np-transparency)](https://github.com/Transparency-in-the-non-profit-sector/np-transparency) |
-| **GitHub Actions**                 | &nbsp; |
-| Build                              | [![build](https://github.com/Transparency-in-the-non-profit-sector/np-transparency/actions/workflows/build.yml/badge.svg)](https://github.com/Transparency-in-the-non-profit-sector/np-transparency/actions/workflows/build.yml) |
-| Citation data consistency               | [![cffconvert](https://github.com/Transparency-in-the-non-profit-sector/np-transparency/actions/workflows/cffconvert.yml/badge.svg)](https://github.com/Transparency-in-the-non-profit-sector/np-transparency/actions/workflows/cffconvert.yml) |
-| SonarCloud                         | [![sonarcloud](https://github.com/Transparency-in-the-non-profit-sector/np-transparency/actions/workflows/sonarcloud.yml/badge.svg)](https://github.com/Transparency-in-the-non-profit-sector/np-transparency/actions/workflows/sonarcloud.yml) |
-| MarkDown link checker              | [![markdown-link-check](https://github.com/Transparency-in-the-non-profit-sector/np-transparency/actions/workflows/markdown-link-check.yml/badge.svg)](https://github.com/Transparency-in-the-non-profit-sector/np-transparency/actions/workflows/markdown-link-check.yml) |
+[![github repo badge](https://img.shields.io/badge/github-repo-000.svg?logo=github&labelColor=gray&color=blue)](https://github.com/Transparency-in-the-non-profit-sector/np-transparency)
+[![github license badge](https://img.shields.io/github/license/Transparency-in-the-non-profit-sector/np-transparency)](https://github.com/Transparency-in-the-non-profit-sector/np-transparency)
+[![RSD](https://img.shields.io/badge/rsd-auto_extract-00a3e3.svg)](https://research-software-directory.org/projects/transparency-in-non-profit) 
+[![fair-software badge](https://img.shields.io/badge/fair--software.eu-%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8B-yellow)](https://fair-software.eu) 
+[![build](https://github.com/Transparency-in-the-non-profit-sector/np-transparency/actions/workflows/build.yml/badge.svg)](https://github.com/Transparency-in-the-non-profit-sector/np-transparency/actions/workflows/build.yml)
+[![cffconvert](https://github.com/Transparency-in-the-non-profit-sector/np-transparency/actions/workflows/cffconvert.yml/badge.svg)](https://github.com/Transparency-in-the-non-profit-sector/np-transparency/actions/workflows/cffconvert.yml) 
+[![sonarcloud](https://github.com/Transparency-in-the-non-profit-sector/np-transparency/actions/workflows/sonarcloud.yml/badge.svg)](https://github.com/Transparency-in-the-non-profit-sector/np-transparency/actions/workflows/sonarcloud.yml)
+[![markdown-link-check](https://github.com/Transparency-in-the-non-profit-sector/np-transparency/actions/workflows/markdown-link-check.yml/badge.svg)](https://github.com/Transparency-in-the-non-profit-sector/np-transparency/actions/workflows/markdown-link-check.yml)
 <br/><br/>
 
 ## How to use auto_extract
@@ -54,9 +41,8 @@ Auto_extract is being developed to extract specific information from annual repo
     - Finally, the identified organisations are attempted to be matched on a list of provided organisations, to collect their rsin number for further analysis. See also the optional `-af` argument description. If the `-af` argument is not provided, by default, the empty file `./Data/Anbis_clean.csv` will be used. Matching is attempted both on currentStatutoryName and shortBusinessName. Only full matches (independent of capitals) and full matches with the additional term 'Stichting' at the start of the identified organisation (again independent of capitals) are considered for matching. Fuzzy matching is not used here, because it leads to a significant amount of false positives.
 
 
-- Classify the sector in which the organisation is active. The code uses a pre-trained model to identify one of eight sectors in which the organisation is active. 
+- Classify the sector in which the organisation is active. The code uses a pre-trained model to identify one of eight sectors in which the organisation is active. The model is trained on the 2020 annual report pdf files of CBF certified organisations.
 
-- Determine to which sustainable development goals (SDG) the organisation contributes to. (under development)
 
 <br/><br/>
 <b>How to run</b>  
@@ -90,13 +76,12 @@ Here YYYYMMDD and HHMMSS refer to the date and time at which the execution start
 
 ## Prerequisites
 1. [Python 3.8, or 3.9](https://www.python.org/downloads/)
-2. If you are using Microsoft Visual Studio Code, the Microsoft Visual C++ Build Tools are required, which can be found under ['Build Tools for Visual Studio'](https://visualstudio.microsoft.com/downloads/). 
-3. [Poppler](https://anaconda.org/conda-forge/poppler)
-4. Auto_extract requires the following Python packages: [FuzzyWuzzy](https://github.com/seatgeek/fuzzywuzzy) (with [python-Levenshtein](https://github.com/ztane/python-Levenshtein)), [NumPy](https://numpy.org), [openpyxl](https://openpyxl.readthedocs.io/en/stable/), [pandas](https://pandas.pydata.org), [pdftotext](https://github.com/jalan/pdftotext), [scikit-learn](https://scikit-learn.org/stable/), [Stanza](https://github.com/stanfordnlp/stanza), and [xlsxwriter](https://github.com/jmcnamara/XlsxWriter).
+2. [miniconda](https://docs.conda.io/en/latest/miniconda.html); miniconda is only required to install the requirements for pdftext, not to run auto_extract itself.
+3. If you are using Microsoft Visual Studio Code, the Microsoft Visual C++ Build Tools are required, which can be found under ['Build Tools for Visual Studio'](https://visualstudio.microsoft.com/downloads/). 
 
 ## Installation
 
-To install auto_extract from the GitHub repository, do:
+To install auto_extract from the GitHub repository, execute the following commands:
 
 ```console
 git clone https://github.com/Transparency-in-the-non-profit-sector/np-transparency.git
@@ -104,7 +89,9 @@ cd np-transparency
 python -m pip install .
 ```
 
-Auto_extract requires the following Python packages: [FuzzyWuzzy](https://github.com/seatgeek/fuzzywuzzy) (with [python-Levenshtein](https://github.com/ztane/python-Levenshtein)), [NumPy](https://numpy.org), [openpyxl](https://openpyxl.readthedocs.io/en/stable/), [pandas](https://pandas.pydata.org), [pdftotext](https://github.com/jalan/pdftotext), [scikit-learn](https://scikit-learn.org/stable/), [Stanza](https://github.com/stanfordnlp/stanza), and [xlsxwriter](https://github.com/jmcnamara/XlsxWriter).
+The last command installs the requirements to run auto_exract. The packages that are installed are: [FuzzyWuzzy](https://github.com/seatgeek/fuzzywuzzy), [NumPy](https://numpy.org), [openpyxl](https://openpyxl.readthedocs.io/en/stable/), [pandas](https://pandas.pydata.org), [pdftotext](https://github.com/jalan/pdftotext), [scikit-learn](https://scikit-learn.org/stable/), [Stanza](https://github.com/stanfordnlp/stanza), and [xlsxwriter](https://github.com/jmcnamara/XlsxWriter).[^1]
+
+[^1]: If you encounter problems with the installation, these often arise from the installation of poppler, which is a requirement for pdftotext. Help can generally be found on [pdftotext](https://pypi.org/project/pdftotext/).
 <br/><br/>
 
 ## Contributing
