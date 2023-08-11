@@ -71,9 +71,9 @@ jobs:
       - name: Run unit tests
         run: pytest --cov --cov-report term --cov-report xml --cov-report html --junitxml=xunit-result.xml
       - name: SonarCloud Scan
-      uses: SonarSource/sonarcloud-github-action@master
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       - name: Verify that we can build the package
         run: python setup.py sdist bdist_wheel
