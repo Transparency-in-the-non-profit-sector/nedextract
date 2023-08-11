@@ -47,5 +47,3 @@ jobs:
             -Dsonar.projectBaseDir=.
       - name: List Working Directory
         run: ls -R -l
-      - name: Print Working Directory
-        run: echo "Working Directory: $(pwd)"
