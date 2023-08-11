@@ -8,10 +8,6 @@ dist
 .cache
 __pycache__
 
-htmlcov
-.coverage
-coverage.xml
-.pytest_cache
 
 docs/_build
 
