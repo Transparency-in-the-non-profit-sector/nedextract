@@ -35,9 +35,7 @@ jobs:
           python -m pip install --upgrade pip setuptools
           python -m pip install .[dev,publishing]
       - name: Run unit tests with coverage
-        run: pytest --cov --cov-report term --cov-report xml --cov-report html
-      - name: Correct coverage paths
-        run: sed -i "s+$PWD/++g" coverage.xml
+        run: pytest --cov --cov-report term --cov-report xml --cov-report html --junitxml=xunit-result.xml
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
