@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - main
-      - 18-ad-code-coverage
+      - 18-add-code-coverage
       
 
   pull_request:
