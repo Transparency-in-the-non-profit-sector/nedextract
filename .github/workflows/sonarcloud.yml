@@ -1,0 +1,52 @@
+name: Sonarcloud
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - 18-add-code-coverage
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  sonarcloud:
+    name: SonarCloud
+    runs-on: ubuntu-latest
+    python-version: ['3.8', '3.9']
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+          
+      - name: Install Poppler
+        run: |
+          if [ "$RUNNER_OS" == "Linux" ]; then
+            conda install -c anaconda certifi openssl
+            conda update openssl certifi
+            conda install -c conda-forge/label/gcc7 poppler
+            sudo apt-get update -y
+            sudo apt-get install -y build-essential libpoppler-cpp-dev pkg-config python3-dev
+          elif [ "$RUNNER_OS" == "macOS" ]; then
+            brew install pkg-config poppler python
+            conda install -c conda-forge poppler
+          else
+            conda install -c conda-forge poppler
+            conda install -c conda-forge pdftotext
+          fi
+      - name: Upgrade pip and install dependencies 
+        run: |
+          python -m pip install --upgrade pip setuptools
+          python -m pip install .[dev,publishing]
+      - name: Run unit tests with coverage
+        run: pytest --cov=./ --cov-report term --cov-report xml --cov-report html --junitxml=xunit-result.xml
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.projectKey=Transparency-in-the-non-profit-sector_np-transparency
+            -Dsonar.projectBaseDir=.
+      - name: List Working Directory
+        run: ls -R -l

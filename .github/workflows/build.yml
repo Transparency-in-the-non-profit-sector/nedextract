@@ -70,14 +70,14 @@ jobs:
         run: isort --recursive --check-only auto_extract
       - name: Run unit tests
         run: pytest --cov --cov-report term --cov-report xml --cov-report html --junitxml=xunit-result.xml
-      - name: fix code coverage paths
-      - working-directory: ./coverage
-        run: sed -i "s+$PWD/++g" coverage.xml  
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      #- name: fix code coverage paths
+      #- working-directory: ./coverage
+      #  run: sed -i "s+$PWD/++g" coverage.xml  
+      #- name: SonarCloud Scan
+      #  uses: SonarSource/sonarcloud-github-action@master
+      #  env:
+      #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+      #    SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       - name: List Workspace Contents
         run: ls -R -l /home/runner/work/np-transparency/
       - name: Verify that we can build the package
