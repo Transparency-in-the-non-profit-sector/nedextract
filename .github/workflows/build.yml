@@ -73,11 +73,11 @@ jobs:
       - name: fix code coverage paths
         working-directory: ./coverage
         run: sed -i "s+$PWD/++g" coverage.xml  
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+#      - name: SonarCloud Scan
+#        uses: SonarSource/sonarcloud-github-action@master
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+#          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       - name: List Workspace Contents
         run: ls -R -l /home/runner/work/np-transparency/
       - name: Verify that we can build the package
