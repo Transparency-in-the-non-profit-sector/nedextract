@@ -4,7 +4,6 @@ on:
   push:
     branches:
     - main
-    #- 18-add-code-coverage
   pull_request:
 
 jobs:
@@ -69,17 +68,11 @@ jobs:
       - name: Check import order
         run: isort --recursive --check-only auto_extract
       - name: Run unit tests
-        run: pytest -v #--cov --cov-report term --cov-report xml --cov-report html --junitxml=xunit-result.xml ./tests
-      #- name: fix code coverage paths
-      #  working-directory: ./coverage
-      #  run: sed -i "s+$PWD/++g" coverage.xml  
-      #- name: SonarCloud Scan
-      #  uses: SonarSource/sonarcloud-github-action@master
-      #  env:
-      #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-      #    SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      - name: List pwd
-        run: pwd
-      #  run: ls -R -l /home/runner/work/np-transparency/
+        run: pytest --cov --cov-report term --cov-report xml --cov-report html --junitxml=xunit-result.xml ./tests
+      - name: Coveralls GitHub Action
+        uses: coverallsapp/github-action@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: coverage.xml
       - name: Verify that we can build the package
         run: python setup.py sdist bdist_wheel
