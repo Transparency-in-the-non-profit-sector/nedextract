@@ -42,8 +42,6 @@ jobs:
           pwd
           date
           ls -l
-      #- name: Correct coverage paths
-      #  run: sed -i "s+$PWD/++g" coverage.xml
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
@@ -53,6 +51,6 @@ jobs:
           args: >
             -Dsonar.projectKey=Transparency-in-the-non-profit-sector_np-transparency
             -Dsonar.projectBaseDir=.
-            -X  # Enable debug mode
+            -X
       - name: List Working Directory
         run: ls -R -l
