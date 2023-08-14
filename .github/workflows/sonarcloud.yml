@@ -1,13 +1,13 @@
 name: Sonarcloud
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
       - 18-add-code-coverage
-      
-
   pull_request:
     types: [opened, synchronize, reopened]
+
 jobs:
   sonarcloud:
     name: SonarCloud
@@ -16,6 +16,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+          
       - name: Install Poppler
         run: |
           if [ "$RUNNER_OS" == "Linux" ]; then
@@ -36,7 +37,9 @@ jobs:
           python -m pip install --upgrade pip setuptools
           python -m pip install .[dev,publishing]
       - name: Run unit tests with coverage
-        run: pytest --cov=./ --cov-report term --cov-report xml --cov-report html --junitxml=xunit-result.xml
+        run: |
+          pytest --cov=./ --cov-report term --cov-report xml --cov-report html --junitxml=xunit-result.xml ./tests
+          pwd
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
