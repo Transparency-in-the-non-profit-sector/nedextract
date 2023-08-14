@@ -78,7 +78,8 @@ jobs:
       #  env:
       #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
       #    SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      #- name: List Workspace Contents
+      - name: List pwd
+        run: pwd
       #  run: ls -R -l /home/runner/work/np-transparency/
       - name: Verify that we can build the package
         run: python setup.py sdist bdist_wheel
