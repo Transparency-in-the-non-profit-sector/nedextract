@@ -51,6 +51,7 @@ jobs:
           args: >
             -Dsonar.projectKey=Transparency-in-the-non-profit-sector_np-transparency
             -Dsonar.projectBaseDir=.
+            -Dsonar.exclusions=**/*.css,**/*.html,**/Dockerfile, **/*.vue,**/*.js
             -X
       - name: List Working Directory
         run: ls -R -l
