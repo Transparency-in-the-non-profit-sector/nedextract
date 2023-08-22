@@ -22,7 +22,7 @@ isort --recursive --check-only auto_extract
 if [ $? != "0" ]; then
     echo "Commit aborted."
     echo "  Run 'isort --recursive --check-only --diff auto_extract' to see what's wrong."
-    echo "  Run 'isort --recursive auto_extract' to let isort fix problems automatically."
+    echo "  Run 'isort --recursive nedextract' to let isort fix problems automatically."
     exit 1
 fi
 
