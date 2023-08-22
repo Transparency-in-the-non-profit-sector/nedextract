@@ -1,11 +1,11 @@
-"""Tests for run_auto_extract."""
+"""Tests for run_nedextract."""
 import os
 import unittest
 from nedextract.run_nedextract import main
 
 
 class TestRunAutoExtract(unittest.TestCase):
-    """Class containing the unit test for the main function of run_auto_extract."""
+    """Class containing the unit test for the main function of run_nedextract."""
 
     def test_main(self):
         """Unit test function for the 'main' function.
