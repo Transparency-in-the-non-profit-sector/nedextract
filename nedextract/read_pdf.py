@@ -12,7 +12,7 @@ from nedextract.classify_organisation import predict_main_sector
 from nedextract.extract_persons import extract_persons
 from nedextract.extract_related_orgs import collect_orgs
 from nedextract.preprocessing import preprocess_pdf
-from utils.orgs_checks import OrganisationExtraction
+from nedextract.utils.orgs_checks import OrganisationExtraction
 
 
 class PDFInformationExtractor:
