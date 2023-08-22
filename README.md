@@ -10,9 +10,9 @@
 <br/><br/>
 
 
-## How to use auto_extract
+## How to use nedextract
 <b>What does it do?</b>  
-Auto_extract is being developed to extract specific information from annual report PDF files that are written in Dutch. Currently it tries to do the following:
+nedextract is being developed to extract specific information from annual report PDF files that are written in Dutch. Currently it tries to do the following:
 
 - Read the PDF file, and perform Named Entity Recognition (NER) using Stanza to extract all persons and all organisations named in the document, which are then processed by the processes listed below.
 - Extract persons: using a rule-based method that searches for specific keywords, this module tries to identify:
@@ -43,27 +43,27 @@ Auto_extract is being developed to extract specific information from annual repo
     - Finally, the identified organisations are attempted to be matched on a list of provided organisations, to collect their rsin number for further analysis. See also the optional `-af` argument description. If the `-af` argument is not provided, by default, the empty file `./Data/Anbis_clean.csv` will be used. Matching is attempted both on currentStatutoryName and shortBusinessName. Only full matches (independent of capitals) and full matches with the additional term 'Stichting' at the start of the identified organisation (again independent of capitals) are considered for matching. Fuzzy matching is not used here, because it leads to a significant amount of false positives.
 
 
-- Classify the sector in which the organisation is active. A pretrained model can be used, or you can use the `train` function to train a model.
+- Classify the sector in which the organisation is active. The code uses a pre-trained model to identify one of eight sectors in which the organisation is active. The model is trained on the 2020 annual report pdf files of CBF certified organisations.
 
 
 <br/><br/>
-<b>How to run the full pipeline</b>  
-To run auto_extract the script `auto_extract/run_auto_extract.py` has to be executed and provided with input data and tasks. The following arguments can be provided when running the script:
+<b>How to run</b>  
+To run nedextract the script `nedextract/run_nedextract.py` has to be executed and provided with input data and tasks. The following arguments can be provided when running the script:
 
 - The input data (annual report pdf files) can be supplied as a single file, an entire folder, an url (referring to an online pdf file), or a text file containing a list of urls. The input data is supplied using one of the following arguments:
 
-    - `-f`: to supply a single pdf file as argument. The full command would for example be: `python ./auto_extract/run_auto_extract.py -f 'annual_report.pdf'`
-    - `-d`: to supply a directory containing pdf files as argument. The code will process all pdf files in the folder. If the folder contains subfolders or non-pdf files, these will be ignored. E.g. `python ./auto_extract/run_auto_extract.py -d './Annual_reports'`
-    - `-u`: to supply an url to a pdf file as argument. E.g. `python ./auto_extract/run_auto_extract.py -u https://www.website.com/annual_report.pdf`
-    - `-uf`: to supply a text file containing a list of urls as argument. E.g. `python ./auto_extract/run_auto_extract.py -uf 'my_urls.txt'`.  
+    - `-f`: to supply a single pdf file as argument. The full command would for example be: `python ./nedextract/run_nedextract.py -f 'annual_report.pdf'`
+    - `-d`: to supply a directory containing pdf files as argument. The code will process all pdf files in the folder. If the folder contains subfolders or non-pdf files, these will be ignored. E.g. `python ./nedextract/run_nedextract.py -d './Annual_reports'`
+    - `-u`: to supply an url to a pdf file as argument. E.g. `python ./nedextract/run_nedextract.py -u https://www.website.com/annual_report.pdf`
+    - `-uf`: to supply a text file containing a list of urls as argument. E.g. `python ./nedextract/run_nedextract.py -uf 'my_urls.txt'`.  
 The text file should simply contain one url per line, without headers and footers. 
 
 - Additionally, it is possible to define which tasks should be performed using the `-t` argument with one or more of the options: `people` (to perform the tasks described under extract persons), `orgs` (to perform tge tasks described under extract related organisations), `sector` (to classify the sector in which the organisation is active) or `all` (to perform all tasks). It is possible to supply multiple tasks. E.g.:  
-`python ./auto_extract/run_auto_extract.py -f 'annual_report.pdf' -t people sector`  
+`python ./nedextract/run_nedextract.py -f 'annual_report.pdf' -t people sector`  
 If the `-t` argument is not provided, the code will perform all tasks by default.
 
 - Finally, the `-af` argument can be provided to pass a .csv file which will be used with the `orgs` task. The file should contain (at least) the columns rsin, currentStatutoryName, and shortBusinessName. An empty example file, that is also the default file, can be found in the folder 'Data'. The data in the file will be used to try to match identified named organisations on to collect their rsin number provided in the `-af` file. For example, use your own './comparison.csv' file by running:
-`python ./auto_extract/run_auto_extract.py -f 'annual_report.pdf' -t orgs -af ./comparison.csv` 
+`python ./nedextract/run_nedextract.py -f 'annual_report.pdf' -t orgs -af ./comparison.csv` 
 
 <br/><br/>
 <b>Output</b>  
@@ -78,12 +78,12 @@ Here YYYYMMDD and HHMMSS refer to the date and time at which the execution start
 
 ## Prerequisites
 1. [Python 3.8, or 3.9](https://www.python.org/downloads/)
-2. [miniconda](https://docs.conda.io/en/latest/miniconda.html); miniconda is only required to install the requirements for pdftext, not to run auto_extract itself.
+2. [miniconda](https://docs.conda.io/en/latest/miniconda.html); miniconda is only required to install the requirements for pdftext, not to run nedextract itself.
 3. If you are using Microsoft Visual Studio Code, the Microsoft Visual C++ Build Tools are required, which can be found under ['Build Tools for Visual Studio'](https://visualstudio.microsoft.com/downloads/). 
 
 ## Installation
 
-To install auto_extract from the GitHub repository, execute the following commands:
+To install nedextract from the GitHub repository, execute the following commands:
 
 ```console
 git clone https://github.com/Transparency-in-the-non-profit-sector/np-transparency.git
@@ -98,7 +98,7 @@ The last command installs the requirements to run auto_exract. The packages that
 
 ## Contributing
 
-If you want to contribute to the development of auto_extract,
+If you want to contribute to the development of nedextract,
 have a look at the [contribution guidelines](CONTRIBUTING.md).
 <br/><br/>
 

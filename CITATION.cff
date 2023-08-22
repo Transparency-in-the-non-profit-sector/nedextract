@@ -1,7 +1,7 @@
 # YAML 1.2
 ---
 cff-version: "1.1.0"
-title: "auto_extract"
+title: "nedextract"
 authors:
   -
     family-names: Ootes
