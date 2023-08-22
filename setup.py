@@ -12,13 +12,13 @@ with open('conda-requirements.txt', 'r', encoding="utf-8") as f:
 
 
 # see setup.cfg
-setup(name='run_auto_extract',
+setup(name='run_nedextract',
       version='0.0.1',
       description='automatically extract information from Dutch annual report PDF files',
       author='Laura S. Ootes',
       author_email='l.ootes@esciencecenter.nl',
       python_requires='>=3.8',
-      packages=['auto_extract'],
+      packages=['nedextract'],
       install_requires=['fuzzywuzzy==0.18.0',
                         'numpy>=1.23',
                         'pandas>=1.3.5',
