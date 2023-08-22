@@ -3,14 +3,14 @@ import os
 import unittest
 import numpy as np
 import stanza
-from auto_extract.extract_persons import append_p_position
-from auto_extract.extract_persons import array_p_position
-from auto_extract.extract_persons import check_bestuur
-from auto_extract.extract_persons import check_rvt
-from auto_extract.extract_persons import director_check
-from auto_extract.extract_persons import extract_persons
-from auto_extract.extract_persons import identify_potential_people
-from auto_extract.preprocessing import preprocess_pdf
+from nedextract.extract_persons import append_p_position
+from nedextract.extract_persons import array_p_position
+from nedextract.extract_persons import check_bestuur
+from nedextract.extract_persons import check_rvt
+from nedextract.extract_persons import director_check
+from nedextract.extract_persons import extract_persons
+from nedextract.extract_persons import identify_potential_people
+from nedextract.preprocessing import preprocess_pdf
 
 
 # Download stanza

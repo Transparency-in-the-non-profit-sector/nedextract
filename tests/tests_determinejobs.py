@@ -3,9 +3,9 @@ import os
 import unittest
 import numpy as np
 import stanza
-from classes.determinejobs import DetermineJobs
-from classes.keywords import JobKeywords
-from auto_extract.preprocessing import preprocess_pdf
+from nedextract.preprocessing import preprocess_pdf
+from nedextract.utils.determinejobs import DetermineJobs
+from nedextract.utils.keywords import JobKeywords
 
 
 indir = os.path.join(os.getcwd(), 'tests')

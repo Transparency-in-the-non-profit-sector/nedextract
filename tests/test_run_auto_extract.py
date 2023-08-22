@@ -1,7 +1,7 @@
 """Tests for run_auto_extract."""
 import os
 import unittest
-from auto_extract.run_auto_extract import main
+from nedextract.run_nedextract import main
 
 
 class TestRunAutoExtract(unittest.TestCase):
