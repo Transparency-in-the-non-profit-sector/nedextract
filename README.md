@@ -10,7 +10,7 @@
 <br/><br/>
 
 
-## How to use auto_extract
+## How to use nedextract
 <b>What does it do?</b>  
 Auto_extract is being developed to extract specific information from annual report PDF files that are written in Dutch. Currently it tries to do the following:
 
