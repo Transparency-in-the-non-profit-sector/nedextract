@@ -125,9 +125,8 @@ def output_to_df(opd_p=None, opd_g=None, opd_o=None, anbis_file=None):
         df_p, df_g, df_o: three pd.DataFrames containing the input information on people, sectors,
         and organizations repectively
     """
-    df_p, df_g, df_o = pd.DataFrame
-
-    if opd_p:
+    df_p, df_g, df_o = pd.DataFrame(), pd.DataFrame(), pd.DataFrame()
+    if opd_p is not None:
         cols_p = ['Input_file', 'Organization', 'Persons', 'Ambassadors',
                   'Board_members', 'Job_description']
         cols_p.extend([f'directeur{n}' for n in range(1, 6)])
@@ -139,15 +138,16 @@ def output_to_df(opd_p=None, opd_g=None, opd_o=None, anbis_file=None):
         df_p = pd.DataFrame(opd_p, columns=cols_p)
 
     # Convert sectors to df
-    if opd_g:
+    if opd_g is not None:
         cols_g = ['Input_file', 'Organization', 'Main_sector']
         df_g = pd.DataFrame(opd_g, columns=cols_g)
 
     # convert organisations to df
-    if opd_o:
+    if opd_o is not None:
         cols_o = ['Input_file', 'mentioned_organization', 'n_mentions']
         df_o = pd.DataFrame(opd_o, columns=cols_o)
-        df_o = match_anbis(df_o, anbis_file)
+        if anbis_file is not None:
+            df_o = match_anbis(df_o, anbis_file)
     
     return df_p, df_g, df_o
 
