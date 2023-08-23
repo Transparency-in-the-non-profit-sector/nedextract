@@ -12,7 +12,7 @@ with open('conda-requirements.txt', 'r', encoding="utf-8") as f:
 
 
 # see setup.cfg
-setup(name='run_nedextract',
+setup(name='nedextract',
       version='0.0.1',
       description='automatically extract information from Dutch annual report PDF files',
       author='Laura S. Ootes',
@@ -23,7 +23,7 @@ setup(name='run_nedextract',
                         'numpy>=1.23',
                         'pandas>=1.3.5',
                         'openpyxl==3.0.9',
-                        'scikit-learn==1.0.2',
+                        'scikit-learn',
                         'stanza>=1.3.0',
                         'xlsxwriter',
                         'certifi',
