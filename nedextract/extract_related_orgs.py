@@ -32,7 +32,7 @@ def collect_orgs(infile: str, nlp: stanza.Pipeline):  # pylint: disable=too-many
        - whether is contains a typical orginastions keyword.
        - term length.
        - how often te term was identified as an organisation by NER.
-       - wether it passes the check_single_orgs check
+       - whether it passes the check_single_orgs check
 
     Args:
         infile (str): Path to the input PDF file.
