@@ -73,7 +73,8 @@ class Titles:
     """
 
     titles = ['prof.', 'dr.', 'mr.', 'ir.', 'drs.', 'bacc.', 'kand.', 'dr.h.c.', 'ing.', 'bc.',
-              'phd', 'phd.', 'dhr.', 'mevr.', 'mw.', 'ds.', 'mgr.', 'mevrouw', 'meneer', 'jhr.']
+              'phd', 'phd.', 'dhr.', 'mevr.', 'mw.', 'ds.', 'mgr.', 'mevrouw', 'meneer', 'jhr.',
+              'pastor', 'pastoor', 'dominee', 'priester', 'imam', 'rabbi', 'rabbijn']
 
 class Org_Keywords:
     """Class that stored lists with various keywords used to extract organisations from a text."""
