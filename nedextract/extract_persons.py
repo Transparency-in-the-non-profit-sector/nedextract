@@ -234,8 +234,8 @@ def director_check(pot_director: np.array, b_position: np.array,
     # Loop through potential directors
     for i in range(len(pot_director)):
         if (all([len(pot_director) > 5, pot_director[i, 2] <= 3,
-                int(max(pot_director[:, 2])) > 5]) or
-                all([pot_director[i, 2] <= 1, int(max(pot_director[:, 2])) > 2]) or
+                int(max(list(pot_director[:, 2]))) > 5]) or
+                all([pot_director[i, 2] <= 1, int(max(list(pot_director[:, 2]))) > 2]) or
                 (pot_director[i, 1] != 'directeur')):
 
             # if condition is met remove from b_position
