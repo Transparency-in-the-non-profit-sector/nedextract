@@ -2,4 +2,5 @@
 from setuptools import setup
 
 # see setup.cfg
-setup()
+if __name__ == "__main__":
+    setup(python_requires='>=3.8')

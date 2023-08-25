@@ -19,7 +19,8 @@ from nedextract.preprocessing import download_pdf
 from nedextract.read_pdf import PDFInformationExtractor
 
 
-def run(directory=None, file=None, url=None, urlf=None, tasks=['people'], anbis=None, model=None, labels=None,
+def run(directory=None, file=None, url=None, urlf=None,  # pylint: disable=too-many-arguments, disable=too-many-locals
+        tasks='people', anbis=None, model=None, labels=None,
         vectors=None, write_output=False):
     """Annual report information extraction.
 
@@ -98,10 +99,10 @@ def run(directory=None, file=None, url=None, urlf=None, tasks=['people'], anbis=
         for urlp in urls:
             print('working on url:', urlp)
             infile = download_pdf(url)
-            opd_p, opd_g, opd_o = pdf_extractor.extract_pdf(infile, opd_p, opd_g, opd_o, anbis)
+            opd_p, opd_g, opd_o = pdf_extractor.extract_pdf(infile, opd_p, opd_g, opd_o)
             delete_downloaded_pdf()
 
-    df_p, df_g, df_o = output_to_df(opd_p, opd_g, opd_o)
+    df_p, df_g, df_o = output_to_df(opd_p, opd_g, opd_o, anbis)
     # Write output to files
     if write_output:
         write_output(tasks, df_p, df_g, df_o)
@@ -152,7 +153,8 @@ def output_to_df(opd_p=None, opd_g=None, opd_o=None, anbis_file=None):
     return df_p, df_g, df_o
 
 
-def write_output(tasks: list, dfp: pd.DataFrame, dfg: pd.DataFrame, dfo: pd.DataFrame):
+def write_output(tasks: list,
+                 dfp: pd.DataFrame = None, dfg: pd.DataFrame = None, dfo: pd.DataFrame = None):
     """Write extracted information to output files.
 
     Create three output excel files for people, sectors, and organisations.
@@ -165,25 +167,23 @@ def write_output(tasks: list, dfp: pd.DataFrame, dfg: pd.DataFrame, dfo: pd.Data
     """
     outtime = time.strftime("%Y%m%d_%H%M%S", time.localtime())
 
-    # Define outputfiles
-    opf_p = os.path.join(os.path.join(os.getcwd(), 'Output'),
-                         'output' + str(outtime) + '_people.xlsx')
-    opf_g = os.path.join(os.path.join(os.getcwd(), 'Output'),
-                         'output' + str(outtime) + '_general.xlsx')
-    opf_o = os.path.join(os.path.join(os.getcwd(), 'Output'),
-                         'output' + str(outtime) + '_related_organizations.xlsx')
-
     # Write extracted people to output file
     if 'all' in tasks or 'people' in tasks:
+        opf_p = os.path.join(os.path.join(os.getcwd(), 'Output'),
+                             'output' + str(outtime) + '_people.xlsx')
         dfp.to_excel(opf_p, engine='xlsxwriter')
         print('Output people written to:', opf_p)
 
     # Write sectors to output file
     if 'all' in tasks or 'sectors' in tasks:
+        opf_g = os.path.join(os.path.join(os.getcwd(), 'Output'),
+                             'output' + str(outtime) + '_general.xlsx')
         dfg.to_excel(opf_g, engine='xlsxwriter')
         print('Output sectors written to:', opf_g)
 
     # Write extracted organisations to output file
     if 'all' in tasks or 'orgs' in tasks:
+        opf_o = os.path.join(os.path.join(os.getcwd(), 'Output'),
+                             'output' + str(outtime) + '_related_organizations.xlsx')
         dfo.to_excel(opf_o, engine='xlsxwriter')
         print('Output organisations written to:', opf_o)
