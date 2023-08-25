@@ -33,7 +33,8 @@ class TestRunAutoExtract(unittest.TestCase):
     """
 
     def test_run(self):
-        """Unit test function for the 'run' function.
+        """
+        Unit test function for the 'run' function.
 
         This function tests the run function tha runs the full pipeline of nedextract.
 
@@ -44,7 +45,6 @@ class TestRunAutoExtract(unittest.TestCase):
         Raises:
             AssertionError: If any of the assert statements fail, indicating incorrect return values.
         """
-
         # Test case 1
         df1, _, _ = run(file=infile1)
         self.assertTrue(isinstance(df1, pd.DataFrame))
@@ -67,7 +67,6 @@ class TestRunAutoExtract(unittest.TestCase):
         Returns:
             AssertionError: If the assertEqual statements fails, indicating incorrect return values.
         """
-        
         e_og = np.array([[os.path.basename(file), 'Bedrijf', 'Natuur en milieu']])
         _, df_g, _ = output_to_df(opd_g=e_og)
 
@@ -86,8 +85,7 @@ class TestRunAutoExtract(unittest.TestCase):
         Returns:
             AssertionError: If the expected outputfile does not exist, indicating that the file was not created
         """
-
-        write_output(tasks = ['sectors'], dfp=None, dfg=e_df_g, dfo=None)
+        write_output(tasks = 'sectors', dfg=e_df_g)
         outtime = time.strftime("%Y%m%d_%H%M%S", time.localtime())
 
         # omit time, only check date
