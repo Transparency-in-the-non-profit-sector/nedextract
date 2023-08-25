@@ -1,9 +1,9 @@
 """This file contains the unit tests for the preprocessing functions of auto_extract."""
 import os
 import unittest
-from auto_extract.preprocessing import delete_downloaded_pdf
-from auto_extract.preprocessing import download_pdf
-from auto_extract.preprocessing import preprocess_pdf
+from nedextract.preprocessing import delete_downloaded_pdf
+from nedextract.preprocessing import download_pdf
+from nedextract.preprocessing import preprocess_pdf
 
 
 class UnitTestsPreprocessing(unittest.TestCase):

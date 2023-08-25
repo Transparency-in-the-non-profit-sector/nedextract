@@ -3,8 +3,8 @@ import os
 import unittest
 import numpy as np
 import stanza
-from auto_extract.preprocessing import preprocess_pdf
-from auto_extract.read_pdf import PDFInformationExtractor
+from nedextract.preprocessing import preprocess_pdf
+from nedextract.read_pdf import PDFInformationExtractor
 
 
 # Files containing unit ttest data

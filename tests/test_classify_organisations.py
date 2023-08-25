@@ -2,9 +2,9 @@
 import os
 import unittest
 import pandas as pd
-from auto_extract.classify_organisation import file_to_pd
-from auto_extract.classify_organisation import predict_main_sector
-from auto_extract.classify_organisation import train
+from nedextract.classify_organisation import file_to_pd
+from nedextract.classify_organisation import predict_main_sector
+from nedextract.classify_organisation import train
 
 
 infolder = os.path.join(os.getcwd(), 'tests')

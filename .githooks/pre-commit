@@ -16,13 +16,13 @@ fi
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 echo "Starting isort analysis using configuration from setup.cfg..."
 
-# recursively run isort on auto_extract/ directory, don't try to automatically fix anything
-isort --recursive --check-only auto_extract
+# recursively run isort on nedextract/ directory, don't try to automatically fix anything
+isort --recursive --check-only nedextract
 
 if [ $? != "0" ]; then
     echo "Commit aborted."
     echo "  Run 'isort --recursive --check-only --diff auto_extract' to see what's wrong."
-    echo "  Run 'isort --recursive auto_extract' to let isort fix problems automatically."
+    echo "  Run 'isort --recursive nedextract' to let isort fix problems automatically."
     exit 1
 fi
 
