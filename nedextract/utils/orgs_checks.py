@@ -1,7 +1,7 @@
 """This file contains functions that are used by exxtract_related_orgs to determine wether the found orgs are true orgs."""
 import re
 import numpy as np
-from classes.keywords import Org_Keywords
+from nedextract.utils.keywords import Org_Keywords
 
 
 class OrganisationExtraction:
@@ -103,7 +103,7 @@ class OrganisationExtraction:
 
         This function checks if an orginasations 'o' in the list orgs is part of the input 'org'. 
         If it is and the matching 'o' has enough characters, is common enough in the analysed test,
-        and it is not the cases that he only difference is the presence of a keyword org, return True
+        and it is not the cases that the only difference is the presence of a keyword org, return True
         
         Args:
             orgs: list of organisations

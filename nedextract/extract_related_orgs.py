@@ -11,8 +11,8 @@ import numpy as np
 import pandas as pd
 import stanza
 from nedextract.preprocessing import preprocess_pdf
-from utils.keywords import Org_Keywords
-from utils.orgs_checks import OrganisationExtraction
+from nedextract.utils.keywords import Org_Keywords
+from nedextract.utils.orgs_checks import OrganisationExtraction
 
 
 def collect_orgs(infile: str, nlp: stanza.Pipeline):  # pylint: disable=too-many-locals'
@@ -32,7 +32,7 @@ def collect_orgs(infile: str, nlp: stanza.Pipeline):  # pylint: disable=too-many
        - whether is contains a typical orginastions keyword.
        - term length.
        - how often te term was identified as an organisation by NER.
-       - wether it passes the check_single_orgs check
+       - whether it passes the check_single_orgs check
 
     Args:
         infile (str): Path to the input PDF file.

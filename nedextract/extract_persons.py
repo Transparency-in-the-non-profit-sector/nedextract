@@ -17,9 +17,9 @@ Functions:
 
 import re
 import numpy as np
-from classes.determinejobs import DetermineJobs
-from classes.keywords import JobKeywords
-from classes.nameanalysis import NameAnalysis
+from nedextract.utils.determinejobs import DetermineJobs
+from nedextract.utils.keywords import JobKeywords
+from nedextract.utils.nameanalysis import NameAnalysis
 
 
 def identify_potential_people(doc, all_persons: list):

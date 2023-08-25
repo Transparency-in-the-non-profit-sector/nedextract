@@ -2,8 +2,8 @@
 import itertools
 import re
 import numpy as np
-from classes.keywords import Titles
-from classes.keywords import Tussenvoegsels
+from nedextract.utils.keywords import Titles
+from nedextract.utils.keywords import Tussenvoegsels
 from fuzzywuzzy import fuzz
 
 

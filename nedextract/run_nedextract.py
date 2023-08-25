@@ -97,12 +97,12 @@ def run(directory=None, file=None, url=None, urlf=None,  # pylint: disable=too-m
         with open(urlf, mode='r', encoding='UTF-8') as u_url:
             urls = u_url.readlines()
         for urlp in urls:
-            print(urlp)
+            print('working on url:', urlp)
             infile = download_pdf(url)
-            opd_p, opd_g, opd_o = pdf_extractor.extract_pdf(infile, opd_p, opd_g, opd_o, anbis)
+            opd_p, opd_g, opd_o = pdf_extractor.extract_pdf(infile, opd_p, opd_g, opd_o)
             delete_downloaded_pdf()
 
-    df_p, df_g, df_o = output_to_df(opd_p, opd_g, opd_o)
+    df_p, df_g, df_o = output_to_df(opd_p, opd_g, opd_o, anbis)
     # Write output to files
     if write_o:
         write_output(tasks, df_p, df_g, df_o)
@@ -126,9 +126,8 @@ def output_to_df(opd_p=None, opd_g=None, opd_o=None, anbis_file=None):
         df_p, df_g, df_o: three pd.DataFrames containing the input information on people, sectors,
         and organizations repectively
     """
-    df_p, df_g, df_o = pd.DataFrame
-
-    if opd_p:
+    df_p, df_g, df_o = pd.DataFrame(), pd.DataFrame(), pd.DataFrame()
+    if opd_p is not None:
         cols_p = ['Input_file', 'Organization', 'Persons', 'Ambassadors',
                   'Board_members', 'Job_description']
         cols_p.extend([f'directeur{n}' for n in range(1, 6)])
@@ -140,21 +139,21 @@ def output_to_df(opd_p=None, opd_g=None, opd_o=None, anbis_file=None):
         df_p = pd.DataFrame(opd_p, columns=cols_p)
 
     # Convert sectors to df
-    if opd_g:
+    if opd_g is not None:
         cols_g = ['Input_file', 'Organization', 'Main_sector']
         df_g = pd.DataFrame(opd_g, columns=cols_g)
 
     # convert organisations to df
-    if opd_o:
+    if opd_o is not None:
         cols_o = ['Input_file', 'mentioned_organization', 'n_mentions']
         df_o = pd.DataFrame(opd_o, columns=cols_o)
         if anbis_file is not None:
             df_o = match_anbis(df_o, anbis_file)
-
     return df_p, df_g, df_o
 
 
-def write_output(tasks: list, dfp: pd.DataFrame, dfg: pd.DataFrame, dfo: pd.DataFrame):
+def write_output(tasks: list,
+                 dfp: pd.DataFrame = None, dfg: pd.DataFrame = None, dfo: pd.DataFrame = None):
     """Write extracted information to output files.
 
     Create three output excel files for people, sectors, and organisations.
@@ -167,25 +166,23 @@ def write_output(tasks: list, dfp: pd.DataFrame, dfg: pd.DataFrame, dfo: pd.Data
     """
     outtime = time.strftime("%Y%m%d_%H%M%S", time.localtime())
 
-    # Define outputfiles
-    opf_p = os.path.join(os.path.join(os.getcwd(), 'Output'),
-                         'output' + str(outtime) + '_people.xlsx')
-    opf_g = os.path.join(os.path.join(os.getcwd(), 'Output'),
-                         'output' + str(outtime) + '_general.xlsx')
-    opf_o = os.path.join(os.path.join(os.getcwd(), 'Output'),
-                         'output' + str(outtime) + '_related_organizations.xlsx')
-
     # Write extracted people to output file
     if 'all' in tasks or 'people' in tasks:
+        opf_p = os.path.join(os.path.join(os.getcwd(), 'Output'),
+                             'output' + str(outtime) + '_people.xlsx')
         dfp.to_excel(opf_p, engine='xlsxwriter')
         print('Output people written to:', opf_p)
 
     # Write sectors to output file
     if 'all' in tasks or 'sectors' in tasks:
+        opf_g = os.path.join(os.path.join(os.getcwd(), 'Output'),
+                             'output' + str(outtime) + '_general.xlsx')
         dfg.to_excel(opf_g, engine='xlsxwriter')
         print('Output sectors written to:', opf_g)
 
     # Write extracted organisations to output file
     if 'all' in tasks or 'orgs' in tasks:
+        opf_o = os.path.join(os.path.join(os.getcwd(), 'Output'),
+                             'output' + str(outtime) + '_related_organizations.xlsx')
         dfo.to_excel(opf_o, engine='xlsxwriter')
         print('Output organisations written to:', opf_o)
