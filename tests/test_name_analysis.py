@@ -1,6 +1,6 @@
 """Unit tests for functions in class NameAnalysis."""
 import unittest
-from classes.nameanalysis import NameAnalysis
+from nedextract.utils.nameanalysis import NameAnalysis
 
 
 # input names for NameAnalysis class
