@@ -19,7 +19,7 @@ from nedextract.preprocessing import download_pdf
 from nedextract.read_pdf import PDFInformationExtractor
 
 
-def run(directory=None, file=None, url=None, urlf=None,  # pylint: disable=too-many-arguments, disable=too-many-locals
+def run(directory=None, file=None, url=None, urlf=None,  # pylint: disable=too-many-arguments, too-many-locals
         tasks='people', anbis=None, model=None, labels=None,
         vectors=None, write_output=False):
     """Annual report information extraction.
