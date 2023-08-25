@@ -94,8 +94,8 @@ def run(directory=None, file=None, url=None, urlf=None,  # pylint: disable=too-m
         opd_p, opd_g, opd_o = pdf_extractor.extract_pdf(infile, opd_p, opd_g, opd_o)
         delete_downloaded_pdf()
     elif urlf:
-        with open(urlf, mode='r', encoding='UTF-8') as url:
-            urls = url.readlines()
+        with open(urlf, mode='r', encoding='UTF-8') as u_url:
+            urls = u_url.readlines()
         for urlp in urls:
             print('working on url:', urlp)
             infile = download_pdf(url)
