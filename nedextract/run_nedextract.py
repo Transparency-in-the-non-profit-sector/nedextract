@@ -96,7 +96,7 @@ def run(directory=None, file=None, url=None, urlf=None, tasks=['people'], anbis=
         with open(urlf, mode='r', encoding='UTF-8') as u:
             urls = u.readlines()
         for urlp in urls:
-            print(urlp)
+            print('working on url:', urlp)
             infile = download_pdf(url)
             opd_p, opd_g, opd_o = pdf_extractor.extract_pdf(infile, opd_p, opd_g, opd_o, anbis)
             delete_downloaded_pdf()
