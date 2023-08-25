@@ -206,11 +206,11 @@ class PDFInformationExtractor:
         """
         orgs = collect_orgs(infile, nlp)
         output = []
-        for o in orgs:
-            n_org = OrganisationExtraction(doc=doc, org=o).count_number_of_mentions()
-            op = [os.path.basename(infile), o, str(n_org)]
+        for org in orgs:
+            n_org = OrganisationExtraction(doc=doc, org=org).count_number_of_mentions()
+            output_p = [os.path.basename(infile), org, str(n_org)]
             if n_org > 0:
-                output.append(op)
+                output.append(output_p)
         return output
 
     @staticmethod

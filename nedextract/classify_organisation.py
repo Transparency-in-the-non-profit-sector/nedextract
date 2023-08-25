@@ -169,7 +169,7 @@ if __name__ == "__main__":
     parser.add_argument('-s', '--save', default=False, help='save the trained model')
     args = parser.parse_args()
 
-    if not (args.inputfile):
+    if not args.inputfile:
         raise FileExistsError('No inputfile provided. Run with -h for help on arguments to be provided.')
 
     data = file_to_pd(args.inputfile)

@@ -19,8 +19,9 @@ from nedextract.preprocessing import download_pdf
 from nedextract.read_pdf import PDFInformationExtractor
 
 
-def run(directory=None, file=None, url=None, urlf=None, tasks=['people'], anbis=None, model=None, labels=None,
-        vectors=None, write_output=False):
+def run(directory=None, file=None, url=None, urlf=None,  # pylint: disable=too-many-arguments, too-many-locals
+        tasks='people', anbis=None, model=None, labels=None,
+        vectors=None, write_o=False):
     """Annual report information extraction.
 
     This function runs the full nedextract pipleline. The pipeline is originally designed to read 
@@ -93,8 +94,8 @@ def run(directory=None, file=None, url=None, urlf=None, tasks=['people'], anbis=
         opd_p, opd_g, opd_o = pdf_extractor.extract_pdf(infile, opd_p, opd_g, opd_o)
         delete_downloaded_pdf()
     elif urlf:
-        with open(urlf, mode='r', encoding='UTF-8') as u:
-            urls = u.readlines()
+        with open(urlf, mode='r', encoding='UTF-8') as u_url:
+            urls = u_url.readlines()
         for urlp in urls:
             print(urlp)
             infile = download_pdf(url)
@@ -103,7 +104,7 @@ def run(directory=None, file=None, url=None, urlf=None, tasks=['people'], anbis=
 
     df_p, df_g, df_o = output_to_df(opd_p, opd_g, opd_o)
     # Write output to files
-    if write_output:
+    if write_o:
         write_output(tasks, df_p, df_g, df_o)
 
     # end time
@@ -147,8 +148,9 @@ def output_to_df(opd_p=None, opd_g=None, opd_o=None, anbis_file=None):
     if opd_o:
         cols_o = ['Input_file', 'mentioned_organization', 'n_mentions']
         df_o = pd.DataFrame(opd_o, columns=cols_o)
-        df_o = match_anbis(df_o, anbis_file)
-    
+        if anbis_file is not None:
+            df_o = match_anbis(df_o, anbis_file)
+
     return df_p, df_g, df_o
 
 
