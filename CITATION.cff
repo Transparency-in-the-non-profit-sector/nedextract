@@ -9,8 +9,8 @@ authors:
     orcid: "https://orcid.org/0000-0002-2800-8309"
 date-released: 2022-03-16
 doi: 10.0000/FIXME
-version: "0.1.0"
-repository-code: "https://github.com/Transparency-in-the-non-profit-sector/np-transparency"
+version: "0.2.0"
+repository-code: "https://github.com/Transparency-in-the-non-profit-sector/nedextract"
 keywords:
   - NLP
   - Philanthropy
