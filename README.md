@@ -7,8 +7,8 @@
 [![cffconvert](https://github.com/Transparency-in-the-non-profit-sector/np-transparency/actions/workflows/cffconvert.yml/badge.svg)](https://github.com/Transparency-in-the-non-profit-sector/np-transparency/actions/workflows/cffconvert.yml)
 [![markdown-link-check](https://github.com/Transparency-in-the-non-profit-sector/np-transparency/actions/workflows/markdown-link-check.yml/badge.svg)](https://github.com/Transparency-in-the-non-profit-sector/np-transparency/actions/workflows/markdown-link-check.yml)
 [![OpenSSF Best Practices](https://bestpractices.coreinfrastructure.org/projects/7733/badge)](https://bestpractices.coreinfrastructure.org/projects/7733)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8286579.svg)](https://doi.org/10.5281/zenodo.8286579)
 <br/><br/>
-
 
 ## Nedextract
 nedextract is being developed to extract specific information from annual report PDF files that are written in Dutch. Currently it tries to do the following:
@@ -96,6 +96,16 @@ Tutorials on the full pipeline and (individual) useful analysis tools can be fou
 If you want to contribute to the development of nedextract,
 have a look at the [contribution guidelines](CONTRIBUTING.md).
 <br/><br/>
+
+## How to cite us
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8286579.svg)](https://doi.org/10.5281/zenodo.8286579)
+[![RSD](https://img.shields.io/badge/rsd-auto_extract-00a3e3.svg)](https://research-software-directory.org/projects/transparency-in-non-profit) 
+
+If you use this package for your scientific work, please consider citing it as:
+<br/><br/>
+Ootes, L.S. (2023). nedextract (v0.2.0). Zenodo. https://doi.org/10.5281/zenodo.8286579
+<br/><br/>
+See also the [Zenodo page](https://zenodo.org/record/8286579) for exporting the citation to BibTteX and other formats.
 
 ## Credits
 
