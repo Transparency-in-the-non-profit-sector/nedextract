@@ -47,7 +47,7 @@ nedextract is being developed to extract specific information from annual report
 
 ## Prerequisites
 1. [Python 3.8, 3.9, 3.10, 3.11](https://www.python.org/downloads/)
-2. [miniconda](https://docs.conda.io/en/latest/miniconda.html); miniconda is only required to install the requirements for pdftext, not to run nedextract itself.
+2. [miniconda](https://docs.conda.io/en/latest/miniconda.html); please note that miniconda is only required to install poppler, a requirements for pdftext.
 
 ## Installation
 
