@@ -89,7 +89,7 @@ Three dataframes, one for the 'people' task, one for the 'sectors' task, and one
 Here YYYYMMDD and HHMMSS refer to the date and time at which the execution started.
 
 #### Turorials
-Tutorials on the full pipeline and (individual) useful analysis tools can be found in the [Tutorials folder](https://github.com/Transparency-in-the-non-profit-sector/nedextract/tree/main/Tutorials).
+Tutorials on the full pipeline and (individual) useful analysis tools can be found in the Tutorials folder.
 
 ## Contributing
 

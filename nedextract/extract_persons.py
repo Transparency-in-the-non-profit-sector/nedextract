@@ -234,8 +234,8 @@ def director_check(pot_director: np.array, b_position: np.array,
     # Loop through potential directors
     for i in range(len(pot_director)):
         if (all([len(pot_director) > 5, pot_director[i, 2] <= 3,
-                int(max(pot_director[:, 2])) > 5]) or
-                all([pot_director[i, 2] <= 1, int(max(pot_director[:, 2])) > 2]) or
+                pot_director[:, 2].max() > 5]) or
+                all([pot_director[i, 2] <= 1, pot_director[:, 2].max() > 2]) or
                 (pot_director[i, 1] != 'directeur')):
 
             # if condition is met remove from b_position
@@ -348,7 +348,7 @@ def check_bestuur(pot_bestuur: np.array, b_position: np.array, p_position: list)
 
 
 def array_p_position(p_position: list, position: str):
-    """Returns an array made out of sublist of the list p_position.
+    """Return an array made out of sublist of the list p_position.
 
     This function returns an array made out of sublist of the list p_position. The sublist must start with
     the term position.

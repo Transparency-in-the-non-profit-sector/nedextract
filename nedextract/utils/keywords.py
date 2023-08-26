@@ -1,7 +1,7 @@
 """Classes with keywords.
 
 Classes:
-- JobKeywords: keywords related to main jobs (directors, bestuur, raad van toezicht) and 
+- JobKeywords: keywords related to main jobs (directors, bestuur, raad van toezicht) and
     related to positions within certain commissions etc (related to main jobs)
 - Tussenvoegsels: a list of common tussenvoegsels in names found in the Netherlands
 - Titles: a list of common titles.
@@ -49,12 +49,13 @@ class JobKeywords:
                 lid, adviseur]
     sub_job = np.array([sj[0] for sj in sub_jobs])
 
+
 class Tussenvoegsels:
     """This class stores a list of prefixes commonly found in the Netherlands.
 
     List of tussenvoegsels is taken from:
     https://publicaties.rvig.nl/dsresource?objectid=c5f84baf-ba01-41ef-a6a0-97cebec1c2d3&type=pdf
-    One-letter tussenvoegsels have been omitted. 
+    One-letter tussenvoegsels have been omitted.
     """
 
     # Common infixes found in the Netherlands
@@ -66,9 +67,10 @@ class Tussenvoegsels:
                       "toe", "tot", "uijt", "uit", "unter", "van", "ver", "vom", "von", "voor",
                       "vor", "zu", "zum", "zur"]
 
+
 class Titles:
     """Class that stores a list of common (abbreviated) titles.
-    
+
     The lists contains titles and abbreviated titles ofter used in combination with their name.
     """
 
@@ -76,14 +78,15 @@ class Titles:
               'phd', 'phd.', 'dhr.', 'mevr.', 'mw.', 'ds.', 'mgr.', 'mevrouw', 'meneer', 'jhr.',
               'pastor', 'pastoor', 'dominee', 'priester', 'imam', 'rabbi', 'rabbijn']
 
+
 class Org_Keywords:
     """Class that stored lists with various keywords used to extract organisations from a text."""
 
     # keywords that indicate that, when present in an pot. organisation, it is likely a true org, independently of cases
     true_keys = ['bv', r'b\.v', 'congregatie', r'fonds\b', r'fondsen\b', r'fund\b',
                  'ministerie', 'umc', r'nederland\b']
-    
-    # keywords that indicate that, when present in an pot. organisation, it is likely a true org, but only when found with 
+
+    # keywords that indicate that, when present in an pot. organisation, it is likely a true org, but only when found with
     # the included caps.
     true_keys_cap = ['Association', 'Coöperatie', r'\bCBF\b', 'Firma', 'Foundation',
                      'Hospice', 'Hogeschool', 'Holding',
@@ -93,7 +96,7 @@ class Org_Keywords:
                      'Medisch Centrum', 'Museum', 'NV', r'N\.V',
                      'Stichting', 'Trust', r'U\.A', 'Universiteit', 'University', 'Vereniging',
                      'Ziekenhuis', 'Ziekenhuizen']
-    
+
     # keywords that, when found in an pot. org., it is likely to be a false org, independently of cases.
     false_keys = ['abonnement', 'activa', 'afdeling', 'akkoord', 'assembly',
                   'baten', 'bedrijfsvoering', 'begroting', 'beleid', 'bestuur', 'board',
@@ -108,7 +111,7 @@ class Org_Keywords:
                   'rj 650', 'rj 2016', 'saldo', 'startdatum', r'\btbv\b', 'traineeship',
                   'van toezicht', 'verkiezing',
                   'voorzitter', r'www\.', r'\.nl', r'\.com']
-    
+
     # keywords that, when found in whole as a pot. org., indicate a false org, indipendently of cases
     false_keys_s = ['aandelen', 'ab', 'agile', 'algemeen nut beogende instelling', 'anbi', 'arbo',
                     'avg', 'beheer & administratie', 'beheer en administratie', 'beweging', 'bhv',
@@ -126,7 +129,7 @@ class Org_Keywords:
                     'personeelsopbouw', 'program offices', 'project offices', 'p&o',
                     'risk and audit', 'rj', 'rvt', 'rvb', 'sar', 'sars', 'sv', 'tv',
                     'vgba', 'vio', 'vog', 'war']
-    
+
     # Keywords to be stripped of pot. orgs (case insensitive)
     position = ['adviseur', 'bestuurslid', 'ceo', 'cfo', 'chief technology officer', 'cio',
                 'commissaris', 'cto', 'directeur', 'lid', 'penningmeester', 'secretaris',
@@ -136,7 +139,7 @@ class Org_Keywords:
     raad = ['raad']
     commissie = ['wetenschappelijke adviesraad', 'maatschappelijke adviesraad', 'bestuur',
                  'toezicht', 'advies', 'commissarissen', 'adviesraad', 'rvt', 'rvc', 'rvb']
-    
+
     # keywords that, when present in pot org, call for the attempt of keyword strip
     search_strip = position + commissie
     functies = ['hoofdfuncties', 'hoofdfunctie', 'nevenfuncties', 'nevenfunctie']
