@@ -348,7 +348,7 @@ def check_bestuur(pot_bestuur: np.array, b_position: np.array, p_position: list)
 
 
 def array_p_position(p_position: list, position: str):
-    """Returns an array made out of sublist of the list p_position.
+    """Return an array made out of sublist of the list p_position.
 
     This function returns an array made out of sublist of the list p_position. The sublist must start with
     the term position.
