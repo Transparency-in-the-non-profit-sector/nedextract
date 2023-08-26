@@ -2,9 +2,10 @@
 import itertools
 import re
 import numpy as np
+from fuzzywuzzy import fuzz
 from nedextract.utils.keywords import Titles
 from nedextract.utils.keywords import Tussenvoegsels
-from fuzzywuzzy import fuzz
+
 
 
 class NameAnalysis:
