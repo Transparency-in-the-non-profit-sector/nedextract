@@ -7,7 +7,6 @@ from nedextract.utils.keywords import Titles
 from nedextract.utils.keywords import Tussenvoegsels
 
 
-
 class NameAnalysis:
     """This class contains functions used to analyse names.
 
