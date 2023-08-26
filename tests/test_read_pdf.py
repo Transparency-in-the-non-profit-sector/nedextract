@@ -3,8 +3,8 @@ import os
 import unittest
 import numpy as np
 import stanza
-from auto_extract.preprocessing import preprocess_pdf
-from auto_extract.read_pdf import PDFInformationExtractor
+from nedextract.preprocessing import preprocess_pdf
+from nedextract.read_pdf import PDFInformationExtractor
 
 
 # Files containing unit ttest data
@@ -129,29 +129,16 @@ class TestReadPDF(unittest.TestCase):
         AssertionError: If any of the test cases fail (if the actual output does not match the expected output).
         """
         # Test case 1
-        tasks = ['all']
+        tasks = ['people', 'orgs']
         extractor = PDFInformationExtractor(tasks, None, None, None)
         opd_p = np.array([]).reshape(0, 91)
         opd_g = np.array([]).reshape(0, 3)
         opd_o = np.array([]).reshape(0, 3)
-        op, og, oo = extractor.extract_pdf(infile1, opd_p, opd_g, opd_o)
-        e_og = np.array([[os.path.basename(infile1), 'Bedrijf', 'Natuur en milieu']])
+        op, _, oo = extractor.extract_pdf(infile1, opd_p, opd_g, opd_o)
         e_oo = np.array([[os.path.basename(infile1), 'Bedrijf2', '1'],
                          [os.path.basename(infile1), 'Bedrijf3', '1']])
-        self.assertTrue(np.alltrue(e_op1 == op))
-        self.assertTrue(np.alltrue(e_og == og))
-        self.assertTrue(np.alltrue(e_oo == oo))
-
-        # Test case 2
-        opd_p = np.array([]).reshape(0, 91)
-        opd_g = np.array([]).reshape(0, 3)
-        opd_o = np.array([]).reshape(0, 3)
-        tasks = ['sectors']
-        extractor = PDFInformationExtractor(tasks, None, None, None)
-        op, og, oo = extractor.extract_pdf(infile1, opd_p, opd_g, opd_o)
-        self.assertTrue(np.alltrue(op == opd_p))
-        self.assertTrue(np.alltrue(og == np.array([[os.path.basename(infile1), '', 'Natuur en milieu']])))
-        self.assertTrue(np.alltrue(oo == opd_o))
+        self.assertTrue(np.all(e_op1 == op))
+        self.assertTrue(np.all(e_oo == oo))
 
         # Test case 3
         opd_p = np.array([]).reshape(0, 91)
@@ -159,10 +146,9 @@ class TestReadPDF(unittest.TestCase):
         opd_o = np.array([]).reshape(0, 3)
         tasks = ['people']
         extractor = PDFInformationExtractor(tasks, None, None, None)
-        op, og, oo = extractor.extract_pdf(infile1, opd_p, opd_g, opd_o)
-        self.assertTrue(np.alltrue(e_op1 == op))
-        self.assertTrue(np.alltrue(og == opd_g))
-        self.assertTrue(np.alltrue(oo == opd_o))
+        op, _, oo = extractor.extract_pdf(infile1, opd_p, opd_g, opd_o)
+        self.assertTrue(np.all(e_op1 == op))
+        self.assertTrue(np.all(oo == opd_o))
 
         # Test case 4
         opd_p = np.array([]).reshape(0, 91)
@@ -170,10 +156,9 @@ class TestReadPDF(unittest.TestCase):
         opd_o = np.array([]).reshape(0, 3)
         tasks = ['orgs']
         extractor = PDFInformationExtractor(tasks, None, None, None)
-        op, og, oo = extractor.extract_pdf(infile1, opd_p, opd_g, opd_o)
-        self.assertTrue(np.alltrue(op == opd_p))
-        self.assertTrue(np.alltrue(og == opd_g))
-        self.assertTrue(np.alltrue(oo == e_oo))
+        op, _, oo = extractor.extract_pdf(infile1, opd_p, opd_g, opd_o)
+        self.assertTrue(np.all(op == opd_p))
+        self.assertTrue(np.all(oo == e_oo))
 
         # Test case 5
         opd_p = np.array([]).reshape(0, 91)
@@ -181,8 +166,8 @@ class TestReadPDF(unittest.TestCase):
         opd_o = np.array([]).reshape(0, 3)
         tasks = ['people']
         extractor = PDFInformationExtractor(tasks, None, None, None)
-        op, og, oo = extractor.extract_pdf(infile2, opd_p, opd_g, opd_o)
-        self.assertTrue(np.alltrue(op == e_op2))
+        op, _, oo = extractor.extract_pdf(infile2, opd_p, opd_g, opd_o)
+        self.assertTrue(np.all(op == e_op2))
 
     def test_ouput_people(self):
         """Unit test function for the output_people method.

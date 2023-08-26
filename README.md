@@ -10,9 +10,8 @@
 <br/><br/>
 
 
-## How to use auto_extract
-<b>What does it do?</b>  
-Auto_extract is being developed to extract specific information from annual report PDF files that are written in Dutch. Currently it tries to do the following:
+## Nedextract
+nedextract is being developed to extract specific information from annual report PDF files that are written in Dutch. Currently it tries to do the following:
 
 - Read the PDF file, and perform Named Entity Recognition (NER) using Stanza to extract all persons and all organisations named in the document, which are then processed by the processes listed below.
 - Extract persons: using a rule-based method that searches for specific keywords, this module tries to identify:
@@ -40,50 +39,19 @@ Auto_extract is being developed to extract specific information from annual repo
 - Extract related organisations:
     - After Stanza NER collects all candidates for mentioned organisations, postprocessing tasks try to determine which of these candidates are most likely true candidates. This is done by considering: how often the terms is mentioned in the document, how often the term was identified as an organisation by Stanza NER, whether the term contains keywords that make it likely to be a true positive, and whether the term contains keywords that make it likely to be a false positive. For candidates that are mentioned only once in the text, it is also considered whether the term by itself (i.e. without context) is identified as an organisation by Stanza NER. Additionally, for candidates that are mentioned only once, an extra check is performed to determine whether part of the candidate org is found to be a in the list of orgs that are already identified as true, and whether that true org is common within the text. In that case the candidate is found to be 'already part of another true org', and not added to the true orgs. This is done, because sometimes an additional random word is identified by NER as being part of an organisation's name. 
     - For those terms that are identified as true organisations, the number of occurrences in the document of each of them (in it's entirety, enclosed by word boudaries) is determined.
-    - Finally, the identified organisations are attempted to be matched on a list of provided organisations, to collect their rsin number for further analysis. See also the optional `-af` argument description. If the `-af` argument is not provided, by default, the empty file `./Data/Anbis_clean.csv` will be used. Matching is attempted both on currentStatutoryName and shortBusinessName. Only full matches (independent of capitals) and full matches with the additional term 'Stichting' at the start of the identified organisation (again independent of capitals) are considered for matching. Fuzzy matching is not used here, because it leads to a significant amount of false positives.
+    - Finally, the identified organisations are attempted to be matched on a list of provided organisations using the `anbis` argument, to collect their rsin number for further analysis. An empty file `./Data/Anbis_clean.csv` is availble that serves as template for such a file. Matching is attempted both on currentStatutoryName and shortBusinessName. Only full matches (independent of capitals) and full matches with the additional term 'Stichting' at the start of the identified organisation (again independent of capitals) are considered for matching. Fuzzy matching is not used here, because during testing, this was found to lead to a significant amount of false positives.
 
 
 - Classify the sector in which the organisation is active. The code uses a pre-trained model to identify one of eight sectors in which the organisation is active. The model is trained on the 2020 annual report pdf files of CBF certified organisations.
 
 
-<br/><br/>
-<b>How to run</b>  
-To run auto_extract the script `auto_extract/run_auto_extract.py` has to be executed and provided with input data and tasks. The following arguments can be provided when running the script:
-
-- The input data (annual report pdf files) can be supplied as a single file, an entire folder, an url (referring to an online pdf file), or a text file containing a list of urls. The input data is supplied using one of the following arguments:
-
-    - `-f`: to supply a single pdf file as argument. The full command would for example be: `python ./auto_extract/run_auto_extract.py -f 'annual_report.pdf'`
-    - `-d`: to supply a directory containing pdf files as argument. The code will process all pdf files in the folder. If the folder contains subfolders or non-pdf files, these will be ignored. E.g. `python ./auto_extract/run_auto_extract.py -d './Annual_reports'`
-    - `-u`: to supply an url to a pdf file as argument. E.g. `python ./auto_extract/run_auto_extract.py -u https://www.website.com/annual_report.pdf`
-    - `-uf`: to supply a text file containing a list of urls as argument. E.g. `python ./auto_extract/run_auto_extract.py -uf 'my_urls.txt'`.  
-The text file should simply contain one url per line, without headers and footers. 
-
-- Additionally, it is possible to define which tasks should be performed using the `-t` argument with one or more of the options: `people` (to perform the tasks described under extract persons), `orgs` (to perform tge tasks described under extract related organisations), `sector` (to classify the sector in which the organisation is active) or `all` (to perform all tasks). It is possible to supply multiple tasks. E.g.:  
-`python ./auto_extract/run_auto_extract.py -f 'annual_report.pdf' -t people sector`  
-If the `-t` argument is not provided, the code will perform all tasks by default.
-
-- Finally, the `-af` argument can be provided to pass a .csv file which will be used with the `orgs` task. The file should contain (at least) the columns rsin, currentStatutoryName, and shortBusinessName. An empty example file, that is also the default file, can be found in the folder 'Data'. The data in the file will be used to try to match identified named organisations on to collect their rsin number provided in the `-af` file. For example, use your own './comparison.csv' file by running:
-`python ./auto_extract/run_auto_extract.py -f 'annual_report.pdf' -t orgs -af ./comparison.csv` 
-
-<br/><br/>
-<b>Output</b>  
-The gathered information is written to auto-named xlsx files in de folder <i>Output</i>. The output of the different tasks are written to separate xlsx files with the following naming convention:
-
-- <i>'./Output/outputYYYYMMDD_HHMMSS_people.xlsx' 
-- './Output/outputYYYYMMDD_HHMMSS_related_organisations.xlsx'
-- './Output/outputYYYYMMDD_HHMMSS_general.xlsx'</i>
-
-Here YYYYMMDD and HHMMSS refer to the date and time at which the execution started.
-<br/><br/>
-
 ## Prerequisites
-1. [Python 3.8, or 3.9](https://www.python.org/downloads/)
-2. [miniconda](https://docs.conda.io/en/latest/miniconda.html); miniconda is only required to install the requirements for pdftext, not to run auto_extract itself.
-3. If you are using Microsoft Visual Studio Code, the Microsoft Visual C++ Build Tools are required, which can be found under ['Build Tools for Visual Studio'](https://visualstudio.microsoft.com/downloads/). 
+1. [Python 3.8, 3.9, 3.10, 3.11](https://www.python.org/downloads/)
+2. [miniconda](https://docs.conda.io/en/latest/miniconda.html); please note that miniconda is only required to install poppler, a requirements for pdftext.
 
 ## Installation
 
-To install auto_extract from the GitHub repository, execute the following commands:
+To install nedextract from the GitHub repository, execute the following commands:
 
 ```console
 git clone https://github.com/Transparency-in-the-non-profit-sector/np-transparency.git
@@ -91,14 +59,43 @@ cd np-transparency
 python -m pip install .
 ```
 
-The last command installs the requirements to run auto_exract. The packages that are installed are: [FuzzyWuzzy](https://github.com/seatgeek/fuzzywuzzy), [NumPy](https://numpy.org), [openpyxl](https://openpyxl.readthedocs.io/en/stable/), [pandas](https://pandas.pydata.org), [pdftotext](https://github.com/jalan/pdftotext), [scikit-learn](https://scikit-learn.org/stable/), [Stanza](https://github.com/stanfordnlp/stanza), and [xlsxwriter](https://github.com/jmcnamara/XlsxWriter).[^1]
+The last command installs the requirements to run auto_exract. The packages that are installed are: [FuzzyWuzzy](https://github.com/seatgeek/fuzzywuzzy), [NumPy](https://numpy.org), [openpyxl](https://openpyxl.readthedocs.io/en/stable/), [poppler](https://anaconda.org/conda-forge/poppler), [pandas](https://pandas.pydata.org), [pdftotext](https://github.com/jalan/pdftotext), [python-Levenshtein](https://pypi.org/project/python-Levenshtein/), [scikit-learn](https://scikit-learn.org/stable/), [Stanza](https://github.com/stanfordnlp/stanza), and [xlsxwriter](https://github.com/jmcnamara/XlsxWriter).[^1]
 
 [^1]: If you encounter problems with the installation, these often arise from the installation of poppler, which is a requirement for pdftotext. Help can generally be found on [pdftotext](https://pypi.org/project/pdftotext/).
 <br/><br/>
 
+
+## Usage
+
+#### Input
+The full pipeline can ben run with the `run_nedextract.run`` function. Input can be provided in four different forms.
+It takes in the following arguments:
+- Input data, one or more pdf files, using one of the following arguments:
+    - file: path to a single pdf file
+    - directory: path to a directory containing pdf files
+    - url: link to a pdf file
+    - urlf: text file containing one or multiple urls to pdf files. The text file should contain one url per line, without headers and footers.
+- tasks (optional): can either be 'people', 'orgs', 'sectors' or 'all'. Indicates which tasks to be performed. Defualts to 'people'.
+- anbis (option): path to a .csv file which will be used with the `orgs` task. The file should contain (at least) the columns rsin, currentStatutoryName, and shortBusinessName. An empty example file, that is also the default file, can be found in the folder 'Data'. The data in the file will be used to try to match identified named organisations on to collect their rsin number provided in the file.
+- model, labels, vectors (optional): each referring to a path containing a pretraining classifyer model, label encoding and tf-idf vectors respectively. These will be used for the sector classification task. A model can be trained using the `classify_organisation.train` function.
+- write_output: TRUE/FALSE, defaults to FALSE, setting weither to write the output data to an excel file.
+
+  
+#### Returns:
+Three dataframes, one for the 'people' task, one for the 'sectors' task, and one for the 'orgs' task. If write_output=True, the gathered information is written to auto-named xlsx files in de folder <i>Output</i>. The output of the different tasks are written to separate xlsx files with the following naming convention:
+
+- <i>'./Output/outputYYYYMMDD_HHMMSS_people.xlsx' 
+- './Output/outputYYYYMMDD_HHMMSS_related_organisations.xlsx'
+- './Output/outputYYYYMMDD_HHMMSS_general.xlsx'</i>
+
+Here YYYYMMDD and HHMMSS refer to the date and time at which the execution started.
+
+#### Turorials
+Tutorials on the full pipeline and (individual) useful analysis tools can be found in the Tutorials folder.
+
 ## Contributing
 
-If you want to contribute to the development of auto_extract,
+If you want to contribute to the development of nedextract,
 have a look at the [contribution guidelines](CONTRIBUTING.md).
 <br/><br/>
 

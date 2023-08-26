@@ -13,8 +13,8 @@ import os
 import unittest
 import numpy as np
 import stanza
-from classes.orgs_checks import OrganisationExtraction
-from auto_extract.preprocessing import preprocess_pdf
+from nedextract.preprocessing import preprocess_pdf
+from nedextract.utils.orgs_checks import OrganisationExtraction
 
 
 stanza.download('nl')
