@@ -51,12 +51,10 @@ nedextract is being developed to extract specific information from annual report
 
 ## Installation
 
-To install nedextract from the GitHub repository, execute the following commands:
+nedextract can be installed using pip:
 
 ```console
-git clone https://github.com/Transparency-in-the-non-profit-sector/np-transparency.git
-cd np-transparency
-python -m pip install .
+pip install nedextract
 ```
 
 The last command installs the requirements to run auto_exract. The packages that are installed are: [FuzzyWuzzy](https://github.com/seatgeek/fuzzywuzzy), [NumPy](https://numpy.org), [openpyxl](https://openpyxl.readthedocs.io/en/stable/), [poppler](https://anaconda.org/conda-forge/poppler), [pandas](https://pandas.pydata.org), [pdftotext](https://github.com/jalan/pdftotext), [python-Levenshtein](https://pypi.org/project/python-Levenshtein/), [scikit-learn](https://scikit-learn.org/stable/), [Stanza](https://github.com/stanfordnlp/stanza), and [xlsxwriter](https://github.com/jmcnamara/XlsxWriter).[^1]
