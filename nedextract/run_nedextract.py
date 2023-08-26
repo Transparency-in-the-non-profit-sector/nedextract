@@ -24,7 +24,7 @@ def run(directory=None, file=None, url=None, urlf=None,  # pylint: disable=too-m
         vectors=None, write_o=False):
     """Annual report information extraction.
 
-    This function runs the full nedextract pipleline. The pipeline is originally designed to read 
+    This function runs the full nedextract pipleline. The pipeline is originally designed to read
     Dutch annual report pdf files from non-profit organisation and extract relevant information.
     It can extract information about people (task 'people') engaged in the organisation and the position they hold,
     entities named in the file (task 'orgs'), and/or identify the sector in which the organisation is active
@@ -36,13 +36,13 @@ def run(directory=None, file=None, url=None, urlf=None,  # pylint: disable=too-m
     - (optional) Extract mentioned people from the text and identify their position within the organisation.
       Which of the people named in the text can be found to likely hold any of the positions of board members (directors,
       bestuur, raad van toezicht, kascommissie, controlecommissie, edenraad), or ambassadors
-    - (optional) Extract mentioned organisations in the text. If an anbis csv file is profided, it will try to match 
+    - (optional) Extract mentioned organisations in the text. If an anbis csv file is profided, it will try to match
       the found organisations with those in the goven file, and add additonal information from the csv file to the output.
     - (optional) Classify the sector in which the organisation is active.
     - The gathered information is converted into a pandas DataFrame and optionally saved to excel files.
 
     Args:
-        directory (str): Directory containing annual reports to be processed. 
+        directory (str): Directory containing annual reports to be processed.
         file (str): Path to specific pdf file to be processed.
         url (str): URL to pdf file to be processed.
         urlf (str): txt file containing url paths to be processed.
@@ -52,7 +52,7 @@ def run(directory=None, file=None, url=None, urlf=None,  # pylint: disable=too-m
         labels (str), only with option 'sectors': The path to the pretrained label encoding file for sector prediction.
         vectors (str), only with option 'sectors': The path to the pretrained tf-idf vectorizer file for sector prediction.
         write_output (bool): if true, the output will be written to an excel file
-    
+
     Returns:
         df_p, df_g, df_o: pd.DataFrames with results of the three respective tasks
     """
@@ -110,7 +110,7 @@ def run(directory=None, file=None, url=None, urlf=None,  # pylint: disable=too-m
     # end time
     print('The start time was: ', start_time)
     print('The end time is: ', f"{datetime.now():%Y-%m-%d %H:%M:%S}")
-    return  df_p, df_g, df_o
+    return df_p, df_g, df_o
 
 
 def output_to_df(opd_p=None, opd_g=None, opd_o=None, anbis_file=None):

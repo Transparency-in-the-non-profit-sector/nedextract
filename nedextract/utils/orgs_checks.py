@@ -16,10 +16,10 @@ class OrganisationExtraction:
     - count_number_of_mentions
     - part_of_other
     """
-    
-    def __init__(self, nlp = None, doc = None, org: str = None, #pylint: disable=too-many-arguments'
-                 orgs: np.array = None, counts: np.array = None, 
-                 true_orgs: list = None, final = None): 
+
+    def __init__(self, nlp = None, doc = None, org: str = None,  # pylint: disable=too-many-arguments'
+                 orgs: np.array = None, counts: np.array = None,
+                 true_orgs: list = None, final= None):
         """Define class variables."""
         self.nlp = nlp
         self.doc = doc
@@ -31,7 +31,7 @@ class OrganisationExtraction:
 
     def keyword_check(self, final: bool = None, org: str = None):
         """Check if org is likely to be or not be an organisation based on keywords.
-        
+
         This function contains a decision tree that determines if it is likely that a candidate organisation is a
         true orginasation, taking into account the presence of 'organisational' keywords.
 
@@ -47,7 +47,7 @@ class OrganisationExtraction:
             final = self.decision
         if not org:
             org = self.org
-        
+
         # decision is true if org contains a keyword, unless org is only a keyword
         for kw in Org_Keywords.true_keys:
             if len(re.findall(kw, org.lower())) > 0:
@@ -71,13 +71,12 @@ class OrganisationExtraction:
                 final = False
         return final
 
-
     def check_single_orgs(self):
         """Append org to true list if it passes the keyword check and is not part of other org.
-        
+
         This function appends an org to true_orgs list if part_of_other
         is false or true respectively, and it is not blocked by the keyword check.
-        
+
         Args:
             org (str): The orgination name to be checked for keyword presence.
             true_orgs: list of organisations that are already found to be likely true
@@ -96,20 +95,19 @@ class OrganisationExtraction:
             true_orgs.append(org)
         return true_orgs
 
-
     @staticmethod
     def part_of_other(orgs: list, org: str, doc):
         """Check if a member of orgs is part of the org string.
 
-        This function checks if an orginasations 'o' in the list orgs is part of the input 'org'. 
+        This function checks if an orginasations 'o' in the list orgs is part of the input 'org'.
         If it is and the matching 'o' has enough characters, is common enough in the analysed test,
         and it is not the cases that the only difference is the presence of a keyword org, return True
-        
+
         Args:
             orgs: list of organisations
             org (str): The orgination name to be checked for keyword presence.
             doc: stanza processed text in which to look for organisations.
-    
+
         Returns:
             is_part (bool): returns true if a member of orgs in a part of org.
         """
@@ -127,18 +125,17 @@ class OrganisationExtraction:
                         is_part = True
         return is_part
 
-
     def individual_org_check(self):
         """Check if org term individually is considered an NER ORG.
-        
+
         Check if an potential ORG is considered and ORG if just that name is analysed by Stanza NER.
         (Without the context of any sentences)
-        
+
         Args:
             org (str): The orgination name to be checked for keyword presence.
             nlp (stanza.pipeline): the stanza pipeline used to analyse texts
 
-        Returns: 
+        Returns:
             is_org(bool): true if the test passes
         """
         org = self.org
@@ -147,13 +144,12 @@ class OrganisationExtraction:
         is_org = bool(len(o_t) == 1 and org in o_t)
         return is_org
 
-
     def percentage_considered_org(self):
         """Determine the percenatge of mention cases for which the org was considered an NER ORG.
 
         This function identifies all mentions of the org within the text. Then calculate in what percentage of the
         total number of mentions, the org is identified as org by NER.
-        
+
         Args:
             doc: stanza processed text in which to look for organisations.
             org (str): The orgination name to be checked for keyword presence.
@@ -176,23 +172,22 @@ class OrganisationExtraction:
             percentage = 0.
         return percentage, n_orgs
 
-
     def strip_function_of_entity(self):
         """Strip the work roles of an potential org.
-        
+
         This function removes terms indicating a persons role within a organisation off the organisation's name.
 
         Example: if fed with
         "Lid van de Raad van Advies bij Bedrijfsnaam", only "Bedrijfsnaam" would be returned.
-        
+
         Args:
             org (str): The orgination name to be checked for keyword presence.
 
         Returns:
             org (str): The orgination name from which the role is removed if found.
-        """         
+        """
         org = self.org
-        
+
         for p in Org_Keywords.position:
             org = re.sub('^' + p + r"\b", '', org, flags=re.IGNORECASE).lstrip()
 
@@ -221,10 +216,9 @@ class OrganisationExtraction:
             org = re.sub(f + '$', '', org, flags=re.IGNORECASE).rstrip()
         return org
 
-
     def count_number_of_mentions(self, org: str = None, doc = None):
         """Count the number of mentions of org in the text, taking into account word boundaries.
-        
+
         Args:
             org (str): The orgination name to be checked for keyword presence.
             doc: stanza processed text in which to look for organisations.
@@ -232,8 +226,10 @@ class OrganisationExtraction:
         Returns:
             n_counts (int): number of mentions found.
         """
-        if org is None: org=self.org
-        if doc is None: doc=self.doc
+        if org is None:
+            org = self.org
+        if doc is None:
+            doc = self.doc
 
         if '-' not in org:
             n_counts = len(re.findall(r"\b" + org + r"\b", doc.text.replace('-', '')))

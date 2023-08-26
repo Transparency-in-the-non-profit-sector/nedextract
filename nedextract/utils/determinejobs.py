@@ -17,7 +17,7 @@ class DetermineJobs:
     - relevant_sentences
     """
 
-    def __init__(self, main_jobs=None, main_job=None, members=None, doc=None, # pylint: disable=too-many-arguments'
+    def __init__(self, main_jobs=None, main_job=None, members=None, doc=None,  # pylint: disable=too-many-arguments'
                  p_position=None, position=None):
         """Define class variables."""
         self.main_job = main_job
@@ -35,11 +35,11 @@ class DetermineJobs:
 
         For a given 'text' and search words ('search_name'), this function returns an array of words that are
         found before and after the 'search_name'.
-        
+
         Args:
             text (np.array): text to search through
             search_names (list): name to look for in the text
-        
+
         Returns:
             surrounding_words (np.array): array of words that are
             found before and after the 'search_name'.
@@ -68,11 +68,10 @@ class DetermineJobs:
                     surrounding_words = np.append(surrounding_words, text_split[i+1])
         return surrounding_words
 
-
     @staticmethod
     def count_occurrence(text: np.array, search_words: list):
         """Return the summed total of occurrences of search words in text.
-        
+
         This function counts the total number of occurrences of each word in the 'search_words'
         list within the provided 'text', and the number of sentences in which any of the search words is found.
         The function takes care of word boundaries to avoid
@@ -101,7 +100,7 @@ class DetermineJobs:
         for item in search_words:
             escape_item = re.escape(item)
             totalcount += sum(1 for _ in re.finditer(r'\b' + escape_item + r'\b', fulltext))
-        
+
         # Determine totalcount_sentence
         for sentence in text:
             sentence = sentence.replace('vice voorzitter', 'vicevoorzitter')
@@ -113,7 +112,6 @@ class DetermineJobs:
             if count > 0:
                 totalcount_sentence += 1
         return totalcount, totalcount_sentence
-
 
     def determine_main_job(self, sentences: list = None, surroundings: list = None):
         """Determine main job category based on sentence and overall frequency.
@@ -145,7 +143,7 @@ class DetermineJobs:
             main_jobs (list): A list containing sub-lists of words for each main job category.
             sentences (list): A list of sentences in which to search for job categories.
             surroundings (list): A list of sentences surrounding the main text.
-        
+
         Returns:
             list: A list containing four elements in the following order:
                 - The determined main job category (str) or None if no category is found.
@@ -155,8 +153,10 @@ class DetermineJobs:
         """
         # Define sentence (fs, fss) and total frequencies (ft, fts) for direct sentences and surrounding sentences
         self.relevant_sentences()
-        if sentences is None: sentences = self.sentences
-        if surroundings is None: surroundings = self.surroundings
+        if sentences is None:
+            sentences = self.sentences
+        if surroundings is None:
+            surroundings = self.surroundings
 
         fs = np.empty(len(self.main_jobs))
         fss = np.empty(len(self.main_jobs))
@@ -169,7 +169,7 @@ class DetermineJobs:
         for m, m_j in enumerate(self.main_jobs):
             ft[m], fs[m] = DetermineJobs.count_occurrence(sentences, m_j)
             fts[m], fss[m] = DetermineJobs.count_occurrence(surroundings, m_j)
-        
+
         # Select based on most occuring category in the direct text using sentence frequency, no tie
         if (max(fs) > 0 and len(np.where(fs == max(fs))[0]) == 1):
             main_cat = main_job[np.where(fs == max(fs))[0]][0]
@@ -199,7 +199,7 @@ class DetermineJobs:
         # do not select a main category
         else:
             main_cat = None
-        
+
         # define term frequency of selected main job directeur based on direct sentences
         ft_director = ft[np.where(main_job == 'directeur')]
 
@@ -208,7 +208,6 @@ class DetermineJobs:
         fts_rvt = fts[np.where(main_job == 'rvt')]
 
         return [main_cat, ft_director, fts_bestuur, fts_rvt]
-
 
     def determine_sub_job(self, sentences: list = None):
         """Determine the sub job category based on the words mentioned in the provided 'sentences' and main category ('main_cat').
@@ -238,19 +237,20 @@ class DetermineJobs:
                 - The backup sub job category (str) or an empty string if no category is found.
         """
         self.relevant_sentences()
-        if sentences is None: sentences = self.sentences
-        
+        if sentences is None:
+            sentences = self.sentences
+
         # Define c_sub_jobs
         c_sub_job = np.array([])
 
-        # Determine the surrounding words and use these to determine the count of each sub job 
+        # Determine the surrounding words and use these to determine the count of each sub job
         surrounding_w = DetermineJobs.surrounding_words(sentences, self.members)
         if surrounding_w.size > 0:
             for sj in JobKeywords.sub_jobs:
                 c_sub_job = np.append(c_sub_job, DetermineJobs.count_occurrence(surrounding_w, sj)[0])
         else:
             c_sub_job = np.append(c_sub_job, 0)
-        
+
         # Determine sub_cat and backup_sub_cat
         if max(c_sub_job) > 0 and len(np.where(c_sub_job == max(c_sub_job))[0]) == 1:
             sub_cat = backup_sub_cat = JobKeywords.sub_job[np.where(c_sub_job == max(c_sub_job))[0]][0]
@@ -258,9 +258,8 @@ class DetermineJobs:
                 backup_sub_cat = ''
         else:
             sub_cat = backup_sub_cat = ''
-        
-        return [sub_cat, backup_sub_cat]
 
+        return [sub_cat, backup_sub_cat]
 
     def relevant_sentences(self):
         """Identify all sentences containing a specific person and those directly surrounding them.

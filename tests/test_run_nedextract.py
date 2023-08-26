@@ -24,7 +24,7 @@ e_df_g = pd.DataFrame({'Input_file': [file], 'Organization': ['Bedrijf'], 'Main_
 
 class TestRunAutoExtract(unittest.TestCase):
     """Class containing the unit test for the function in run_nedextract.
-    
+
     Test_methods:
         - test_run: tests the run function tha runs the full pipeline of nedextract.
         - test_output to df: tests the output_to_df function that converts numpy arrays
@@ -53,7 +53,6 @@ class TestRunAutoExtract(unittest.TestCase):
         df1, _, _ = run(directory=indir)
         self.assertTrue(isinstance(df1, pd.DataFrame))
 
-
     def test_output_to_df(self):
         """
         Unit test function for the 'output_to_df' function.
@@ -72,10 +71,9 @@ class TestRunAutoExtract(unittest.TestCase):
 
         self.assertEqual(True, df_g.equals(e_df_g))
 
-
     def test_write_output(self):
         """Unit test for the write_output function.
-        
+
         This function tests the write_output function that writes for each given task
         a pandas dataframe to an output file.
 
@@ -85,13 +83,13 @@ class TestRunAutoExtract(unittest.TestCase):
         Returns:
             AssertionError: If the expected outputfile does not exist, indicating that the file was not created
         """
-        write_output(tasks = 'sectors', dfg=e_df_g)
+        write_output(tasks='sectors', dfg=e_df_g)
         outtime = time.strftime("%Y%m%d_%H%M%S", time.localtime())
 
         # omit time, only check date
-        testtime= str(outtime)[0:9]
+        testtime = str(outtime)[0:9]
 
-        writefile = os.path.join(os.path.join(os.path.join( '..', os.getcwd()), 'Output'),
+        writefile = os.path.join(os.path.join(os.path.join('..', os.getcwd()), 'Output'),
                                  'output' + str(testtime) + '*_general.xlsx')
 
         self.assertTrue(exists(glob.glob(writefile)[0]))

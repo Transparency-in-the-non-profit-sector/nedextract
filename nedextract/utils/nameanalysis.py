@@ -26,14 +26,14 @@ class NameAnalysis:
     @staticmethod
     def abbreviate(name: str, n_ab: int):
         """Abbreviate names.
-        
+
         This function abbreviates the first 'n_ab' terms in a 'name', except if they are tussenvoegsels, and as long
-        as it is not the last term in a name. 
+        as it is not the last term in a name.
 
         Args:
             name (str): name to be abbreviated
             n_ab (int): number of terms in the name to try to abbreviate
-        
+
         Returns:
             abbreviation (str): The abbreviated name based on the specified number of terms.
         """
@@ -50,10 +50,10 @@ class NameAnalysis:
     @staticmethod
     def get_tsr(p_i: str, p_j: str):
         """Determine the token set ratio for two names and the required score.
-        
+
         This function determines the token set ratio for two names p_i and p_j, and the required score,
         depending on what kind of names they are.
-        
+
         Note: The required scores for different name cases is chosen based on experience.
 
         Args:
@@ -98,7 +98,7 @@ class NameAnalysis:
     @staticmethod
     def strip_names_from_title(persons: list):
         """Strip titles from person names.
-        
+
         This function check if a names contains a title, and remvoes it.
         It takes the following steps:
         1. Define empty lists 'p', and 'p_remove'.
@@ -110,7 +110,7 @@ class NameAnalysis:
 
         Args:
             persons (list): a list of names (str)
-        
+
         Returns:
             p (list), p_remove (list): one containing the names stripped of titles,
             and one for names that only consist of 1 letter after stripping
@@ -132,7 +132,7 @@ class NameAnalysis:
     @staticmethod
     def sort_select_name(names: list):
         """Sort names in a list.
-        
+
         This function sort the names in a list: it set the longest name that does not contain points,
         but does contain spaces, as first element.
         It takes the following steps:
@@ -142,10 +142,10 @@ class NameAnalysis:
         3. Loop through the list and looks for the longest name that has no periods (e.g., initials)
         and has at least one space..
         4. If such a name is found, this name will be moved to the first position in the list
-        
+
         Args:
             names (list): a list of names (str)
-        
+
         Returns:
             names (list): the input list in sorted order
         """
@@ -173,7 +173,7 @@ class NameAnalysis:
         The function uses the following steps:
         1. Use the 'strip_names_from_title' function to remove titles from the names.
         2. Filters out the removed names from the original list.
-        3. Iterates through the filtered list of input names to find matches and group similar names together. 
+        3. Iterates through the filtered list of input names to find matches and group similar names together.
         Names consisting of one term, are not matched.
         - For each set input name, calculate the token set ratio (TSR) and the required score by calling 'get_tsr'.
         - If the TSR meets or exceeds the required score, the names are considered similar and grouped together.
@@ -189,7 +189,7 @@ class NameAnalysis:
         outnames = []
         p, p_remove = NameAnalysis.strip_names_from_title(persons)
         persons = [n for n in persons if n not in p_remove]
-        
+
         # loop through list of input names to find matches
         for i, sn in enumerate(persons):
             same_name = [sn]
@@ -216,7 +216,6 @@ class NameAnalysis:
                 outnames.pop(i)
         return outnames
 
-
     def find_duplicate_persons(self):
         """Find duplicate names.
 
@@ -226,10 +225,10 @@ class NameAnalysis:
         used to determine how close to names are. Names are stripped from any titles, and when
         comparing two names where one contains initials (i.e. James Brown versus J. Brown), the first
         name is abbreviated to try to determine the initials.
-        
+
         Args:
             persons (list[str]): list of names.
-        
+
         Returns:
             outlist (list[list[str]]): list consisting of sublists, in which each sublist
             contains all versions of the same name.
