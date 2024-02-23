@@ -1,7 +1,7 @@
 """This file contains the class DetermineJobs with functions to determine job positions."""
 import re
 import numpy as np
-from nedextract.utils.keywords import JobKeywords
+from utils.keywords import JobKeywords
 
 
 class DetermineJobs:
