@@ -66,18 +66,22 @@ The required packages that are installed are: [FuzzyWuzzy](https://github.com/se
 ## Usage
 
 #### Input
-The full pipeline can ben run with the `run_nedextract.run`` function. Input can be provided in four different forms.
-It takes in the following arguments:
-- Input data, one or more pdf files, using one of the following arguments:
-    - file: path to a single pdf file
-    - directory: path to a directory containing pdf files
-    - url: link to a pdf file
-    - urlf: text file containing one or multiple urls to pdf files. The text file should contain one url per line, without headers and footers.
-- tasks (optional): can either be 'people', 'orgs', 'sectors' or 'all'. Indicates which tasks to be performed. Defualts to 'people'.
-- anbis (option): path to a .csv file which will be used with the `orgs` task. The file should contain (at least) the columns rsin, currentStatutoryName, and shortBusinessName. An empty example file, that is also the default file, can be found in the folder 'Data'. The data in the file will be used to try to match identified named organisations on to collect their rsin number provided in the file.
-- model, labels, vectors (optional): each referring to a path containing a pretraining classifyer model, label encoding and tf-idf vectors respectively. These will be used for the sector classification task. A model can be trained using the `classify_organisation.train` function.
-- write_output: TRUE/FALSE, defaults to FALSE, setting weither to write the output data to an excel file.
+The full pipeline can be executed from the command line using:
+`python3 -m nedextract.run_nedextract`
+Followed by one or more of the following arguments:
 
+- Input data, one or more pdf files, using one of the following arguments:
+    - `-f` file: path to a single pdf file
+    - `-d` directory: path to a directory containing pdf files
+    - `-u` url: link to a pdf file
+    - `-uf` urlf: text file containing one or multiple urls to pdf files. The text file should contain one url per line, without headers and footers.
+- `-t` tasks (optional): can either be 'people', 'orgs', 'sectors' or 'all'. Indicates which tasks to be performed. Defualts to 'people'.
+- `-a` anbis (option): path to a .csv file which will be used with the `orgs` task. The file should contain (at least) the columns rsin, currentStatutoryName, and shortBusinessName. An empty example file, that is also the default file, can be found in the folder 'Data'. The data in the file will be used to try to match identified named organisations on to collect their rsin number provided in the file.
+- model (`-m`), labels (`-l`), vectors (`-v`) (optional): each referring to a path containing a pretraining classifyer model, label encoding and tf-idf vectors respectively. These will be used for the sector classification task. A model can be trained using the `classify_organisation.train` function.
+- `-wo` write_output: TRUE/FALSE, defaults to TRUE, setting weither to write the output data to an excel file.
+
+For example:
+`python3 -m nedextract.run_nedextract -f pathtomypdf.pdf -t all -a ansbis.csv`
   
 #### Returns:
 Three dataframes, one for the 'people' task, one for the 'sectors' task, and one for the 'orgs' task. If write_output=True, the gathered information is written to auto-named xlsx files in de folder <i>Output</i>. The output of the different tasks are written to separate xlsx files with the following naming convention:

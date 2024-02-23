@@ -7,7 +7,7 @@ Functions:
 Copyright 2022 Netherlands eScience Center
 Licensed under the Apache License, version 2.0. See LICENSE for details.
 """
-
+import argparse
 import os
 import time
 from datetime import datetime
@@ -21,7 +21,7 @@ from .read_pdf import PDFInformationExtractor
 
 def run(directory=None, file=None, url=None, urlf=None,  # pylint: disable=too-many-arguments, too-many-locals
         tasks='people', anbis=None, model=None, labels=None,
-        vectors=None, write_o=False):
+        vectors=None, write_o=True):
     """Annual report information extraction.
 
     This function runs the full nedextract pipleline. The pipeline is originally designed to read
@@ -59,6 +59,7 @@ def run(directory=None, file=None, url=None, urlf=None,  # pylint: disable=too-m
     # start time
     start_time = f"{datetime.now():%Y-%m-%d %H:%M:%S}"
     print('start time', start_time)
+    
     if not (directory or file or url or urlf):
         raise FileNotFoundError('No input provided. Run with -h for help on arguments to be provided.')
 
@@ -187,3 +188,28 @@ def write_output(tasks: list,
                              'output' + str(outtime) + '_related_organizations.xlsx')
         dfo.to_excel(opf_o, engine='xlsxwriter')
         print('Output organisations written to:', opf_o)
+
+
+# Check if the script is being run directly
+if __name__ == "__main__":
+    # Call the run function
+    # Create argument parser
+    parser = argparse.ArgumentParser(description='Annual report information extraction.')
+
+    # Add arguments
+    parser.add_argument('-d', '--directory', type=str, help='Directory containing annual reports to be processed.')
+    parser.add_argument('-f', '--file', type=str, help='Path to specific pdf file to be processed.')
+    parser.add_argument('-u', '--url', type=str, help='URL to pdf file to be processed.')
+    parser.add_argument('-uf', '--urlf', type=str, help='txt file containing url paths to be processed.')
+    parser.add_argument('-t', '--tasks', type=str, default='people', help="The tasks to execute. Options for tasks: 'all', 'people', 'sectors', 'orgs'")
+    parser.add_argument('-a', '--anbis', type=str, help="csv file for matching mentioned organisations (for task orgs)")
+    parser.add_argument('-m', '--model', type=str, help="The path to the pretrained classifier file for sector prediction.")
+    parser.add_argument('-l', '--labels', type=str, help="The path to the pretrained label encoding file for sector prediction.")
+    parser.add_argument('-v', '--vectors', type=str, help="The path to the pretrained tf-idf vectorizer file for sector prediction.")
+    parser.add_argument('-w', '--write_o', type=bool, default=True, help="If true, the output will be written to an excel file.")
+
+    # Parse arguments
+    args = parser.parse_args()
+
+    # Call the run function with arguments
+    run(args.directory, args.file, args.url, args.urlf, args.tasks, args.anbis, args.model, args.labels, args.vectors, args.write_o)
