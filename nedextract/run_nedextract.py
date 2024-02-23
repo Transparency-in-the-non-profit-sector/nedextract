@@ -59,7 +59,7 @@ def run(directory=None, file=None, url=None, urlf=None,  # pylint: disable=too-m
     # start time
     start_time = f"{datetime.now():%Y-%m-%d %H:%M:%S}"
     print('start time', start_time)
-    
+
     if not (directory or file or url or urlf):
         raise FileNotFoundError('No input provided. Run with -h for help on arguments to be provided.')
 
@@ -201,15 +201,18 @@ if __name__ == "__main__":
     parser.add_argument('-f', '--file', type=str, help='Path to specific pdf file to be processed.')
     parser.add_argument('-u', '--url', type=str, help='URL to pdf file to be processed.')
     parser.add_argument('-uf', '--urlf', type=str, help='txt file containing url paths to be processed.')
-    parser.add_argument('-t', '--tasks', type=str, default='people', help="The tasks to execute. Options for tasks: 'all', 'people', 'sectors', 'orgs'")
+    parser.add_argument('-t', '--tasks', type=str, default='people',
+                        help="The tasks to execute.Options for tasks: 'all', 'people', 'sectors', 'orgs'")
     parser.add_argument('-a', '--anbis', type=str, help="csv file for matching mentioned organisations (for task orgs)")
     parser.add_argument('-m', '--model', type=str, help="The path to the pretrained classifier file for sector prediction.")
     parser.add_argument('-l', '--labels', type=str, help="The path to the pretrained label encoding file for sector prediction.")
-    parser.add_argument('-v', '--vectors', type=str, help="The path to the pretrained tf-idf vectorizer file for sector prediction.")
+    parser.add_argument('-v', '--vectors', type=str,
+                        help="The path to the pretrained tf-idf vectorizer file for sector prediction.")
     parser.add_argument('-w', '--write_o', type=bool, default=True, help="If true, the output will be written to an excel file.")
 
     # Parse arguments
     args = parser.parse_args()
 
     # Call the run function with arguments
-    run(args.directory, args.file, args.url, args.urlf, args.tasks, args.anbis, args.model, args.labels, args.vectors, args.write_o)
+    run(args.directory, args.file, args.url, args.urlf, args.tasks, args.anbis,
+        args.model, args.labels, args.vectors, args.write_o)
