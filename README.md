@@ -1,11 +1,11 @@
-[![github repo badge](https://img.shields.io/badge/github-repo-000.svg?logo=github&labelColor=gray&color=blue)](https://github.com/Transparency-in-the-non-profit-sector/np-transparency)
-[![github license badge](https://img.shields.io/github/license/Transparency-in-the-non-profit-sector/np-transparency)](https://github.com/Transparency-in-the-non-profit-sector/np-transparency)
-[![RSD](https://img.shields.io/badge/rsd-auto_extract-00a3e3.svg)](https://research-software-directory.org/projects/transparency-in-non-profit) 
+[![github repo badge](https://img.shields.io/badge/github-repo-000.svg?logo=github&labelColor=gray&color=blue)](https://github.com/Transparency-in-the-non-profit-sector/nedextract)
+[![github license badge](https://img.shields.io/github/license/Transparency-in-the-non-profit-sector/nedextract)](https://github.com/Transparency-in-the-non-profit-sector/nedextract)
+[![RSD](https://img.shields.io/badge/rsd-nedextract-00a3e3.svg)](https://research-software-directory.org/projects/transparency-in-non-profit) 
 [![fair-software.eu](https://img.shields.io/badge/fair--software.eu-%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8F-green)](https://fair-software.eu)
-[![build](https://github.com/Transparency-in-the-non-profit-sector/np-transparency/actions/workflows/build.yml/badge.svg)](https://github.com/Transparency-in-the-non-profit-sector/np-transparency/actions/workflows/build.yml)
-[![Coverage Status](https://coveralls.io/repos/github/Transparency-in-the-non-profit-sector/np-transparency/badge.svg)](https://coveralls.io/github/Transparency-in-the-non-profit-sector/np-transparency)
-[![cffconvert](https://github.com/Transparency-in-the-non-profit-sector/np-transparency/actions/workflows/cffconvert.yml/badge.svg)](https://github.com/Transparency-in-the-non-profit-sector/np-transparency/actions/workflows/cffconvert.yml)
-[![markdown-link-check](https://github.com/Transparency-in-the-non-profit-sector/np-transparency/actions/workflows/markdown-link-check.yml/badge.svg)](https://github.com/Transparency-in-the-non-profit-sector/np-transparency/actions/workflows/markdown-link-check.yml)
+[![Build](https://github.com/Transparency-in-the-non-profit-sector/nedextract/actions/workflows/build.yml/badge.svg)](https://github.com/Transparency-in-the-non-profit-sector/nedextract/actions/workflows/build.yml)
+[![Coverage Status](https://coveralls.io/repos/github/Transparency-in-the-non-profit-sector/nedextract/badge.svg?branch=main)](https://coveralls.io/github/Transparency-in-the-non-profit-sector/nedextract?branch=main)
+[![cffconvert](https://github.com/Transparency-in-the-non-profit-sector/nedextract/actions/workflows/cffconvert.yml/badge.svg)](https://github.com/Transparency-in-the-non-profit-sector/nedextract/actions/workflows/cffconvert.yml)
+[![markdown-link-check](https://github.com/Transparency-in-the-non-profit-sector/nedextract/actions/workflows/markdown-link-check.yml/badge.svg)](https://github.com/Transparency-in-the-non-profit-sector/nedextract/actions/workflows/markdown-link-check.yml)
 [![OpenSSF Best Practices](https://bestpractices.coreinfrastructure.org/projects/7733/badge)](https://bestpractices.coreinfrastructure.org/projects/7733)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8286579.svg)](https://doi.org/10.5281/zenodo.8286579)
 <br/><br/>
@@ -99,7 +99,7 @@ have a look at the [contribution guidelines](CONTRIBUTING.md).
 
 ## How to cite us
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8286579.svg)](https://doi.org/10.5281/zenodo.8286579)
-[![RSD](https://img.shields.io/badge/rsd-auto_extract-00a3e3.svg)](https://research-software-directory.org/projects/transparency-in-non-profit) 
+[![RSD](https://img.shields.io/badge/rsd-nedextract-00a3e3.svg)](https://research-software-directory.org/projects/transparency-in-non-profit) 
 
 If you use this package for your scientific work, please consider citing it as:
 <br/><br/>
