@@ -13,10 +13,10 @@ import time
 from datetime import datetime
 import numpy as np
 import pandas as pd
-from extract_related_orgs import match_anbis
-from preprocessing import delete_downloaded_pdf
-from preprocessing import download_pdf
-from read_pdf import PDFInformationExtractor
+from .extract_related_orgs import match_anbis
+from .preprocessing import delete_downloaded_pdf
+from .preprocessing import download_pdf
+from .read_pdf import PDFInformationExtractor
 
 
 def run(directory=None, file=None, url=None, urlf=None,  # pylint: disable=too-many-arguments, too-many-locals

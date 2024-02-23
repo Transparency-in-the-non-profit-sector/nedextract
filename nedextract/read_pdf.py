@@ -8,11 +8,11 @@ import os
 from datetime import datetime
 import numpy as np
 import stanza
-from classify_organisation import predict_main_sector
-from extract_persons import extract_persons
-from extract_related_orgs import collect_orgs
-from preprocessing import preprocess_pdf
-from utils.orgs_checks import OrganisationExtraction
+from .classify_organisation import predict_main_sector
+from .extract_persons import extract_persons
+from .extract_related_orgs import collect_orgs
+from .preprocessing import preprocess_pdf
+from .utils.orgs_checks import OrganisationExtraction
 
 
 class PDFInformationExtractor:

@@ -3,8 +3,8 @@ import itertools
 import re
 import numpy as np
 from fuzzywuzzy import fuzz
-from utils.keywords import Titles
-from utils.keywords import Tussenvoegsels
+from .keywords import Titles
+from .keywords import Tussenvoegsels
 
 
 class NameAnalysis:

@@ -1,7 +1,7 @@
 """This file contains functions that are used by exxtract_related_orgs to determine wether the found orgs are true orgs."""
 import re
 import numpy as np
-from utils.keywords import Org_Keywords
+from .keywords import Org_Keywords
 
 
 class OrganisationExtraction:
