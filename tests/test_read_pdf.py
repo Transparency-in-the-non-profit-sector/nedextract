@@ -30,7 +30,8 @@ posities = ('Dirkje Rooden - bestuur - lid\n' +
             'Jan van Oranje - ledenraad - penningmeester\nKarel - ledenraad - lid\n' +
             'Lodewijk - ledenraad - \nMaria - ledenraad - \n' +
             'Mohammed El Idrissi - controlecommissie - \n' +
-            'Saïda Benali - controlecommissie - \nAnna de Wit - rvt - vice-voorzitter\nBernard Zwartjes - rvt - \nCornelis Geel - rvt - lid\n')
+            'Saïda Benali - controlecommissie - \nAnna de Wit - rvt - vice-voorzitter\n' +
+            'Bernard Zwartjes - rvt - \nCornelis Geel - rvt - lid\n')
 
 # Expected output for test cases
 expected_output_people = ([os.path.basename(infile1),
