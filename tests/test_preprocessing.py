@@ -33,8 +33,7 @@ class UnitTestsPreprocessing(unittest.TestCase):
 
         This function tests the download_pdf dunction that downloads a pdf file from an url and safe it in the cwd.
         """
-        url = ("https://github.com/Transparency-in-the-non-profit-sector/" +
-               "np-transparency/blob/main/tests/test_report.pdf")
+        url = ("https://github.com/Transparency-in-the-non-profit-sector/nedextract/blob/main/tests/test_report.pdf")
         filename = download_pdf(url)
         self.assertTrue(os.path.exists(filename))
 
@@ -44,8 +43,7 @@ class UnitTestsPreprocessing(unittest.TestCase):
         This function tests the funciton delete_downloaded pdf that deletes the file that is downloaded with the function
         download_pdf and saved as downloaded.pdf from the cwd.
         """
-        url = ("https://github.com/Transparency-in-the-non-profit-sector/" +
-               "np-transparency/blob/main/tests/test_report.pdf")
+        url = ("https://github.com/Transparency-in-the-non-profit-sector/nedextract/blob/main/tests/test_report.pdf")
         filename = download_pdf(url)
         delete_downloaded_pdf()
         filename = os.path.join(os.getcwd(), "downloaded.pdf")
