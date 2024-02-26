@@ -23,15 +23,13 @@ text = preprocess_pdf(infile, ' ')
 doc = stanza.Pipeline(lang='nl', processors='tokenize,ner')(text)
 
 # expected value for test_extract_persons test case 1
-e_bp = np.array(['Anna de Wit - rvt - vice-voorzitter',
-                 'Dirkje Rooden - bestuur - lid',
+e_bp = np.array(['Dirkje Rooden - bestuur - lid',
                  'Eduard van Grijs - bestuur - ',
                  'Ferdinand de Blauw - bestuur - ',
                  'Gerard Roze - kascommissie - voorzitter',
-                 'Hendrik Doe - rvt - voorzitter',
                  'Hendrik Groen - kascommissie - ',
                  'Jane Doe - directeur - directeur',
-                 'Cornelis Geel - rvt - lid',
+                 'Hendrik Doe - rvt - voorzitter',
                  'Isaak Paars - ledenraad - voorzitter',
                  'Jan van Oranje - ledenraad - penningmeester',
                  'Karel - ledenraad - lid',
@@ -39,7 +37,9 @@ e_bp = np.array(['Anna de Wit - rvt - vice-voorzitter',
                  'Maria - ledenraad - ',
                  'Mohammed El Idrissi - controlecommissie - ',
                  'Saïda Benali - controlecommissie - ',
-                 'Bernard Zwartjes - rvt - '])
+                 'Anna de Wit - rvt - vice-voorzitter',
+                 'Bernard Zwartjes - rvt - ',
+                 'Cornelis Geel - rvt - lid'])
 
 # Definitions for test case 2
 all_persons = np.unique([f'{ent.text}' for ent in doc.ents if ent.type == "PER"])
@@ -101,7 +101,7 @@ class TestExtractPersons(unittest.TestCase):
         """
         # Test case 1
         e_a = np.array(['Sarah', 'Thomas'])
-        e_r = np.array(['Anna de Wit', 'Hendrik Doe', 'Cornelis Geel', 'Bernard Zwartjes'])
+        e_r = np.array(['Hendrik Doe', 'Anna de Wit', 'Bernard Zwartjes', 'Cornelis Geel'])
         e_b = np.array(['Dirkje Rooden', 'Eduard van Grijs', 'Ferdinand de Blauw'])
         e_l = np.array(['Isaak Paars', 'Jan van Oranje', 'Karel', 'Lodewijk', 'Maria'])
         e_k = np.array(['Gerard Roze', 'Hendrik Groen'])

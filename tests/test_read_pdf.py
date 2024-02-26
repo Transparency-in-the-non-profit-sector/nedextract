@@ -15,22 +15,22 @@ infile2 = os.path.join(indir, 'test_report3.pdf')
 # Inout for test cases
 people = ('A.B. de Wit\nAnna de Wit\nBernard Zwartjes\nCornelis Geel\nD.A. Rooden\n' +
           'Dirkje Rooden\nE. van Grijs\nEduard van Grijs\nF. de Blauw\nFerdinand de Blauw\n' +
-          'G. Roze\nGerard Roze\nH. Doe\nHendrik Doe\nHendrik Groen\nIsaak Paars\nJ. Doe\n' +
+          'G. Roze\nGerard Roze\nH\nHendrik Doe\nHendrik Groen\nIsaak Paars\nJ. Doe\n' +
           'Jan van Oranje\nJane Doe\nKarel\nLodewijk\nMaria\nMohammed El Idrissi\n' +
           'Mr. H. Hendrik Groen\nNico\nOtto\nPieter\nSarah\nSaïda Benali\nThomas\n')
 bestuursmensen = ('Jane Doe\nDirkje Rooden\nEduard van Grijs\nFerdinand de Blauw\n' +
-                  'Anna de Wit\nHendrik Doe\nCornelis Geel\nBernard Zwartjes\nIsaak Paars\n' +
+                  'Hendrik Doe\nAnna de Wit\nBernard Zwartjes\nCornelis Geel\nIsaak Paars\n' +
                   'Jan van Oranje\nKarel\nLodewijk\nMaria\nGerard Roze\n' +
                   'Hendrik Groen\nMohammed El Idrissi\nSaïda Benali\n')
-posities = ('Anna de Wit - rvt - vice-voorzitter\nDirkje Rooden - bestuur - lid\n' +
+posities = ('Dirkje Rooden - bestuur - lid\n' +
             'Eduard van Grijs - bestuur - \nFerdinand de Blauw - bestuur - \n' +
-            'Gerard Roze - kascommissie - voorzitter\nHendrik Doe - rvt - voorzitter\n' +
+            'Gerard Roze - kascommissie - voorzitter\n' +
             'Hendrik Groen - kascommissie - \nJane Doe - directeur - directeur\n' +
-            'Cornelis Geel - rvt - lid\nIsaak Paars - ledenraad - voorzitter\n' +
+            'Hendrik Doe - rvt - voorzitter\nIsaak Paars - ledenraad - voorzitter\n' +
             'Jan van Oranje - ledenraad - penningmeester\nKarel - ledenraad - lid\n' +
             'Lodewijk - ledenraad - \nMaria - ledenraad - \n' +
             'Mohammed El Idrissi - controlecommissie - \n' +
-            'Saïda Benali - controlecommissie - \nBernard Zwartjes - rvt - \n')
+            'Saïda Benali - controlecommissie - \nAnna de Wit - rvt - vice-voorzitter\nBernard Zwartjes - rvt - \nCornelis Geel - rvt - lid\n')
 
 # Expected output for test cases
 expected_output_people = ([os.path.basename(infile1),
@@ -40,7 +40,7 @@ expected_output_people = ([os.path.basename(infile1),
                            bestuursmensen,
                            posities,
                            'Jane Doe', '', '', '', '',
-                           'Anna de Wit', 'Hendrik Doe', 'Cornelis Geel', 'Bernard Zwartjes', '', '',
+                           'Hendrik Doe', 'Anna de Wit', 'Bernard Zwartjes', 'Cornelis Geel', '', '',
                            '', '', '', '', '', '', '', '', '', '', '', '', '', '',
                            'Dirkje Rooden', 'Eduard van Grijs', 'Ferdinand de Blauw', '', '', '', '',
                            '', '', '', '', '', '', '', '', '', '', '', '', '',
@@ -53,25 +53,25 @@ expected_output_people = ([os.path.basename(infile1),
 e_op1 = np.array([[os.path.basename(infile1), 'Bedrijf',
                    'A.B. de Wit\nAnna de Wit\nBernard Zwartjes\nCornelis Geel\nD.A. Rooden\n' +
                    'Dirkje Rooden\nE. van Grijs\nEduard van Grijs\nF. de Blauw\nFerdinand de Blauw\n' +
-                   'G. Roze\nGerard Roze\nH. Doe\nHendrik Doe\nHendrik Groen\nIsaak Paars\nJ. Doe\n' +
+                   'G. Roze\nGerard Roze\nH\nHendrik Doe\nHendrik Groen\nIsaak Paars\nJ. Doe\n' +
                    'Jan van Oranje\nJane Doe\nKarel\nLodewijk\nMaria\nMohammed El Idrissi\n' +
                    'Mr. H. Hendrik Groen\nNico\nOtto\nPieter\nSarah\nSaïda Benali\nThomas\n',
                    'Sarah\nThomas\n',
-                   'Jane Doe\nDirkje Rooden\nEduard van Grijs\nFerdinand de Blauw\nAnna de Wit\n' +
-                   'Hendrik Doe\nCornelis Geel\nBernard Zwartjes\nIsaak Paars\nJan van Oranje\n' +
+                   'Jane Doe\nDirkje Rooden\nEduard van Grijs\nFerdinand de Blauw\n' +
+                   'Hendrik Doe\nAnna de Wit\nBernard Zwartjes\nCornelis Geel\nIsaak Paars\nJan van Oranje\n' +
                    'Karel\nLodewijk\nMaria\nGerard Roze\nHendrik Groen\nMohammed El Idrissi\n' +
                    'Saïda Benali\n',
-                   'Anna de Wit - rvt - vice-voorzitter\nDirkje Rooden - bestuur - lid\n' +
+                   'Dirkje Rooden - bestuur - lid\n' +
                    'Eduard van Grijs - bestuur - \nFerdinand de Blauw - bestuur - \n' +
-                   'Gerard Roze - kascommissie - voorzitter\nHendrik Doe - rvt - voorzitter\n' +
-                   'Hendrik Groen - kascommissie - \nJane Doe - directeur - directeur\n' +
-                   'Cornelis Geel - rvt - lid\nIsaak Paars - ledenraad - voorzitter\n' +
+                   'Gerard Roze - kascommissie - voorzitter\n' +
+                   'Hendrik Groen - kascommissie - \nJane Doe - directeur - directeur\nHendrik Doe - rvt - voorzitter\n' +
+                   'Isaak Paars - ledenraad - voorzitter\n' +
                    'Jan van Oranje - ledenraad - penningmeester\nKarel - ledenraad - lid\n' +
                    'Lodewijk - ledenraad - \nMaria - ledenraad - \n' +
                    'Mohammed El Idrissi - controlecommissie - \nSaïda Benali - controlecommissie - \n' +
-                   'Bernard Zwartjes - rvt - \n',
+                   'Anna de Wit - rvt - vice-voorzitter\nBernard Zwartjes - rvt - \nCornelis Geel - rvt - lid\n',
                    'Jane Doe', '', '', '', '',
-                   'Anna de Wit', 'Hendrik Doe', 'Cornelis Geel', 'Bernard Zwartjes', '', '', '', '',
+                   'Hendrik Doe', 'Anna de Wit', 'Bernard Zwartjes', 'Cornelis Geel', '', '', '', '',
                    '', '', '', '', '', '', '', '', '', '', '', '',
                    'Dirkje Rooden', 'Eduard van Grijs', 'Ferdinand de Blauw', '', '', '', '', '', '',
                    '', '', '', '', '', '', '', '', '', '', '',
@@ -81,16 +81,16 @@ e_op1 = np.array([[os.path.basename(infile1), 'Bedrijf',
                    'Mohammed El Idrissi', 'Saïda Benali', '', '', '']])
 
 e_op2 = np.array(([[os.path.basename(infile2), 'Bedrijf',
-                    'A.B. de Wit\nAnna de Wit\nBernard Zwartjes\nCornelis Geel\nH. Doe\nHendrik Doe\n' +
+                    'A.B. de Wit\nAnna de Wit\nBernard Zwartjes\nCornelis Geel\nH\nHendrik Doe\n' +
                     'J. Doe\nJane Doe\nQuirine de Bruin\nRudolph de Bruin\nSimon de Zwart\n' +
                     'Tinus de Zwart\nVictor Wit\nWillem Wit\nXantippe de Bruin\nYolanda\nZander\n',
                     '',
-                    'Jane Doe\nAnna de Wit\nHendrik Doe\nBernard Zwartjes\nCornelis Geel\n',
-                    'Anna de Wit - rvt - vice-voorzitter\nHendrik Doe - rvt - voorzitter\n' +
+                    'Jane Doe\nAnna de Wit\nBernard Zwartjes\nCornelis Geel\nHendrik Doe\n',
+                    'Anna de Wit - rvt - vice-voorzitter\n' +
                     'Jane Doe - directeur - directeur\nBernard Zwartjes - rvt - \n' +
-                    'Cornelis Geel - rvt - lid\n',
+                    'Cornelis Geel - rvt - lid\nHendrik Doe - rvt - voorzitter\n',
                     'Jane Doe', '', '', '', '',
-                    'Anna de Wit', 'Hendrik Doe', 'Bernard Zwartjes', 'Cornelis Geel',
+                    'Anna de Wit', 'Bernard Zwartjes', 'Cornelis Geel', 'Hendrik Doe',
                     '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
                     '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
                    '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
