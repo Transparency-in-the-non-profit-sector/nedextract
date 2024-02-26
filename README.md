@@ -47,7 +47,7 @@ nedextract is being developed to extract specific information from annual report
 
 ## Prerequisites
 1. [Python 3.8, 3.9, 3.10, 3.11](https://www.python.org/downloads/)
-2. [miniconda](https://docs.conda.io/en/latest/miniconda.html); please note that miniconda is only required to install poppler, a requirements for pdftext.
+2. Poppler, as a prerequisite for pdftotext. Instructions can be found here: [https://pypi.org/project/pdftotext/](https://pypi.org/project/pdftotext/). Please note that to install poppler on a Windows Machine using VSCode, the Microsoft Visual C++ Build Tools are required before installing poppler with conda-forge.
 
 ## Installation
 
