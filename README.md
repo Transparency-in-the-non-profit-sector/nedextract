@@ -107,7 +107,7 @@ have a look at the [contribution guidelines](CONTRIBUTING.md).
 
 If you use this package for your scientific work, please consider citing it as:
 <br/><br/>
-Ootes, L.S. (2023). nedextract (v0.2.0). Zenodo. https://doi.org/10.5281/zenodo.8286579
+Ootes, L.S. (2023). nedextract (v0.2.1). Zenodo. https://doi.org/10.5281/zenodo.8286579
 <br/><br/>
 See also the [Zenodo page](https://zenodo.org/record/8286579) for exporting the citation to BibTteX and other formats.
 
