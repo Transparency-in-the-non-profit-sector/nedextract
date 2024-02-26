@@ -102,12 +102,12 @@ have a look at the [contribution guidelines](CONTRIBUTING.md).
 <br/><br/>
 
 ## How to cite us
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8286579.svg)](https://doi.org/10.5281/zenodo.8286579)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8286578.svg)](https://doi.org/10.5281/zenodo.8286578)
 [![RSD](https://img.shields.io/badge/rsd-nedextract-00a3e3.svg)](https://research-software-directory.org/projects/transparency-in-non-profit) 
 
 If you use this package for your scientific work, please consider citing it as:
 <br/><br/>
-Ootes, L.S. (2023). nedextract (v0.2.1). Zenodo. https://doi.org/10.5281/zenodo.8286579
+Ootes, L.S. (2023). nedextract (*[VERSION YOU USED]*). Zenodo. https://doi.org/10.5281/zenodo.8286578
 <br/><br/>
 See also the [Zenodo page](https://zenodo.org/record/8286579) for exporting the citation to BibTteX and other formats.
 
